@@ -23,30 +23,49 @@ from html.parser import HTMLParser
 BASE_URL = "https://nocr.net"
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+        "Mozilla/5.0 (compatible; Googlebot/2.1; "
+        "+http://www.google.com/bot.html)"
     ),
     "Accept-Language": "ko,en;q=0.9",
 }
-MAX_WORKERS = 20
+MAX_WORKERS = 8
+MAX_TIMEOUT = 120
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Low-level HTTP helper
 # ─────────────────────────────────────────────────────────────────────────────
 
-def fetch(url: str) -> str:
-    """Fetch a URL and return text (UTF-8). Raises on HTTP errors."""
-    req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        raw = resp.read()
-        # Try UTF-8 first; fall back to detected charset.
-        for enc in ("utf-8", "euc-kr", "cp949"):
-            try:
-                return raw.decode(enc)
-            except UnicodeDecodeError:
+
+def fetch(url: str, retries: int = 0, label: str | None = None) -> str:
+    """Fetch a URL and return text (UTF-8). Retries transient failures immediately (no sleep)."""
+    last_exc = None
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=MAX_TIMEOUT) as resp:
+                raw = resp.read()
+                # Try UTF-8 first; fall back to detected charset.
+                for enc in ("utf-8", "euc-kr", "cp949"):
+                    try:
+                        return raw.decode(enc)
+                    except UnicodeDecodeError:
+                        continue
+                return raw.decode("utf-8", errors="replace")
+        except (TimeoutError, urllib.error.URLError, ConnectionError) as exc:
+            last_exc = exc
+            if attempt < retries:
+                where = label or url
+                print(
+                    f"  [WARN] {where} failed ({exc}); retry {attempt + 1}/{retries}",
+                    f"{f' -- [{label}] ({url})' if (attempt + 1 == retries) else ''}",
+                    flush=True,
+                )
                 continue
-        return raw.decode("utf-8", errors="replace")
+            raise
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError(f"fetch retry loop failed without exception: {label or url}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -55,13 +74,11 @@ def fetch(url: str) -> str:
 
 _CONTENT_DIV_RE = re.compile(
     r'<div[^>]+class="[^"]*rhymix_content xe_content[^"]*"[^>]*>(.*?)</div>'
-    r'\s*<!--AfterDocument',
+    r"\s*<!--AfterDocument",
     re.DOTALL | re.IGNORECASE,
 )
 
-_ARTICLE_LINK_RE = re.compile(
-    r'href="(/[^"]+/(\d+)\?listStyle=viewer)"'
-)
+_ARTICLE_LINK_RE = re.compile(r'href="(/[^"]+/(\d+)\?listStyle=viewer)"')
 
 _TITLE_RE = re.compile(
     r'<span class="tl">(.*?)</span>',
@@ -73,9 +90,7 @@ _VIEWER_LIST_LINK_RE = re.compile(
     re.DOTALL | re.IGNORECASE,
 )
 
-_PAGE_COUNT_RE = re.compile(
-    r'/page/(\d+)\?listStyle=viewer'
-)
+_PAGE_COUNT_RE = re.compile(r"/page/(\d+)\?listStyle=viewer")
 
 
 def extract_content_html(page_html: str) -> str | None:
@@ -117,16 +132,18 @@ def max_page_number(html: str) -> int:
 # Core crawler
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class NocrBoardCrawler:
     """
     Crawls a single nocr.net board and calls extractor.extract(srl, title, html)
     for every article, then hands results to packager.
     """
 
-    def __init__(self, board_id: str, extractor, packager):
+    def __init__(self, board_id: str, extractor, packager, retries: int = 5):
         self.board_id = board_id
         self.extractor = extractor
         self.packager = packager
+        self.retries = retries
 
     # ── Step 1: collect all (srl, title) pairs ───────────────────────────────
 
@@ -134,7 +151,7 @@ class NocrBoardCrawler:
         """Fetch one board list page and return (srl, title) pairs."""
         url = f"{BASE_URL}/{self.board_id}/page/{page}?listStyle=viewer"
         try:
-            html = fetch(url)
+            html = fetch(url, retries=self.retries, label=f"list page {page}")
             return extract_articles_from_list_page(html, self.board_id)
         except Exception as exc:
             print(f"  [WARN] list page {page} failed: {exc}")
@@ -152,7 +169,7 @@ class NocrBoardCrawler:
         print(f"[{self.board_id}] Fetching page 1 to find article count…")
         url1 = f"{BASE_URL}/{self.board_id}/page/1?listStyle=viewer"
         try:
-            html1 = fetch(url1)
+            html1 = fetch(url1, retries=self.retries, label="list page 1")
         except Exception as exc:
             raise RuntimeError(f"Cannot fetch board index: {exc}")
 
@@ -166,21 +183,43 @@ class NocrBoardCrawler:
         true_max = initial_max
         if initial_max > 1:
             boundary_html = fetch(
-                f"{BASE_URL}/{self.board_id}/page/{initial_max}?listStyle=viewer"
+                f"{BASE_URL}/{self.board_id}/page/{initial_max}?listStyle=viewer",
+                retries=self.retries,
+                label=f"list page {initial_max}",
             )
             true_max = max(max_page_number(boundary_html), initial_max)
 
-        print(f"[{self.board_id}] {true_max} list pages, {len(articles)} articles on p.1")
+        print(
+            f"[{self.board_id}] {true_max} list pages, {len(articles)} articles on p.1"
+        )
 
         if true_max > 1:
+            total_extra_pages = true_max - 1
+            fetched_pages = 0
+            print(
+                f"[{self.board_id}] Fetching {total_extra_pages} more list pages "
+                f"with {MAX_WORKERS} workers…",
+                flush=True,
+            )
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-                futs = {pool.submit(self._fetch_article_list_page, p): p
-                        for p in range(2, true_max + 1)}
+                futs = {
+                    pool.submit(self._fetch_article_list_page, p): p
+                    for p in range(2, true_max + 1)
+                }
                 for fut in as_completed(futs):
-                    for srl, title in fut.result():
+                    page_articles = fut.result()
+                    fetched_pages += 1
+                    before = len(seen_srls)
+                    for srl, title in page_articles:
                         if srl not in seen_srls:
                             seen_srls.add(srl)
                             articles.append((srl, title))
+                    if fetched_pages % 5 == 0 or fetched_pages == total_extra_pages:
+                        print(
+                            f"[{self.board_id}] List pages {fetched_pages}/{total_extra_pages}; "
+                            f"articles discovered={len(articles)}",
+                            flush=True,
+                        )
 
         # Sort by SRL (ascending = canonical order)
         articles.sort(key=lambda x: x[0])
@@ -194,7 +233,7 @@ class NocrBoardCrawler:
         """Fetch one article and return parsed rows, or None on failure."""
         url = f"{BASE_URL}/{self.board_id}/{srl}?listStyle=viewer"
         try:
-            html = fetch(url)
+            html = fetch(url, retries=self.retries, label=f"article {srl}")
             content_html = extract_content_html(html)
             if content_html is None:
                 print(f"  [WARN] No content div in {url}")
@@ -225,14 +264,24 @@ class NocrBoardCrawler:
         def on_done():
             with lock:
                 done[0] += 1
-                if done[0] % 50 == 0 or done[0] == total:
-                    print(f"[{self.board_id}] {done[0]}/{total} articles processed")
+                every = max(10, min(50, total // 20 or 1))
+                if done[0] % every == 0 or done[0] == total:
+                    pct = (done[0] / total) * 100
+                    print(
+                        f"[{self.board_id}] Articles {done[0]}/{total} ({pct:.1f}%); "
+                        f"rows extracted={len(results)}",
+                        flush=True,
+                    )
 
-        print(f"[{self.board_id}] Fetching {total} articles with {MAX_WORKERS} workers…")
+        print(
+            f"[{self.board_id}] Fetching {total} articles with {MAX_WORKERS} workers…"
+        )
         results = []
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-            futs = {pool.submit(self._fetch_article, srl, title): (srl, title)
-                    for srl, title in articles}
+            futs = {
+                pool.submit(self._fetch_article, srl, title): (srl, title)
+                for srl, title in articles
+            }
             for fut in as_completed(futs):
                 rows = fut.result()
                 if rows:
@@ -247,6 +296,7 @@ class NocrBoardCrawler:
 # ─────────────────────────────────────────────────────────────────────────────
 # SQLite packager
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class SqlitePackager:
     """
@@ -296,7 +346,9 @@ class SqlitePackager:
         out_path: str,
         slug: str,
         label: str,
-        books_meta: list[dict],   # list of {book_id, osis, eng_name, name, testament, chapters}
+        books_meta: list[
+            dict
+        ],  # list of {book_id, osis, eng_name, name, testament, chapters}
     ):
         self.out_path = out_path
         self.slug = slug
@@ -312,16 +364,23 @@ class SqlitePackager:
         cur = con.cursor()
         cur.executescript(self.SCHEMA_SQL)
 
-        cur.execute("INSERT INTO version (slug, label) VALUES (?, ?)",
-                    (self.slug, self.label))
+        cur.execute(
+            "INSERT INTO version (slug, label) VALUES (?, ?)", (self.slug, self.label)
+        )
 
         for bm in self.books_meta:
             cur.execute(
                 "INSERT OR REPLACE INTO books "
                 "(book_id, osis, eng_name, name, testament, chapters) "
                 "VALUES (?, ?, ?, ?, ?, ?)",
-                (bm["book_id"], bm["osis"], bm["eng_name"],
-                 bm["name"], bm["testament"], bm["chapters"]),
+                (
+                    bm["book_id"],
+                    bm["osis"],
+                    bm["eng_name"],
+                    bm["name"],
+                    bm["testament"],
+                    bm["chapters"],
+                ),
             )
 
         # Update chapters count from actual data

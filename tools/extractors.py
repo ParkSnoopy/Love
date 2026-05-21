@@ -108,16 +108,24 @@ BOOKS = [
 BOOK_BY_ID = {b[0]: b for b in BOOKS}
 BOOK_META_LIST = [
     {
-        "book_id": b[0], "osis": b[1], "eng_name": b[2],
-        "name": b[3], "testament": b[4], "chapters": b[5],
+        "book_id": b[0],
+        "osis": b[1],
+        "eng_name": b[2],
+        "name": b[3],
+        "testament": b[4],
+        "chapters": b[5],
     }
     for b in BOOKS
 ]
 
 # INTRO pseudo-book (book_id=0) for general prefaces
 INTRO_BOOK_META = {
-    "book_id": 0, "osis": "INTRO", "eng_name": "General Intro",
-    "name": "일반 서론/소개", "testament": "INTRO", "chapters": 0,
+    "book_id": 0,
+    "osis": "INTRO",
+    "eng_name": "General Intro",
+    "name": "일반 서론/소개",
+    "testament": "INTRO",
+    "chapters": 0,
 }
 
 ALL_BOOKS_META = [INTRO_BOOK_META] + BOOK_META_LIST
@@ -132,45 +140,181 @@ _KOR_BOOK_NAME_TO_ID: dict[str, int] = {b[3]: b[0] for b in BOOKS}
 
 # Short abbreviations used in PYS ("창", "출", ...) → id
 _KOR_ABBREV_TO_ID: dict[str, int] = {
-    "창": 1, "출": 2, "레": 3, "민": 4, "신": 5,
-    "수": 6, "삿": 7, "룻": 8, "삼상": 9, "삼하": 10,
-    "왕상": 11, "왕하": 12, "대상": 13, "대하": 14,
-    "스": 15, "느": 16, "에": 17, "욥": 18, "시": 19,
-    "잠": 20, "전": 21, "아": 22, "사": 23, "렘": 24,
-    "애": 25, "겔": 26, "단": 27, "호": 28, "욜": 29,
-    "암": 30, "옵": 31, "욘": 32, "미": 33, "나": 34,
-    "합": 35, "습": 36, "학": 37, "슥": 38, "말": 39,
-    "마": 40, "막": 41, "눅": 42, "요": 43, "행": 44,
-    "롬": 45, "고전": 46, "고후": 47, "갈": 48, "엡": 49,
-    "빌": 50, "골": 51, "살전": 52, "살후": 53,
-    "딤전": 54, "딤후": 55, "딛": 56, "몬": 57, "히": 58,
-    "약": 59, "벧전": 60, "벧후": 61, "요일": 62,
-    "요이": 63, "요삼": 64, "유": 65, "계": 66,
+    "창": 1,
+    "출": 2,
+    "레": 3,
+    "민": 4,
+    "신": 5,
+    "수": 6,
+    "삿": 7,
+    "룻": 8,
+    "삼상": 9,
+    "삼하": 10,
+    "왕상": 11,
+    "왕하": 12,
+    "대상": 13,
+    "대하": 14,
+    "스": 15,
+    "느": 16,
+    "에": 17,
+    "욥": 18,
+    "시": 19,
+    "잠": 20,
+    "전": 21,
+    "아": 22,
+    "사": 23,
+    "렘": 24,
+    "애": 25,
+    "겔": 26,
+    "단": 27,
+    "호": 28,
+    "욜": 29,
+    "암": 30,
+    "옵": 31,
+    "욘": 32,
+    "미": 33,
+    "나": 34,
+    "합": 35,
+    "습": 36,
+    "학": 37,
+    "슥": 38,
+    "말": 39,
+    "마": 40,
+    "막": 41,
+    "눅": 42,
+    "요": 43,
+    "행": 44,
+    "롬": 45,
+    "고전": 46,
+    "고후": 47,
+    "갈": 48,
+    "엡": 49,
+    "빌": 50,
+    "골": 51,
+    "살전": 52,
+    "살후": 53,
+    "딤전": 54,
+    "딤후": 55,
+    "딛": 56,
+    "몬": 57,
+    "히": 58,
+    "약": 59,
+    "벧전": 60,
+    "벧후": 61,
+    "요일": 62,
+    "요이": 63,
+    "요삼": 64,
+    "유": 65,
+    "계": 66,
 }
 
 # English abbreviation → id (for English commentaries)
 _ENG_ABBREV_TO_ID: dict[str, int] = {
-    "gen": 1, "exod": 2, "ex": 2, "lev": 3, "num": 4, "deut": 5, "dt": 5,
-    "josh": 6, "judg": 7, "jdg": 7, "ruth": 8, "rut": 8,
-    "1sam": 9, "2sam": 10, "1kgs": 11, "1ki": 11, "2kgs": 12, "2ki": 12,
-    "1chr": 13, "1ch": 13, "2chr": 14, "2ch": 14,
-    "ezra": 15, "neh": 16, "esth": 17, "est": 17, "job": 18,
-    "ps": 19, "psa": 19, "prov": 20, "pr": 20, "eccl": 21, "ec": 21,
-    "song": 22, "isa": 23, "is": 23, "jer": 24, "lam": 25,
-    "ezek": 26, "eze": 26, "dan": 27, "hos": 28, "joel": 29, "jl": 29,
-    "amos": 30, "am": 30, "obad": 31, "ob": 31, "jonah": 32, "jon": 32,
-    "mic": 33, "nah": 34, "hab": 35, "zeph": 36, "zep": 36,
-    "hag": 37, "zech": 38, "zec": 38, "mal": 39,
-    "matt": 40, "mt": 40, "mark": 41, "mk": 41, "luke": 42, "lk": 42,
-    "john": 43, "jn": 43, "acts": 44, "ac": 44,
-    "rom": 45, "1cor": 46, "2cor": 47, "gal": 48, "eph": 49,
-    "phil": 50, "php": 50, "col": 51, "1thess": 52, "1th": 52,
-    "2thess": 53, "2th": 53, "1tim": 54, "1ti": 54, "2tim": 55, "2ti": 55,
-    "titus": 56, "tit": 56, "phlm": 57, "phm": 57,
-    "heb": 58, "jas": 59, "jms": 59, "1pet": 60, "1pe": 60,
-    "2pet": 61, "2pe": 61, "1john": 62, "1jn": 62,
-    "2john": 63, "2jn": 63, "3john": 64, "3jn": 64,
-    "jude": 65, "jud": 65, "rev": 66,
+    "gen": 1,
+    "exod": 2,
+    "ex": 2,
+    "lev": 3,
+    "num": 4,
+    "deut": 5,
+    "dt": 5,
+    "josh": 6,
+    "judg": 7,
+    "jdg": 7,
+    "ruth": 8,
+    "rut": 8,
+    "1sam": 9,
+    "2sam": 10,
+    "1kgs": 11,
+    "1ki": 11,
+    "2kgs": 12,
+    "2ki": 12,
+    "1chr": 13,
+    "1ch": 13,
+    "2chr": 14,
+    "2ch": 14,
+    "ezra": 15,
+    "neh": 16,
+    "esth": 17,
+    "est": 17,
+    "job": 18,
+    "ps": 19,
+    "psa": 19,
+    "prov": 20,
+    "pr": 20,
+    "eccl": 21,
+    "ec": 21,
+    "song": 22,
+    "isa": 23,
+    "is": 23,
+    "jer": 24,
+    "lam": 25,
+    "ezek": 26,
+    "eze": 26,
+    "dan": 27,
+    "hos": 28,
+    "joel": 29,
+    "jl": 29,
+    "amos": 30,
+    "am": 30,
+    "obad": 31,
+    "ob": 31,
+    "jonah": 32,
+    "jon": 32,
+    "mic": 33,
+    "nah": 34,
+    "hab": 35,
+    "zeph": 36,
+    "zep": 36,
+    "hag": 37,
+    "zech": 38,
+    "zec": 38,
+    "mal": 39,
+    "matt": 40,
+    "mt": 40,
+    "mark": 41,
+    "mk": 41,
+    "luke": 42,
+    "lk": 42,
+    "john": 43,
+    "jn": 43,
+    "acts": 44,
+    "ac": 44,
+    "rom": 45,
+    "1cor": 46,
+    "2cor": 47,
+    "gal": 48,
+    "eph": 49,
+    "phil": 50,
+    "php": 50,
+    "col": 51,
+    "1thess": 52,
+    "1th": 52,
+    "2thess": 53,
+    "2th": 53,
+    "1tim": 54,
+    "1ti": 54,
+    "2tim": 55,
+    "2ti": 55,
+    "titus": 56,
+    "tit": 56,
+    "phlm": 57,
+    "phm": 57,
+    "heb": 58,
+    "jas": 59,
+    "jms": 59,
+    "1pet": 60,
+    "1pe": 60,
+    "2pet": 61,
+    "2pe": 61,
+    "1john": 62,
+    "1jn": 62,
+    "2john": 63,
+    "2jn": 63,
+    "3john": 64,
+    "3jn": 64,
+    "jude": 65,
+    "jud": 65,
+    "rev": 66,
 }
 
 
@@ -220,9 +364,7 @@ def clean_text(text: str) -> str:
 
 # Title format: "{Board prefix} {KorBookName} {NN}장"
 # e.g. "우리말성경 창세기 01장"  →  book_id=1, chapter=1
-_TITLE_BOOK_CHAPTER_RE = re.compile(
-    r"([가-힣\s]+?)\s+(\d+)장$"
-)
+_TITLE_BOOK_CHAPTER_RE = re.compile(r"([가-힣\s]+?)\s+(\d+)장$")
 
 
 def title_to_book_chapter(title: str) -> tuple[int, int] | None:
@@ -246,6 +388,7 @@ def title_to_book_chapter(title: str) -> tuple[int, int] | None:
 # ─────────────────────────────────────────────────────────────────────────────
 # BASE EXTRACTOR
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class BaseExtractor:
     """
@@ -302,7 +445,9 @@ class BibleExtractor(BaseExtractor):
                 continue
             text = clean_text(text)
             if text:
-                rows.append({"book_id": book_id, "chapter": ch, "verse": v, "text": text})
+                rows.append(
+                    {"book_id": book_id, "chapter": ch, "verse": v, "text": text}
+                )
 
         return rows
 
@@ -347,7 +492,9 @@ class HochmaExtractor(BaseExtractor):
             text = strip_html(content_html)
             text = clean_text(text)
             if text:
-                return [{"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}]
+                return [
+                    {"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}
+                ]
             return []
 
         if parsed is None:
@@ -375,7 +522,14 @@ class HochmaExtractor(BaseExtractor):
             intro_text = strip_html(parts[0])
             intro_text = clean_text(intro_text)
             if intro_text:
-                rows.append({"book_id": book_id, "chapter": chapter, "verse": 0, "text": intro_text})
+                rows.append(
+                    {
+                        "book_id": book_id,
+                        "chapter": chapter,
+                        "verse": 0,
+                        "text": intro_text,
+                    }
+                )
 
         i = 1
         while i + 2 <= len(parts):
@@ -385,7 +539,9 @@ class HochmaExtractor(BaseExtractor):
             text = strip_html(text_html)
             text = clean_text(text)
             if text:
-                rows.append({"book_id": book_id, "chapter": ch, "verse": v, "text": text})
+                rows.append(
+                    {"book_id": book_id, "chapter": ch, "verse": v, "text": text}
+                )
 
         return rows
 
@@ -397,7 +553,7 @@ class HochmaExtractor(BaseExtractor):
 # <div class="dent"><a id="V1"></a><font color="red">1:1</font>
 _MHW_VERSE_DIV_RE = re.compile(
     r'<div[^>]+class="dent"[^>]*>\s*<a[^>]+id="V(\d+)"[^>]*></a>\s*'
-    r'<font[^>]*>(\d+):(\d+)</font>',
+    r"<font[^>]*>(\d+):(\d+)</font>",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -423,7 +579,9 @@ class MatthewHenryKorExtractor(BaseExtractor):
             text = strip_html(content_html)
             text = clean_text(text)
             if text:
-                return [{"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}]
+                return [
+                    {"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}
+                ]
             return []
 
         if parsed is None:
@@ -446,29 +604,44 @@ class MatthewHenryKorExtractor(BaseExtractor):
 
         # Chapter intro: everything before first marker
         if markers:
-            intro_html = content_html[:markers[0].start()]
+            intro_html = content_html[: markers[0].start()]
             intro_text = strip_html(intro_html)
             intro_text = clean_text(intro_text)
             if intro_text:
-                rows.append({"book_id": book_id, "chapter": chapter, "verse": 0, "text": intro_text})
+                rows.append(
+                    {
+                        "book_id": book_id,
+                        "chapter": chapter,
+                        "verse": 0,
+                        "text": intro_text,
+                    }
+                )
         else:
             # No verse markers found; store whole text as chapter-level
             text = strip_html(content_html)
             text = clean_text(text)
             if text:
-                rows.append({"book_id": book_id, "chapter": chapter, "verse": 0, "text": text})
+                rows.append(
+                    {"book_id": book_id, "chapter": chapter, "verse": 0, "text": text}
+                )
             return rows
 
         # Verse segments
         for idx, m in enumerate(markers):
             ch, v = int(m.group(2)), int(m.group(3))
             start = m.end()
-            end = markers[idx + 1].start() if idx + 1 < len(markers) else len(content_html)
+            end = (
+                markers[idx + 1].start()
+                if idx + 1 < len(markers)
+                else len(content_html)
+            )
             seg_html = content_html[start:end]
             text = strip_html(seg_html)
             text = clean_text(text)
             if text:
-                rows.append({"book_id": book_id, "chapter": ch, "verse": v, "text": text})
+                rows.append(
+                    {"book_id": book_id, "chapter": ch, "verse": v, "text": text}
+                )
 
         return rows
 
@@ -481,8 +654,8 @@ class MatthewHenryKorExtractor(BaseExtractor):
 # The book abbrev + chapter:verse are in the span text.
 _PYS_VERSE_MARKER_RE = re.compile(
     r'<p[^>]+class="0"[^>]*>\s*<span[^>]*>\s*'
-    r'([가-힣]+)\s+(\d+):(\d+)'      # group 1=abbrev, 2=ch, 3=v
-    r'[^<]*</span>\s*</p>',
+    r"([가-힣]+)\s+(\d+):(\d+)"  # group 1=abbrev, 2=ch, 3=v
+    r"[^<]*</span>\s*</p>",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -518,7 +691,9 @@ class BakYunsenExtractor(BaseExtractor):
             text = strip_html(content_html)
             text = clean_text(text)
             if text:
-                return [{"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}]
+                return [
+                    {"book_id": 0, "chapter": 0, "verse": srl % 10000, "text": text}
+                ]
             return []
 
         if parsed is None:
@@ -550,20 +725,26 @@ class BakYunsenExtractor(BaseExtractor):
             text = strip_html(content_html)
             text = clean_text(text)
             if text:
-                return [{"book_id": book_id, "chapter": chapter, "verse": 0, "text": text}]
+                return [
+                    {"book_id": book_id, "chapter": chapter, "verse": 0, "text": text}
+                ]
             return []
 
         rows = []
 
         # Text before the first verse marker → chapter intro (verse=0)
-        pre_text = strip_html(content_html[:markers[0][0]])
+        pre_text = strip_html(content_html[: markers[0][0]])
         pre_text = clean_text(pre_text)
         if pre_text:
-            rows.append({"book_id": book_id, "chapter": chapter, "verse": 0, "text": pre_text})
+            rows.append(
+                {"book_id": book_id, "chapter": chapter, "verse": 0, "text": pre_text}
+            )
 
         # Collect text between each pair of markers
         for idx, (mstart, mend, bid, ch, v) in enumerate(markers):
-            seg_end = markers[idx + 1][0] if idx + 1 < len(markers) else len(content_html)
+            seg_end = (
+                markers[idx + 1][0] if idx + 1 < len(markers) else len(content_html)
+            )
             seg_html = content_html[mend:seg_end]
             text = strip_html(seg_html)
             text = clean_text(text)
