@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException, sqlite3, OpenMode;
 
@@ -12,7 +11,19 @@ import '../../../data/storage/db_path_provider.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../library/domain/manifest_repository.dart';
+import '../providers/commentary_visibility_provider.dart';
+import 'verse_action_pane.dart';
 
+class CommentaryFullScreenNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void toggle() => state = !state;
+  void setFullScreen(bool value) => state = value;
+}
+
+final commentaryFullScreenProvider =
+    NotifierProvider<CommentaryFullScreenNotifier, bool>(CommentaryFullScreenNotifier.new);
 
 class ReaderPage extends ConsumerWidget {
   const ReaderPage({super.key});
@@ -52,305 +63,181 @@ class _ReaderContentView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rr = ref.watch(readerRefProvider);
-    final selection = ref.watch(verseSelectionProvider);
-    final userDataRepo = ref.watch(userDataRepositoryProvider);
-    final userDataDbPath = ref.watch(userDataDbPathProvider);
-    final activeCommentaryDbPath = ref.watch(activeCommentaryDbPathProvider).asData?.value;
+    final rrAsync = ref.watch(readerRefProvider);
 
-    const repo = ReaderRepository();
-    var verses = const <VerseLine>[];
-    var bookName = 'Bible';
-    String? loadError;
-    try {
-      verses = repo.loadChapter(
-        dbPath: dbPath,
-        bookId: rr.bookId,
-        chapter: rr.chapter,
-      );
-      bookName = repo.loadBookName(dbPath: dbPath, bookId: rr.bookId);
-    } on SqliteException catch (e) {
-      loadError = 'DB Error: ${e.message}\nPath: $dbPath';
-    }
-    final selectedVerseLines = verses
-        .where(
-          (v) => selection.selected.contains(
-            VerseKey(bookId: v.bookId, chapter: v.chapter, verse: v.verse),
-          ),
-        )
-        .map(
-          (v) => SelectedVerse(
-            bookName: bookName,
-            chapter: v.chapter,
-            verse: v.verse,
-            text: v.text,
-          ),
-        )
-        .toList(growable: false);
+    ref.listen<bool>(commentaryVisibilityProvider, (prev, next) {
+      if (!next) {
+        ref.read(commentaryFullScreenProvider.notifier).setFullScreen(false);
+      }
+    });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: InkWell(
-          onTap: () => _showPicker(context, ref, rr, dbPath),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('$bookName ${rr.chapter}'),
-              const Icon(Icons.arrow_drop_down),
+    ref.listen<VerseSelectionState>(verseSelectionProvider, (prev, next) {
+      if (next.mode != SelectionMode.none) {
+        ref.read(commentaryVisibilityProvider.notifier).hide();
+      }
+    });
+
+    return rrAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+      data: (rr) {
+        final selection = ref.watch(verseSelectionProvider);
+        final userDataRepo = ref.watch(userDataRepositoryProvider);
+        final userDataDbPath = ref.watch(userDataDbPathProvider);
+        final activeCommentaryDbPath = ref.watch(activeCommentaryDbPathProvider).asData?.value;
+        final isCommentaryVisible = ref.watch(commentaryVisibilityProvider);
+        final isCommentaryActive = activeCommentaryDbPath != null && isCommentaryVisible;
+        final isFullScreen = ref.watch(commentaryFullScreenProvider);
+
+        const repo = ReaderRepository();
+        var verses = const <VerseLine>[];
+        var bookName = 'Bible';
+        String? loadError;
+        try {
+          verses = repo.loadChapter(
+            dbPath: dbPath,
+            bookId: rr.bookId,
+            chapter: rr.chapter,
+          );
+          bookName = repo.loadBookName(dbPath: dbPath, bookId: rr.bookId);
+        } on SqliteException catch (e) {
+          loadError = 'DB Error: ${e.message}\nPath: $dbPath';
+        }
+        final selectedVerseLines = verses
+            .where(
+              (v) => selection.selected.contains(
+                VerseKey(bookId: v.bookId, chapter: v.chapter, verse: v.verse),
+              ),
+            )
+            .map(
+              (v) => SelectedVerse(
+                bookName: bookName,
+                chapter: v.chapter,
+                verse: v.verse,
+                text: v.text,
+              ),
+            )
+            .toList(growable: false);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: InkWell(
+              onTap: () => _showPicker(context, ref, rr, dbPath),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$bookName ${rr.chapter}'),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            ),
+            actions: [
+              IconButton(
+                tooltip: 'Toggle Commentary',
+                icon: Icon(
+                  isCommentaryActive ? Icons.comment : Icons.comment_outlined,
+                  color: isCommentaryActive ? Theme.of(context).colorScheme.primary : null,
+                ),
+                onPressed: () {
+                  final activeCommentary = ref.read(activeCommentarySelectionProvider).asData?.value;
+                  if (activeCommentary == null) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      builder: (ctx) => _CommentarySelectionSheet(
+                        onSelected: () => Navigator.of(ctx).pop(),
+                      ),
+                    );
+                  } else {
+                    ref.read(commentaryVisibilityProvider.notifier).toggle();
+                  }
+                },
+              ),
+              IconButton(
+                onPressed: () => ref.read(readerRefProvider.notifier).prevChapter(),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              IconButton(
+                onPressed: () => ref.read(readerRefProvider.notifier).nextChapter(),
+                icon: const Icon(Icons.chevron_right),
+              ),
             ],
           ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => ref.read(readerRefProvider.notifier).prevChapter(),
-            icon: const Icon(Icons.chevron_left),
-          ),
-          IconButton(
-            onPressed: () => ref.read(readerRefProvider.notifier).nextChapter(),
-            icon: const Icon(Icons.chevron_right),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (selection.mode != SelectionMode.none)
-            Material(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: SizedBox(
-                height: 52,
-                child: Row(
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        final text = VerseExportFormatter.format(
-                          selectedVerseLines,
-                        );
-                        await Clipboard.setData(ClipboardData(text: text));
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Copied to clipboard'),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Copy'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final text = VerseExportFormatter.format(
-                          selectedVerseLines,
-                        );
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Share pending: $text')),
-                          );
-                        }
-                      },
-                      child: const Text('Share'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        final now = DateTime.now().millisecondsSinceEpoch;
-                        for (final v in selectedVerseLines) {
-                          userDataRepo.addBookmark(
-                            dbPath: userDataDbPath,
-                            bookId: rr.bookId,
-                            chapter: v.chapter,
-                            verse: v.verse,
-                            createdAt: now,
-                          );
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Bookmarked ${selectedVerseLines.length} verse(s)',
-                            ),
+          body: Column(
+            children: [
+              if (!isFullScreen)
+                Expanded(
+                  child: loadError != null
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(loadError, textAlign: TextAlign.center),
                           ),
-                        );
-                      },
-                      child: const Text('Bookmark'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        final sorted = [...selectedVerseLines]
-                          ..sort((a, b) => a.verse.compareTo(b.verse));
-                        final first = sorted.first;
-                        final last = sorted.last;
-                        userDataRepo.addHighlight(
-                          dbPath: userDataDbPath,
-                          bookId: rr.bookId,
-                          chapter: first.chapter,
-                          verseStart: first.verse,
-                          verseEnd: last.verse,
-                          color: 'yellow',
-                          createdAt: DateTime.now().millisecondsSinceEpoch,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Highlight ${first.chapter}:${first.verse}-${last.verse}',
-                            ),
-                          ),
-                        );
-                      },
-                      child: const Text('Highlight'),
-                    ),
-                    TextButton(
-                      onPressed: selection.mode == SelectionMode.single
-                          ? () async {
-                              final single = selection.single!;
-                              final existing = userDataRepo.loadNote(
-                                dbPath: userDataDbPath,
-                                bookId: single.bookId,
-                                chapter: single.chapter,
-                                verse: single.verse,
-                              );
-                              final c = TextEditingController(
-                                text: existing?.content ?? '',
-                              );
-                              final text = await showDialog<String>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: Text(
-                                    'Note ${single.chapter}:${single.verse}',
-                                  ),
-                                  content: TextField(
-                                    controller: c,
-                                    maxLines: 5,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
+                        )
+                      : ListView.builder(
+                          itemCount: verses.length,
+                          itemBuilder: (context, i) {
+                            final v = verses[i];
+                            final key = VerseKey(
+                              bookId: v.bookId,
+                              chapter: v.chapter,
+                              verse: v.verse,
+                            );
+                            final selected = selection.selected.contains(key);
+                            return ListTile(
+                              selected: selected,
+                              onTap: () {
+                                ref.read(verseSelectionProvider.notifier).tap(key);
+                                userDataRepo.addHistory(
+                                  dbPath: userDataDbPath,
+                                  bookId: v.bookId,
+                                  chapter: v.chapter,
+                                  verse: v.verse,
+                                  visitedAt: DateTime.now().millisecondsSinceEpoch,
+                                );
+                              },
+                              onLongPress: () => ref
+                                  .read(verseSelectionProvider.notifier)
+                                  .longPress(key),
+                              title: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '${v.verse} ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () =>
-                                          Navigator.of(ctx).pop(c.text.trim()),
-                                      child: const Text('Save'),
-                                    ),
+                                    TextSpan(text: v.text),
                                   ],
                                 ),
-                              );
-                              if (text != null && text.isNotEmpty) {
-                                userDataRepo.upsertNote(
-                                  dbPath: userDataDbPath,
-                                  bookId: single.bookId,
-                                  chapter: single.chapter,
-                                  verse: single.verse,
-                                  content: text,
-                                  now: DateTime.now().millisecondsSinceEpoch,
-                                );
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Note saved')),
-                                  );
-                                }
-                              }
-                            }
-                          : null,
-                      child: const Text('Note'),
-                    ),
-                    TextButton(
-                      onPressed: selection.mode == SelectionMode.single
-                          ? () async {
-                              final commentaryDbPath = ref.read(activeCommentaryDbPathProvider).asData?.value;
-                              if (commentaryDbPath != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Showing commentary in split pane below.'),
-                                    duration: Duration(seconds: 1),
-                                  ),
-                                );
-                              } else {
-                                showModalBottomSheet<void>(
-                                  context: context,
-                                  builder: (ctx) => _CommentarySelectionSheet(
-                                    onSelected: () => Navigator.of(ctx).pop(),
-                                  ),
-                                );
-                              }
-                            }
-                          : null,
-                      child: const Text('Jump Comment'),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () =>
-                          ref.read(verseSelectionProvider.notifier).clear(),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          Expanded(
-            flex: activeCommentaryDbPath != null ? 3 : 1,
-            child: loadError != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(loadError, textAlign: TextAlign.center),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: verses.length,
-                    itemBuilder: (context, i) {
-                      final v = verses[i];
-                      final key = VerseKey(
-                        bookId: v.bookId,
-                        chapter: v.chapter,
-                        verse: v.verse,
-                      );
-                      final selected = selection.selected.contains(key);
-                      return ListTile(
-                        selected: selected,
-                        onTap: () {
-                          ref.read(verseSelectionProvider.notifier).tap(key);
-                          userDataRepo.addHistory(
-                            dbPath: userDataDbPath,
-                            bookId: v.bookId,
-                            chapter: v.chapter,
-                            verse: v.verse,
-                            visitedAt: DateTime.now().millisecondsSinceEpoch,
-                          );
-                        },
-                        onLongPress: () => ref
-                            .read(verseSelectionProvider.notifier)
-                            .longPress(key),
-                        title: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${v.verse} ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 12,
-                                ),
                               ),
-                              TextSpan(text: v.text),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                ),
+              if (isCommentaryActive)
+                Expanded(
+                  flex: isFullScreen ? 1 : 2,
+                  child: CommentaryPane(
+                    dbPath: activeCommentaryDbPath,
+                    bookId: rr.bookId,
+                    chapter: rr.chapter,
                   ),
+                ),
+            ],
           ),
-          if (activeCommentaryDbPath != null)
-            Expanded(
-              flex: 2,
-              child: CommentaryPane(
-                dbPath: activeCommentaryDbPath,
-                bookId: rr.bookId,
-                chapter: rr.chapter,
-              ),
-            ),
-        ],
-      ),
+          bottomNavigationBar: selection.mode != SelectionMode.none
+              ? VerseActionPane(
+                  selectedVerses: selectedVerseLines,
+                  bookName: bookName,
+                  chapter: rr.chapter,
+                  bookId: rr.bookId,
+                )
+              : null,
+        );
+      },
     );
   }
 
@@ -598,10 +485,10 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   @override
   Widget build(BuildContext context) {
     const repo = ReaderRepository();
-    CommentaryArticle? article;
+    List<CommentaryVerse> verses = [];
     String? err;
     try {
-      article = repo.loadCommentaryArticle(
+      verses = repo.loadCommentaryVerses(
         dbPath: widget.dbPath,
         bookId: widget.bookId,
         chapter: widget.chapter,
@@ -613,10 +500,101 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
     final theme = Theme.of(context);
     final baseTextStyle = theme.textTheme.bodyMedium ?? const TextStyle();
     final activeCommentary = ref.watch(activeCommentarySelectionProvider).asData?.value;
-    final articleTitle = article?.title;
+
+    var bookName = repo.loadBookName(dbPath: widget.dbPath, bookId: widget.bookId);
+    if (widget.dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+      final names = bibleBookNames[widget.bookId];
+      if (names != null && names.isNotEmpty) {
+        bookName = names.last;
+      }
+    }
     final headerTitle = activeCommentary != null
-        ? '${activeCommentary.name}${articleTitle != null ? ' - $articleTitle' : ''}'
-        : (articleTitle ?? 'No Commentary');
+        ? '${activeCommentary.name} - $bookName ${widget.chapter}장'
+        : '$bookName ${widget.chapter}장';
+
+    final isFullScreen = ref.watch(commentaryFullScreenProvider);
+    final hasVerseComments = verses.any((v) => v.verse > 0);
+
+    Widget contentWidget;
+    if (err != null) {
+      contentWidget = Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(err, style: const TextStyle(color: Colors.red)),
+      );
+    } else if (verses.isEmpty) {
+      contentWidget = const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Text(
+            'No commentary available for this chapter.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (hasVerseComments) {
+      contentWidget = Scrollbar(
+        controller: _scrollController,
+        thumbVisibility: true,
+        child: ListView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemCount: verses.length,
+          itemBuilder: (context, i) {
+            final v = verses[i];
+            if (v.text.trim().isEmpty) return const SizedBox.shrink();
+
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+              color: theme.colorScheme.surfaceContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      v.verse == 0 ? '장의 서론 / 개요' : '${v.verse}절',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text.rich(
+                      TextSpan(
+                        children: _parseHtmlToTextSpans(
+                          v.text,
+                          baseTextStyle.copyWith(height: 1.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    } else {
+      final intro = verses.firstWhere((v) => v.verse == 0, orElse: () => verses.first);
+      contentWidget = Scrollbar(
+        controller: _scrollController,
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(16),
+          child: Text.rich(
+            TextSpan(
+              children: _parseHtmlToTextSpans(
+                intro.text,
+                baseTextStyle.copyWith(height: 1.5),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -646,47 +624,35 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                     ),
                   ),
                 ),
+                if (activeCommentary != null)
+                  IconButton(
+                    icon: const Icon(Icons.menu_book, size: 18),
+                    tooltip: '서론 및 소개 보기',
+                    onPressed: () {
+                      _showCommentaryIntros(context, activeCommentary.file, activeCommentary.name);
+                    },
+                  ),
+                IconButton(
+                  icon: Icon(
+                    isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                    size: 18,
+                  ),
+                  tooltip: isFullScreen ? '전체화면 종료' : '전체화면으로 보기',
+                  onPressed: () {
+                    ref.read(commentaryFullScreenProvider.notifier).toggle();
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.close, size: 18),
                   onPressed: () {
-                    ref.read(activeCommentarySelectionProvider.notifier).clear();
+                    ref.read(commentaryVisibilityProvider.notifier).hide();
                   },
                 ),
               ],
             ),
           ),
           Expanded(
-            child: err != null
-                ? Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(err, style: const TextStyle(color: Colors.red)),
-                  )
-                : article == null
-                    ? const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(
-                          child: Text(
-                            'No commentary available for this chapter.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      )
-                    : Scrollbar(
-                        controller: _scrollController,
-                        thumbVisibility: true,
-                        child: SingleChildScrollView(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.all(16),
-                          child: Text.rich(
-                            TextSpan(
-                              children: _parseHtmlToTextSpans(
-                                article.text,
-                                baseTextStyle,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+            child: contentWidget,
           ),
         ],
       ),
@@ -747,10 +713,18 @@ class _CommentarySelectionSheet extends ConsumerWidget {
                     return ListTile(
                       title: Text(p.shortName),
                       subtitle: Text('${p.language} - ${p.name}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.info_outline),
+                        tooltip: '서론 및 소개 보기',
+                        onPressed: () {
+                          _showCommentaryIntros(context, p.file, p.name);
+                        },
+                      ),
                       onTap: () async {
                         await ref
                             .read(activeCommentarySelectionProvider.notifier)
                             .select(id: p.id, file: p.file, name: p.name);
+                        ref.read(commentaryVisibilityProvider.notifier).show();
                         onSelected();
                       },
                     );
@@ -763,5 +737,314 @@ class _CommentarySelectionSheet extends ConsumerWidget {
       },
     );
   }
+}
+
+void _showCommentaryIntros(BuildContext context, String manifestFile, String commentaryName) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) {
+          return _CommentaryIntroListSheet(
+            manifestFile: manifestFile,
+            commentaryName: commentaryName,
+            scrollController: scrollController,
+          );
+        },
+      );
+    },
+  );
+}
+
+class _CommentaryIntroListSheet extends StatefulWidget {
+  const _CommentaryIntroListSheet({
+    required this.manifestFile,
+    required this.commentaryName,
+    required this.scrollController,
+  });
+
+  final String manifestFile;
+  final String commentaryName;
+  final ScrollController scrollController;
+
+  @override
+  State<_CommentaryIntroListSheet> createState() => _CommentaryIntroListSheetState();
+}
+
+class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
+  late Future<List<CommentaryIntroduction>?> _introsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _introsFuture = _loadIntros();
+  }
+
+  Future<List<CommentaryIntroduction>?> _loadIntros() async {
+    const repo = ReaderRepository();
+    final dbPath = await repo.resolveDbPath(widget.manifestFile);
+    if (dbPath == null) return null;
+    return repo.loadCommentaryIntroductions(dbPath: dbPath);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return FutureBuilder<List<CommentaryIntroduction>?>(
+      future: _introsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        final intros = snapshot.data;
+        if (intros == null || intros.isEmpty) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 32,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: Text(
+                      '이 주석에는 서론 및 배경 설명 정보가 없습니다.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              alignment: Alignment.center,
+              child: Container(
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${widget.commentaryName} - 서론 및 소개',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: ListView.builder(
+                controller: widget.scrollController,
+                itemCount: intros.length,
+                itemBuilder: (context, idx) {
+                  final intro = intros[idx];
+                  return ListTile(
+                    leading: Icon(
+                      intro.bookId == 0 ? Icons.info_outline : Icons.book_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: Text(
+                      intro.title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right, size: 20),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => _CommentaryIntroViewerPage(
+                            intro: intro,
+                            commentaryName: widget.commentaryName,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CommentaryIntroViewerPage extends StatelessWidget {
+  const _CommentaryIntroViewerPage({
+    required this.intro,
+    required this.commentaryName,
+  });
+
+  final CommentaryIntroduction intro;
+  final String commentaryName;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final baseTextStyle = theme.textTheme.bodyMedium?.copyWith(
+          height: 1.6,
+          fontSize: 16,
+        ) ??
+        const TextStyle(height: 1.6, fontSize: 16);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              intro.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            Text(
+              commentaryName,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: Scrollbar(
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Text.rich(
+              TextSpan(
+                children: _parseIntroMarkdownAndHtml(
+                  intro.text,
+                  baseTextStyle,
+                  theme,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+List<TextSpan> _parseIntroMarkdownAndHtml(String rawText, TextStyle baseStyle, ThemeData theme) {
+  final lines = rawText.split('\n');
+  final spans = <TextSpan>[];
+
+  for (int i = 0; i < lines.length; i++) {
+    final line = lines[i];
+    if (line.trim().isEmpty) {
+      spans.add(const TextSpan(text: '\n'));
+      continue;
+    }
+
+    if (line.startsWith('#')) {
+      final headerLevel = RegExp(r'^#+').firstMatch(line)?.group(0)?.length ?? 1;
+      final headerText = line.replaceAll(RegExp(r'^#+\s*'), '').trim();
+      
+      double fontSizeFactor = 1.25;
+      if (headerLevel == 1) fontSizeFactor = 1.45;
+      if (headerLevel == 2) fontSizeFactor = 1.3;
+      
+      spans.add(
+        TextSpan(
+          text: '$headerText\n',
+          style: baseStyle.copyWith(
+            fontSize: (baseStyle.fontSize ?? 16) * fontSizeFactor,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      );
+      continue;
+    }
+
+    final lineSpans = _parseLineHtml(line, baseStyle);
+    spans.addAll(lineSpans);
+    spans.add(const TextSpan(text: '\n'));
+  }
+
+  return spans;
+}
+
+List<TextSpan> _parseLineHtml(String line, TextStyle baseStyle) {
+  var text = line
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<p>', caseSensitive: false), '');
+
+  final spans = <TextSpan>[];
+  final tagRegex = RegExp(r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)', caseSensitive: false);
+  final matches = tagRegex.allMatches(text);
+
+  for (final match in matches) {
+    if (match.group(1) != null) {
+      final tag = match.group(1)!.toLowerCase();
+      final content = match.group(2) ?? '';
+      spans.add(
+        TextSpan(
+          text: content,
+          style: baseStyle.copyWith(
+            fontWeight: tag == 'b' ? FontWeight.bold : null,
+            fontStyle: tag == 'i' ? FontStyle.italic : null,
+          ),
+        ),
+      );
+    } else if (match.group(3) != null) {
+      spans.add(TextSpan(text: match.group(3)));
+    }
+  }
+
+  if (spans.isEmpty) {
+    spans.add(TextSpan(text: text));
+  }
+  return spans;
 }
 

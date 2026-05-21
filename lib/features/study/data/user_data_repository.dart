@@ -209,6 +209,23 @@ WHERE id IN (
     }
   }
 
+  void deleteNote({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+    required int verse,
+  }) {
+    final db = sqlite3.open(dbPath);
+    try {
+      db.execute(
+        'DELETE FROM notes WHERE book_id = ? AND chapter = ? AND verse = ?',
+        [bookId, chapter, verse],
+      );
+    } finally {
+      db.close();
+    }
+  }
+
   NoteEntry? loadNote({
     required String dbPath,
     required int bookId,

@@ -2,12 +2,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:Love/features/reader/data/reader_repository.dart';
-import 'package:Love/data/import/zip_extractor.dart';
 
 void main() {
   group('Commentary Database Tests (via ZIP Extraction)', () {
     const repository = ReaderRepository();
-    const extractor = ZipExtractor();
     final tempExtractDir = Directory('test/temp_extracted');
 
     setUpAll(() async {
@@ -16,24 +14,21 @@ void main() {
       }
       tempExtractDir.createSync(recursive: true);
 
-      // Extract required dbs for the tests
-      await extractor.extractFile(
-        targetZipPath: 'comment/com_geneva.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_geneva.sqlite'),
-        zipFilePath: 'assets/data.zip',
-      );
+      // Copy the converted/migrated sqlite files from assets/data/comment/ directly
+      final genevaSrc = File('assets/data/comment/com_geneva.sqlite');
+      if (genevaSrc.existsSync()) {
+        genevaSrc.copySync(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
+      }
 
-      await extractor.extractFile(
-        targetZipPath: 'comment/com_barne.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_barne.sqlite'),
-        zipFilePath: 'assets/data.zip',
-      );
+      final barneSrc = File('assets/data/comment/com_barne.sqlite');
+      if (barneSrc.existsSync()) {
+        barneSrc.copySync(p.join(tempExtractDir.path, 'com_barne.sqlite'));
+      }
 
-      await extractor.extractFile(
-        targetZipPath: 'comment/com_kor_hochma.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
-        zipFilePath: 'assets/data.zip',
-      );
+      final hochmaSrc = File('assets/data/comment/com_kor_hochma.sqlite');
+      if (hochmaSrc.existsSync()) {
+        hochmaSrc.copySync(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+      }
     });
 
     tearDownAll(() {
@@ -98,6 +93,38 @@ void main() {
         chapter: 999, // Non-existent chapter
       );
       expect(article, isNull);
+    });
+
+    test('Loads commentary introductions and prefaces', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
+      expect(dbFile.existsSync(), isTrue);
+
+      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
+      expect(intros, isEmpty);
+    });
+
+    test('Loads Korean commentary introductions (prefaces) correctly', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+      expect(dbFile.existsSync(), isTrue);
+
+      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
+      expect(intros, isNotEmpty);
+      expect(intros.first.bookId, equals(0));
+      expect(intros.first.title, isNotEmpty);
+      expect(intros.first.text, isNotEmpty);
+    });
+
+    test('Loads Barnes commentary book introductions', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_barne.sqlite'));
+      expect(dbFile.existsSync(), isTrue);
+
+      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
+      expect(intros, isNotEmpty);
+
+      final bookIntros = intros.where((i) => i.bookId > 0).toList();
+      expect(bookIntros, isNotEmpty);
+      expect(bookIntros.first.title, isNotEmpty);
+      expect(bookIntros.first.text, isNotEmpty);
     });
   });
 }

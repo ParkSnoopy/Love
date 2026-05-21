@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
+import 'package:Love/data/import/zip_extractor.dart';
 
 class VerseLine {
   const VerseLine({
@@ -11,6 +15,22 @@ class VerseLine {
   final int bookId;
   final int chapter;
   final int verse;
+  final String text;
+}
+
+class CommentaryIntroduction {
+  const CommentaryIntroduction({
+    required this.bookId,
+    required this.chapter,
+    required this.verse,
+    required this.title,
+    required this.text,
+  });
+
+  final int bookId;
+  final int chapter;
+  final int verse;
+  final String title;
   final String text;
 }
 
@@ -96,66 +116,176 @@ class ReaderRepository {
   }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final idxRows = db.select(
-        'SELECT name_en, name_native, osis FROM indexing WHERE book_id = ? LIMIT 1',
-        [bookId],
+      final rows = db.select(
+        'SELECT text FROM verses WHERE book_id = ? AND chapter = ? AND verse = 0 LIMIT 1',
+        [bookId, chapter],
       );
-      final Set<String> candidates = {};
-      if (idxRows.isNotEmpty) {
-        final r = idxRows.first;
-        final en = r['name_en'] as String?;
-        final native = r['name_native'] as String?;
-        final osis = r['osis'] as String?;
-        if (en != null && en.isNotEmpty) candidates.add(en.toLowerCase());
-        if (native != null && native.isNotEmpty) candidates.add(native.toLowerCase());
-        if (osis != null && osis.isNotEmpty) candidates.add(osis.toLowerCase());
-      }
+      if (rows.isEmpty) return null;
+      final text = (rows.first['text'] as String?) ?? '';
 
-      final predefined = bibleBookNames[bookId];
-      if (predefined != null) {
-        for (final p in predefined) {
-          candidates.add(p.toLowerCase());
+      var bookName = loadBookName(dbPath: dbPath, bookId: bookId);
+      if (dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+        final names = bibleBookNames[bookId];
+        if (names != null && names.isNotEmpty) {
+          bookName = names.last;
         }
       }
+      final title = '$bookName $chapter장';
 
-      if (candidates.isEmpty) return null;
-
-      final artRows = db.select('SELECT article_id, title FROM articles');
-      final chStr = chapter.toString();
-      final bookRegexPart = candidates.map((c) => RegExp.escape(c)).join('|');
-      final regex = RegExp(
-        '(?:^|[^a-zA-Z0-9])(?:$bookRegexPart)(?:[^a-zA-Z0-9].*?)?\\b0*$chStr\\b',
-        caseSensitive: false,
+      return CommentaryArticle(
+        title: title,
+        text: text,
       );
-
-      int? matchedArticleId;
-      for (final row in artRows) {
-        final title = (row['title'] as String?) ?? '';
-        if (regex.hasMatch(title)) {
-          matchedArticleId = row['article_id'] as int?;
-          break;
-        }
-      }
-
-      if (matchedArticleId != null) {
-        final detailRows = db.select(
-          'SELECT title, text FROM articles WHERE article_id = ? LIMIT 1',
-          [matchedArticleId],
-        );
-        if (detailRows.isNotEmpty) {
-          final row = detailRows.first;
-          return CommentaryArticle(
-            title: (row['title'] as String?) ?? '',
-            text: (row['text'] as String?) ?? '',
-          );
-        }
-      }
-
-      return null;
     } finally {
       db.close();
     }
   }
+
+  List<CommentaryVerse> loadCommentaryVerses({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+  }) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT verse, text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse ASC',
+        [bookId, chapter],
+      );
+      return rows
+          .map(
+            (r) => CommentaryVerse(
+              verse: (r['verse'] as int?) ?? 0,
+              text: (r['text'] as String?) ?? '',
+            ),
+          )
+          .toList(growable: false);
+    } finally {
+      db.close();
+    }
+  }
+
+
+  String _extractTitle(String text, String defaultTitle) {
+    if (text.startsWith('#')) {
+      final firstLine = text.split('\n').first;
+      return firstLine.replaceAll(RegExp(r'^#+\s*'), '').trim();
+    }
+    return defaultTitle;
+  }
+
+  List<CommentaryIntroduction> loadCommentaryIntroductions({required String dbPath}) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      // 1. General prefaces (book_id = 0, chapter = 0, verse > 0)
+      final generalRows = db.select(
+        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id = 0 AND chapter = 0 AND verse > 0 ORDER BY verse ASC'
+      );
+
+      // 2. Book introductions (book_id > 0, chapter = 0, verse = 0)
+      final bookRows = db.select(
+        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id > 0 AND chapter = 0 AND verse = 0 ORDER BY book_id ASC'
+      );
+
+      final result = <CommentaryIntroduction>[];
+
+      for (final r in generalRows) {
+        final bId = (r['book_id'] as int?) ?? 0;
+        final ch = (r['chapter'] as int?) ?? 0;
+        final v = (r['verse'] as int?) ?? 0;
+        final text = (r['text'] as String?) ?? '';
+        final defaultTitle = '일반 서론 $v';
+        result.add(CommentaryIntroduction(
+          bookId: bId,
+          chapter: ch,
+          verse: v,
+          title: _extractTitle(text, defaultTitle),
+          text: text,
+        ));
+      }
+
+      for (final r in bookRows) {
+        final bId = (r['book_id'] as int?) ?? 0;
+        final ch = (r['chapter'] as int?) ?? 0;
+        final v = (r['verse'] as int?) ?? 0;
+        final text = (r['text'] as String?) ?? '';
+        var bookName = loadBookName(dbPath: dbPath, bookId: bId);
+        if (dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+          final names = bibleBookNames[bId];
+          if (names != null && names.isNotEmpty) {
+            bookName = names.last;
+          }
+        }
+        final defaultTitle = '$bookName 소개';
+        result.add(CommentaryIntroduction(
+          bookId: bId,
+          chapter: ch,
+          verse: v,
+          title: _extractTitle(text, defaultTitle),
+          text: text,
+        ));
+      }
+
+      return result;
+    } finally {
+      db.close();
+    }
+  }
+
+  bool _isDatabaseValid(String path) {
+    try {
+      final db = sqlite3.open(path, mode: OpenMode.readOnly);
+      try {
+        final rows = db.select(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='verses'",
+        );
+        return rows.isNotEmpty;
+      } finally {
+        db.close();
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<String?> resolveDbPath(String manifestFile) async {
+    // 1. Try local file (for development/desktop)
+    final localCandidates = [
+      'assets/data/$manifestFile',
+      p.join(Directory.current.path, 'assets/data', manifestFile),
+    ];
+    for (final path in localCandidates) {
+      if (File(path).existsSync()) return path;
+    }
+
+    // 2. Try app documents directory (for mobile)
+    try {
+      final docsDir = await getApplicationDocumentsDirectory();
+      final targetPath = p.join(docsDir.path, 'bible_data', manifestFile);
+      final targetFile = File(targetPath);
+
+      if (targetFile.existsSync()) {
+        if (_isDatabaseValid(targetPath)) {
+          return targetPath;
+        } else {
+          try {
+            targetFile.deleteSync();
+          } catch (_) {}
+        }
+      }
+
+      // 3. Extract from assets/data.zip to documents directory
+      const extractor = ZipExtractor();
+      await extractor.extractFile(
+        targetZipPath: manifestFile,
+        destinationPath: targetPath,
+      );
+      return targetPath;
+    } catch (_) {
+      return null;
+    }
+  }
+
 }
 
 class CommentaryArticle {
@@ -164,6 +294,14 @@ class CommentaryArticle {
   final String title;
   final String text;
 }
+
+class CommentaryVerse {
+  const CommentaryVerse({required this.verse, required this.text});
+
+  final int verse;
+  final String text;
+}
+
 
 const bibleBookNames = {
   1: ['Genesis', 'Gen', '창세기'],
