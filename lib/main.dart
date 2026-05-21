@@ -1,10 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/font_controller.dart';
-import 'data/import/import_error_presenter.dart';
-import 'data/import/import_orchestrator.dart';
 import 'app/theme_controller.dart';
 import 'features/library/domain/bible_pack.dart';
 import 'features/library/domain/manifest_repository.dart';
@@ -44,7 +44,93 @@ class MyApp extends ConsumerWidget {
       darkTheme: ThemeData.dark().copyWith(
         textTheme: ThemeData.dark().textTheme.apply(fontFamily: fontFamily),
       ),
-      home: const LibraryPage(),
+      home: const HomeShell(),
+    );
+  }
+}
+
+class HomeShell extends ConsumerStatefulWidget {
+  const HomeShell({super.key});
+
+  @override
+  ConsumerState<HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends ConsumerState<HomeShell> {
+  int _index = 0;
+
+  String _resolveDbPath(String manifestFile) {
+    final candidates = <String>[
+      'assets/data/$manifestFile',
+      '${Directory.current.path}/assets/data/$manifestFile',
+      '${Directory.current.path}/data/flutter_assets/assets/data/$manifestFile',
+      '${File(Platform.resolvedExecutable).parent.path}/data/flutter_assets/assets/data/$manifestFile',
+    ];
+    for (final path in candidates) {
+      if (File(path).existsSync()) return path;
+    }
+    return candidates.first;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeSelectionAsync = ref.watch(activeBibleSelectionProvider);
+    final activeDbPath = _resolveDbPath(
+      activeSelectionAsync.asData?.value?.file ?? 'nocr/ko_korkjv.sqlite',
+    );
+    final noInstalled =
+        activeSelectionAsync.hasValue && activeSelectionAsync.asData?.value == null;
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
+        children: [
+          const LibraryPage(),
+          noInstalled
+              ? const _NoBibleInstalledView()
+              : ReaderPage(dbPath: activeDbPath),
+          noInstalled
+              ? const _NoBibleInstalledView()
+              : SearchPage(dbPath: activeDbPath),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.library_books_outlined),
+            selectedIcon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'Reader',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search_outlined),
+            selectedIcon: Icon(Icons.search),
+            label: 'Search',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoBibleInstalledView extends StatelessWidget {
+  const _NoBibleInstalledView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Text(
+          'No installed Bible DB found.\nGo Library and select/install version first.',
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
@@ -58,28 +144,8 @@ class LibraryPage extends ConsumerStatefulWidget {
 
 class _LibraryPageState extends ConsumerState<LibraryPage> {
   static const _manifestRepository = ManifestRepository();
-  static const _importOrchestrator = ImportOrchestrator();
   late final Future<List<BiblePack>> _packsFuture =
       _manifestRepository.loadBiblePacksFromAsset();
-
-  Future<void> _validateImport() async {
-    try {
-      await _importOrchestrator.runValidateOnly(
-        bibleDbPath: 'assets/data/getbible/en_kjv.sqlite',
-        commentaryDbPath: 'assets/data/comment/com_tsk.sqlite',
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Import validate OK')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      final msg = ImportErrorPresenter.toUserMessage(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg)),
-      );
-    }
-  }
 
   String _themeLabel(ThemeMode mode) => switch (mode) {
     ThemeMode.system => 'System',
@@ -97,43 +163,15 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final fontType = ref.watch(fontTypeProvider);
-    final activePackId = ref.watch(activeBiblePackIdProvider);
+    final activeSelectionAsync = ref.watch(activeBibleSelectionProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ReaderPage(
-                    dbPath: 'assets/data/getbible/en_kjv.sqlite',
-                  ),
-                ),
-              );
-            },
-            child: const Text('Reader'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SearchPage(
-                    dbPath: 'assets/data/getbible/en_kjv.sqlite',
-                  ),
-                ),
-              );
-            },
-            child: const Text('Search'),
-          ),
-          TextButton(
-            onPressed: _validateImport,
-            child: const Text('Validate Import'),
-          ),
-          if (activePackId != null)
+          if (activeSelectionAsync.asData?.value != null)
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: Center(child: Text('Active: $activePackId')),
+              child: Center(child: Text('Active: ${activeSelectionAsync.asData!.value!.id}')),
             ),
           IconButton(
             tooltip: 'Theme: ${_themeLabel(themeMode)}',
@@ -179,8 +217,9 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                   itemBuilder: (context, index) {
                     final p = packs[index];
                     return ListTile(
-                      onTap: () =>
-                          ref.read(activeBiblePackIdProvider.notifier).select(p.id),
+                      onTap: () => ref
+                          .read(activeBibleSelectionProvider.notifier)
+                          .select(id: p.id, file: p.file),
                       title: Text(p.shortName),
                       subtitle: Text(p.language),
                       trailing: Text(p.id),

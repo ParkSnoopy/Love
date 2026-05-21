@@ -17,4 +17,17 @@ void main() {
 
     expect(find.textContaining('[1:1] In the beginning God created the heaven and the earth.'), findsOneWidget);
   });
+
+  testWidgets('reader page shows nothing-installed message when db missing', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          home: ReaderPage(dbPath: 'assets/data/getbible/__missing__.sqlite'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Nothing installed yet'), findsOneWidget);
+  });
 }

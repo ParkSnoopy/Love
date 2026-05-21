@@ -10,7 +10,7 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: MyApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Library'), findsOneWidget);
+    expect(find.text('Library'), findsWidgets);
     await tester.scrollUntilVisible(
       find.text('KJV'),
       400,

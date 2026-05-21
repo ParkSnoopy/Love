@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../domain/verse_export_formatter.dart';
 import '../data/reader_repository.dart';
@@ -20,8 +21,15 @@ class ReaderPage extends ConsumerWidget {
     final userDataRepo = ref.watch(userDataRepositoryProvider);
     final userDataDbPath = ref.watch(userDataDbPathProvider);
     const repo = ReaderRepository();
-    final verses = repo.loadChapter(dbPath: dbPath, bookId: rr.bookId, chapter: rr.chapter);
-    final bookName = repo.loadBookName(dbPath: dbPath, bookId: rr.bookId);
+    var verses = const <dynamic>[];
+    var bookName = 'Bible';
+    String? loadError;
+    try {
+      verses = repo.loadChapter(dbPath: dbPath, bookId: rr.bookId, chapter: rr.chapter);
+      bookName = repo.loadBookName(dbPath: dbPath, bookId: rr.bookId);
+    } on SqliteException {
+      loadError = 'Nothing installed yet. DB not open: $dbPath\nPlease install/select a Bible pack in Library.';
+    }
     final selectedVerseLines = verses
         .where(
           (v) => selection.selected.contains(
@@ -212,29 +220,39 @@ class ReaderPage extends ConsumerWidget {
               ),
             ),
           Expanded(
-            child: ListView.builder(
-              itemCount: verses.length,
-              itemBuilder: (context, i) {
-                final v = verses[i];
-                final key = VerseKey(bookId: v.bookId, chapter: v.chapter, verse: v.verse);
-                final selected = selection.selected.contains(key);
-                return ListTile(
-                  selected: selected,
-                  onTap: () {
-                    ref.read(verseSelectionProvider.notifier).tap(key);
-                    userDataRepo.addHistory(
-                      dbPath: userDataDbPath,
-                      bookId: v.bookId,
-                      chapter: v.chapter,
-                      verse: v.verse,
-                      visitedAt: DateTime.now().millisecondsSinceEpoch,
-                    );
-                  },
-                  onLongPress: () => ref.read(verseSelectionProvider.notifier).longPress(key),
-                  title: Text('[${v.chapter}:${v.verse}] ${v.text}'),
-                );
-              },
-            ),
+            child: loadError != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        loadError,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: verses.length,
+                    itemBuilder: (context, i) {
+                      final v = verses[i];
+                      final key = VerseKey(bookId: v.bookId, chapter: v.chapter, verse: v.verse);
+                      final selected = selection.selected.contains(key);
+                      return ListTile(
+                        selected: selected,
+                        onTap: () {
+                          ref.read(verseSelectionProvider.notifier).tap(key);
+                          userDataRepo.addHistory(
+                            dbPath: userDataDbPath,
+                            bookId: v.bookId,
+                            chapter: v.chapter,
+                            verse: v.verse,
+                            visitedAt: DateTime.now().millisecondsSinceEpoch,
+                          );
+                        },
+                        onLongPress: () => ref.read(verseSelectionProvider.notifier).longPress(key),
+                        title: Text('[${v.chapter}:${v.verse}] ${v.text}'),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
