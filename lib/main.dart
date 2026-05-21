@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/font_controller.dart';
+import 'app/reader_settings_controller.dart';
 import 'app/theme_controller.dart';
 import 'app/router.dart';
 import 'features/study/providers/user_data_controller.dart';
@@ -25,6 +26,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
     final fontFamily = fontFamilyForType(fontType);
+    final uiScale = ref.watch(readerSettingsProvider).value?.uiScale ?? 1.0;
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
@@ -37,6 +39,13 @@ class MyApp extends ConsumerWidget {
         textTheme: ThemeData.dark().textTheme.apply(fontFamily: fontFamily),
       ),
       routerConfig: router,
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: TextScaler.linear(uiScale)),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

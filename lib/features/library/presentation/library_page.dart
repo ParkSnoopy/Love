@@ -47,7 +47,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
     final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
     final readerSettingsAsync = ref.watch(readerSettingsProvider);
-    final readerSettings = readerSettingsAsync.value ?? const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+    final readerSettings =
+        readerSettingsAsync.value ??
+        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,11 +65,16 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Column(
               children: [
                 ListTile(
-                  leading: Icon(_themeIcon(themeMode), color: Theme.of(context).colorScheme.primary),
+                  leading: Icon(
+                    _themeIcon(themeMode),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   title: const Text('Theme Mode'),
                   subtitle: Text(_themeLabel(themeMode)),
                   trailing: const Icon(Icons.sync, size: 20),
@@ -75,7 +82,10 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: Icon(_fontIcon(fontType), color: Theme.of(context).colorScheme.primary),
+                  leading: Icon(
+                    _fontIcon(fontType),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   title: const Text('Reader Font'),
                   subtitle: Text(_getFontLabel(fontType)),
                   trailing: const Icon(Icons.sync, size: 20),
@@ -89,7 +99,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
@@ -101,8 +113,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       Text(
                         'Font Size',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
                         '${readerSettings.fontSize.toStringAsFixed(1)} px',
@@ -119,7 +131,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     max: 30.0,
                     divisions: 18,
                     onChanged: (val) {
-                      ref.read(readerSettingsProvider.notifier).setFontSize(val);
+                      ref
+                          .read(readerSettingsProvider.notifier)
+                          .setFontSize(val);
                     },
                   ),
                   const Divider(height: 16),
@@ -129,8 +143,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       Text(
                         'Line Spacing',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
                         '${readerSettings.lineSpacing.toStringAsFixed(2)} x',
@@ -147,7 +161,37 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     max: 2.5,
                     divisions: 15,
                     onChanged: (val) {
-                      ref.read(readerSettingsProvider.notifier).setLineSpacing(val);
+                      ref
+                          .read(readerSettingsProvider.notifier)
+                          .setLineSpacing(val);
+                    },
+                  ),
+                  const Divider(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'UI Scale',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '${(readerSettings.uiScale * 100).round()}%',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: readerSettings.uiScale,
+                    min: 0.85,
+                    max: 1.25,
+                    divisions: 8,
+                    onChanged: (val) {
+                      ref.read(readerSettingsProvider.notifier).setUiScale(val);
                     },
                   ),
                 ],
@@ -159,12 +203,17 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Column(
               children: [
                 activeBibleAsync.when(
                   data: (activeBible) => ListTile(
-                    leading: Icon(Icons.book, color: Theme.of(context).colorScheme.primary),
+                    leading: Icon(
+                      Icons.book,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     title: const Text('Active Bible'),
                     subtitle: Text(
                       activeBible != null ? activeBible.name : 'Select Bible',
@@ -190,10 +239,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 const Divider(height: 1),
                 activeCommentaryAsync.when(
                   data: (activeCommentary) => ListTile(
-                    leading: Icon(Icons.comment_bank, color: Theme.of(context).colorScheme.primary),
+                    leading: Icon(
+                      Icons.comment_bank,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     title: const Text('Active Commentary'),
                     subtitle: Text(
-                      activeCommentary != null ? activeCommentary.name : 'None (Off)',
+                      activeCommentary != null
+                          ? activeCommentary.name
+                          : 'None (Off)',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -205,7 +259,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 icon: const Icon(Icons.clear, size: 20),
                                 tooltip: 'Turn off commentary',
                                 onPressed: () {
-                                  ref.read(activeCommentarySelectionProvider.notifier).clear();
+                                  ref
+                                      .read(
+                                        activeCommentarySelectionProvider
+                                            .notifier,
+                                      )
+                                      .clear();
                                 },
                               ),
                               const Icon(Icons.chevron_right),
@@ -273,7 +332,8 @@ class _BibleSelectionSheet extends ConsumerStatefulWidget {
   const _BibleSelectionSheet();
 
   @override
-  ConsumerState<_BibleSelectionSheet> createState() => _BibleSelectionSheetState();
+  ConsumerState<_BibleSelectionSheet> createState() =>
+      _BibleSelectionSheetState();
 }
 
 class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
@@ -317,7 +377,10 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -357,7 +420,9 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                         .where((p) {
                           if (_searchQuery.isEmpty) return true;
                           return p.name.toLowerCase().contains(_searchQuery) ||
-                              p.shortName.toLowerCase().contains(_searchQuery) ||
+                              p.shortName.toLowerCase().contains(
+                                _searchQuery,
+                              ) ||
                               p.language.toLowerCase().contains(_searchQuery) ||
                               p.source.toLowerCase().contains(_searchQuery);
                         })
@@ -381,7 +446,10 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                           ),
                           subtitle: Text('${p.language} • ${p.name}'),
                           trailing: isSelected
-                              ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
                               : null,
                           onTap: () async {
                             await ref
@@ -409,10 +477,12 @@ class _CommentarySelectionSheet extends ConsumerStatefulWidget {
   const _CommentarySelectionSheet();
 
   @override
-  ConsumerState<_CommentarySelectionSheet> createState() => _CommentarySelectionSheetState();
+  ConsumerState<_CommentarySelectionSheet> createState() =>
+      _CommentarySelectionSheetState();
 }
 
-class _CommentarySelectionSheetState extends ConsumerState<_CommentarySelectionSheet> {
+class _CommentarySelectionSheetState
+    extends ConsumerState<_CommentarySelectionSheet> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -424,7 +494,10 @@ class _CommentarySelectionSheetState extends ConsumerState<_CommentarySelectionS
 
   @override
   Widget build(BuildContext context) {
-    final activeCommentary = ref.watch(activeCommentarySelectionProvider).asData?.value;
+    final activeCommentary = ref
+        .watch(activeCommentarySelectionProvider)
+        .asData
+        ?.value;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
@@ -453,7 +526,10 @@ class _CommentarySelectionSheetState extends ConsumerState<_CommentarySelectionS
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -493,7 +569,9 @@ class _CommentarySelectionSheetState extends ConsumerState<_CommentarySelectionS
                         .where((p) {
                           if (_searchQuery.isEmpty) return true;
                           return p.name.toLowerCase().contains(_searchQuery) ||
-                              p.shortName.toLowerCase().contains(_searchQuery) ||
+                              p.shortName.toLowerCase().contains(
+                                _searchQuery,
+                              ) ||
                               p.language.toLowerCase().contains(_searchQuery) ||
                               p.source.toLowerCase().contains(_searchQuery);
                         })
@@ -517,11 +595,16 @@ class _CommentarySelectionSheetState extends ConsumerState<_CommentarySelectionS
                           ),
                           subtitle: Text('${p.language} • ${p.name}'),
                           trailing: isSelected
-                              ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
                               : null,
                           onTap: () async {
                             await ref
-                                .read(activeCommentarySelectionProvider.notifier)
+                                .read(
+                                  activeCommentarySelectionProvider.notifier,
+                                )
                                 .select(id: p.id, file: p.file, name: p.name);
                             if (context.mounted) {
                               Navigator.pop(context);

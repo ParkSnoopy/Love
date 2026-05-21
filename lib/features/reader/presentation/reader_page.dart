@@ -118,6 +118,11 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         final isCommentaryActive =
             activeCommentaryDbPath != null && isCommentaryVisible;
         final isFullScreen = ref.watch(commentaryFullScreenProvider);
+        final activeBible = ref
+            .watch(activeBibleSelectionProvider)
+            .asData
+            ?.value;
+        final activeBibleName = activeBible?.name ?? 'Unknown Bible';
 
         final bookmarksAsync = ref.watch(bookmarksProvider);
         final bookmarkedVerses =
@@ -193,11 +198,26 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         return Scaffold(
           appBar: AppBar(
             title: InkWell(
-              onTap: () => _showPicker(context, ref, rr, widget.dbPath),
+              onTap: () =>
+                  _showPicker(context, ref, rr, widget.dbPath, activeBibleName),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('$bookName ${rr.chapter}'),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('$bookName ${rr.chapter}'),
+                        Text(
+                          activeBibleName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                  ),
                   const Icon(Icons.arrow_drop_down),
                 ],
               ),
@@ -396,12 +416,14 @@ void _showPicker(
   WidgetRef ref,
   ReaderRef rr,
   String dbPath,
+  String bibleName,
 ) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     builder: (ctx) => _BookChapterPicker(
       dbPath: dbPath,
+      bibleName: bibleName,
       initialBookId: rr.bookId,
       initialChapter: rr.chapter,
       onSelected: (bookId, chapter) {
@@ -417,12 +439,14 @@ void _showPicker(
 class _BookChapterPicker extends StatefulWidget {
   const _BookChapterPicker({
     required this.dbPath,
+    required this.bibleName,
     required this.initialBookId,
     required this.initialChapter,
     required this.onSelected,
   });
 
   final String dbPath;
+  final String bibleName;
   final int initialBookId;
   final int initialChapter;
   final void Function(int bookId, int chapter) onSelected;
@@ -534,9 +558,24 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text(
-              'Select Book & Chapter',
-              style: Theme.of(context).textTheme.titleLarge,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Select Book & Chapter',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.bibleName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
