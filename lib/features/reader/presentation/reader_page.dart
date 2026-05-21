@@ -9,6 +9,10 @@ import '../providers/reader_controller.dart';
 import '../providers/verse_selection_controller.dart';
 import '../../study/providers/user_data_controller.dart';
 import '../../../data/storage/db_path_provider.dart';
+import '../../library/providers/library_controller.dart';
+import '../../library/domain/bible_pack.dart';
+import '../../library/domain/manifest_repository.dart';
+
 
 class ReaderPage extends ConsumerWidget {
   const ReaderPage({super.key});
@@ -52,6 +56,8 @@ class _ReaderContentView extends ConsumerWidget {
     final selection = ref.watch(verseSelectionProvider);
     final userDataRepo = ref.watch(userDataRepositoryProvider);
     final userDataDbPath = ref.watch(userDataDbPathProvider);
+    final activeCommentaryDbPath = ref.watch(activeCommentaryDbPathProvider).asData?.value;
+
     const repo = ReaderRepository();
     var verses = const <VerseLine>[];
     var bookName = 'Bible';
@@ -250,33 +256,23 @@ class _ReaderContentView extends ConsumerWidget {
                     ),
                     TextButton(
                       onPressed: selection.mode == SelectionMode.single
-                          ? () {
-                              showModalBottomSheet<void>(
-                                context: context,
-                                builder: (ctx) => SafeArea(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'No commentary installed/mapped for this verse',
-                                        ),
-                                        const SizedBox(height: 12),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(ctx).pop(),
-                                          child: const Text(
-                                            'Manage commentary packs',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                          ? () async {
+                              final commentaryDbPath = ref.read(activeCommentaryDbPathProvider).asData?.value;
+                              if (commentaryDbPath != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Showing commentary in split pane below.'),
+                                    duration: Duration(seconds: 1),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (ctx) => _CommentarySelectionSheet(
+                                    onSelected: () => Navigator.of(ctx).pop(),
+                                  ),
+                                );
+                              }
                             }
                           : null,
                       child: const Text('Jump Comment'),
@@ -292,6 +288,7 @@ class _ReaderContentView extends ConsumerWidget {
               ),
             ),
           Expanded(
+            flex: activeCommentaryDbPath != null ? 3 : 1,
             child: loadError != null
                 ? Center(
                     child: Padding(
@@ -343,6 +340,15 @@ class _ReaderContentView extends ConsumerWidget {
                     },
                   ),
           ),
+          if (activeCommentaryDbPath != null)
+            Expanded(
+              flex: 2,
+              child: CommentaryPane(
+                dbPath: activeCommentaryDbPath,
+                bookId: rr.bookId,
+                chapter: rr.chapter,
+              ),
+            ),
         ],
       ),
     );
@@ -427,11 +433,12 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading)
+    if (_loading) {
       return const SizedBox(
         height: 200,
         child: Center(child: CircularProgressIndicator()),
       );
+    }
 
     final book = _books.firstWhere(
       (b) => b['id'] == _selectedBookId,
@@ -516,3 +523,240 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
     );
   }
 }
+
+class CommentaryPane extends ConsumerStatefulWidget {
+  const CommentaryPane({
+    super.key,
+    required this.dbPath,
+    required this.bookId,
+    required this.chapter,
+  });
+
+  final String dbPath;
+  final int bookId;
+  final int chapter;
+
+  @override
+  ConsumerState<CommentaryPane> createState() => _CommentaryPaneState();
+}
+
+class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CommentaryPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.bookId != widget.bookId || oldWidget.chapter != widget.chapter) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(0);
+        }
+      });
+    }
+  }
+
+  List<TextSpan> _parseHtmlToTextSpans(String html, TextStyle baseStyle) {
+    var text = html
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n')
+        .replaceAll(RegExp(r'<p>', caseSensitive: false), '');
+
+    final spans = <TextSpan>[];
+    final tagRegex = RegExp(r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)', caseSensitive: false);
+    final matches = tagRegex.allMatches(text);
+
+    for (final match in matches) {
+      if (match.group(1) != null) {
+        final tag = match.group(1)!.toLowerCase();
+        final content = match.group(2) ?? '';
+        spans.add(
+          TextSpan(
+            text: content,
+            style: baseStyle.copyWith(
+              fontWeight: tag == 'b' ? FontWeight.bold : null,
+              fontStyle: tag == 'i' ? FontStyle.italic : null,
+            ),
+          ),
+        );
+      } else if (match.group(3) != null) {
+        spans.add(TextSpan(text: match.group(3)));
+      }
+    }
+
+    if (spans.isEmpty) {
+      spans.add(TextSpan(text: text));
+    }
+    return spans;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const repo = ReaderRepository();
+    CommentaryArticle? article;
+    String? err;
+    try {
+      article = repo.loadCommentaryArticle(
+        dbPath: widget.dbPath,
+        bookId: widget.bookId,
+        chapter: widget.chapter,
+      );
+    } catch (e) {
+      err = 'Commentary Error: $e';
+    }
+
+    final theme = Theme.of(context);
+    final baseTextStyle = theme.textTheme.bodyMedium ?? const TextStyle();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        border: Border(
+          top: BorderSide(
+            color: theme.colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: theme.colorScheme.surfaceContainer,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    article?.title ?? 'No Commentary',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: () {
+                    ref.read(activeCommentarySelectionProvider.notifier).clear();
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: err != null
+                ? Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(err, style: const TextStyle(color: Colors.red)),
+                  )
+                : article == null
+                    ? const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(
+                          child: Text(
+                            'No commentary available for this chapter.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : Scrollbar(
+                        controller: _scrollController,
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(16),
+                          child: Text.rich(
+                            TextSpan(
+                              children: _parseHtmlToTextSpans(
+                                article.text,
+                                baseTextStyle,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommentarySelectionSheet extends ConsumerWidget {
+  const _CommentarySelectionSheet({required this.onSelected});
+
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const repo = ManifestRepository();
+    return FutureBuilder<List<BiblePack>>(
+      future: repo.loadBiblePacksFromAsset(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final packs = snapshot.data
+                ?.where((p) => p.type == 'commentary')
+                .toList() ??
+            [];
+        if (packs.isEmpty) {
+          return const SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('No commentaries found.'),
+            ),
+          );
+        }
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'Select Commentary to Activate',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: packs.length,
+                  itemBuilder: (context, idx) {
+                    final p = packs[idx];
+                    return ListTile(
+                      title: Text(p.shortName),
+                      subtitle: Text('${p.language} - ${p.name}'),
+                      onTap: () async {
+                        await ref
+                            .read(activeCommentarySelectionProvider.notifier)
+                            .select(id: p.id, file: p.file);
+                        onSelected();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+

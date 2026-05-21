@@ -80,3 +80,73 @@ class ActiveBibleSelectionController
     await prefs.setString(_prefsKeyFile, picked.file);
   }
 }
+
+class ActiveCommentarySelection {
+  const ActiveCommentarySelection({required this.id, required this.file});
+
+  final String id;
+  final String file;
+}
+
+final activeCommentarySelectionProvider =
+    AsyncNotifierProvider<
+      ActiveCommentarySelectionController,
+      ActiveCommentarySelection?
+    >(ActiveCommentarySelectionController.new);
+
+class ActiveCommentarySelectionController
+    extends AsyncNotifier<ActiveCommentarySelection?> {
+  static const _prefsKeyId = 'active_commentary_id';
+  static const _prefsKeyFile = 'active_commentary_file';
+
+  @override
+  Future<ActiveCommentarySelection?> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedId = prefs.getString(_prefsKeyId);
+    final savedFile = prefs.getString(_prefsKeyFile);
+
+    if (savedId != null &&
+        savedFile != null &&
+        await _looksInstalled(savedFile)) {
+      return ActiveCommentarySelection(id: savedId, file: savedFile);
+    }
+    return null;
+  }
+
+  Future<void> select({required String id, required String file}) async {
+    final picked = ActiveCommentarySelection(id: id, file: file);
+    state = AsyncData(picked);
+    await _save(picked);
+  }
+
+  Future<void> clear() async {
+    state = const AsyncData(null);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsKeyId);
+    await prefs.remove(_prefsKeyFile);
+  }
+
+  Future<bool> _looksInstalled(String manifestFile) async {
+    try {
+      final docsDir = await getApplicationDocumentsDirectory();
+      final candidates = <String>[
+        'assets/data/$manifestFile',
+        p.join(Directory.current.path, 'assets/data', manifestFile),
+        p.join(docsDir.path, 'bible_data', manifestFile),
+      ];
+      return candidates.any((path) => File(path).existsSync());
+    } catch (_) {
+      return [
+        'assets/data/$manifestFile',
+        p.join(Directory.current.path, 'assets/data', manifestFile),
+      ].any((path) => File(path).existsSync());
+    }
+  }
+
+  Future<void> _save(ActiveCommentarySelection picked) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefsKeyId, picked.id);
+    await prefs.setString(_prefsKeyFile, picked.file);
+  }
+}
+

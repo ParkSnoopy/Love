@@ -46,17 +46,33 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     final themeMode = ref.watch(themeModeProvider);
     final fontType = ref.watch(fontTypeProvider);
     final activeSelectionAsync = ref.watch(activeBibleSelectionProvider);
+    final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
+
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
         actions: [
-          if (activeSelectionAsync.asData?.value != null)
+          if (activeSelectionAsync.asData?.value != null ||
+              activeCommentaryAsync.asData?.value != null)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Center(
-                child: Text(
-                  'Active: ${activeSelectionAsync.asData!.value!.id}',
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (activeSelectionAsync.asData?.value != null)
+                      Text(
+                        'Bible: ${activeSelectionAsync.asData!.value!.id}',
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    if (activeCommentaryAsync.asData?.value != null)
+                      Text(
+                        'Commentary: ${activeCommentaryAsync.asData!.value!.id}',
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -173,13 +189,43 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
   }
 
   Widget _buildPackTile(BiblePack p) {
+    final activeSelectionAsync = ref.watch(activeBibleSelectionProvider);
+    final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
+    final activeBible = activeSelectionAsync.asData?.value;
+    final activeCommentary = activeCommentaryAsync.asData?.value;
+    final isActive = p.type == 'bible'
+        ? activeBible?.id == p.id
+        : activeCommentary?.id == p.id;
+
     return ListTile(
-      onTap: () => ref
-          .read(activeBibleSelectionProvider.notifier)
-          .select(id: p.id, file: p.file),
+      selected: isActive,
+      onTap: () {
+        if (p.type == 'bible') {
+          ref
+              .read(activeBibleSelectionProvider.notifier)
+              .select(id: p.id, file: p.file);
+        } else {
+          if (isActive) {
+            ref.read(activeCommentarySelectionProvider.notifier).clear();
+          } else {
+            ref
+                .read(activeCommentarySelectionProvider.notifier)
+                .select(id: p.id, file: p.file);
+          }
+        }
+      },
       title: Text(p.shortName),
       subtitle: Text('${p.language} - ${p.name}'),
-      trailing: Text(p.id),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(p.id),
+          if (isActive) ...[
+            const SizedBox(width: 8),
+            Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary),
+          ],
+        ],
+      ),
     );
   }
 }
