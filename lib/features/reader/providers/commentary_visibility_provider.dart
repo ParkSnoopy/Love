@@ -10,6 +10,7 @@ class CommentaryVisibilityController extends Notifier<bool> {
   void hide() => state = false;
 }
 
-final commentaryVisibilityProvider = NotifierProvider<CommentaryVisibilityController, bool>(
-  CommentaryVisibilityController.new,
-);
+final commentaryVisibilityProvider =
+    NotifierProvider<CommentaryVisibilityController, bool>(
+      CommentaryVisibilityController.new,
+    );

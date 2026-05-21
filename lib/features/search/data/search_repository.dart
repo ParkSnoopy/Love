@@ -40,7 +40,8 @@ class SearchRepository {
 
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      var sql = "SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE '\\'";
+      var sql =
+          "SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE '\\'";
       final args = <Object>[pattern];
 
       if (bookIdStart != null) {

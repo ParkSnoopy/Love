@@ -14,7 +14,11 @@ final biblePacksProvider = FutureProvider<List<BiblePack>>((ref) async {
 });
 
 class ActiveBibleSelection {
-  const ActiveBibleSelection({required this.id, required this.file, required this.name});
+  const ActiveBibleSelection({
+    required this.id,
+    required this.file,
+    required this.name,
+  });
 
   final String id;
   final String file;
@@ -43,11 +47,15 @@ class ActiveBibleSelectionController
     if (savedId != null && savedFile != null) {
       const repo = ManifestRepository();
       final packs = await repo.loadBiblePacksFromAsset();
-      final existsInManifest = packs.any((p) => p.id == savedId || p.file == savedFile);
+      final existsInManifest = packs.any(
+        (p) => p.id == savedId || p.file == savedFile,
+      );
       if (existsInManifest || await _looksInstalled(savedFile)) {
         String name = savedName ?? savedId;
         if (savedName == null) {
-          final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+          final match = packs.where(
+            (p) => p.id == savedId || p.file == savedFile,
+          );
           if (match.isNotEmpty) {
             name = match.first.name;
           }
@@ -60,7 +68,11 @@ class ActiveBibleSelectionController
     final packs = await repo.loadBiblePacksFromAsset();
     for (final p in packs) {
       if (p.type == 'bible' && await _looksInstalled(p.file)) {
-        final picked = ActiveBibleSelection(id: p.id, file: p.file, name: p.name);
+        final picked = ActiveBibleSelection(
+          id: p.id,
+          file: p.file,
+          name: p.name,
+        );
         await _save(picked);
         return picked;
       }
@@ -69,7 +81,11 @@ class ActiveBibleSelectionController
     return null;
   }
 
-  Future<void> select({required String id, required String file, required String name}) async {
+  Future<void> select({
+    required String id,
+    required String file,
+    required String name,
+  }) async {
     final picked = ActiveBibleSelection(id: id, file: file, name: name);
     state = AsyncData(picked);
     await _save(picked);
@@ -102,7 +118,11 @@ class ActiveBibleSelectionController
 }
 
 class ActiveCommentarySelection {
-  const ActiveCommentarySelection({required this.id, required this.file, required this.name});
+  const ActiveCommentarySelection({
+    required this.id,
+    required this.file,
+    required this.name,
+  });
 
   final String id;
   final String file;
@@ -131,22 +151,34 @@ class ActiveCommentarySelectionController
     if (savedId != null && savedFile != null) {
       const repo = ManifestRepository();
       final packs = await repo.loadBiblePacksFromAsset();
-      final existsInManifest = packs.any((p) => p.id == savedId || p.file == savedFile);
+      final existsInManifest = packs.any(
+        (p) => p.id == savedId || p.file == savedFile,
+      );
       if (existsInManifest || await _looksInstalled(savedFile)) {
         String name = savedName ?? savedId;
         if (savedName == null) {
-          final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+          final match = packs.where(
+            (p) => p.id == savedId || p.file == savedFile,
+          );
           if (match.isNotEmpty) {
             name = match.first.name;
           }
         }
-        return ActiveCommentarySelection(id: savedId, file: savedFile, name: name);
+        return ActiveCommentarySelection(
+          id: savedId,
+          file: savedFile,
+          name: name,
+        );
       }
     }
     return null;
   }
 
-  Future<void> select({required String id, required String file, required String name}) async {
+  Future<void> select({
+    required String id,
+    required String file,
+    required String name,
+  }) async {
     final picked = ActiveCommentarySelection(id: id, file: file, name: name);
     state = AsyncData(picked);
     await _save(picked);
@@ -184,4 +216,3 @@ class ActiveCommentarySelectionController
     await prefs.setString(_prefsKeyName, picked.name);
   }
 }
-

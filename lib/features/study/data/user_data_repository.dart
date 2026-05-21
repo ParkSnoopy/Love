@@ -245,7 +245,14 @@ WHERE id IN (
         db.execute(
           'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
           'VALUES (?, ?, ?, ?, ?, ?)',
-          [bookId, chapter, item['start'], item['end'], item['color'], item['createdAt']],
+          [
+            bookId,
+            chapter,
+            item['start'],
+            item['end'],
+            item['color'],
+            item['createdAt'],
+          ],
         );
       }
 
@@ -314,14 +321,20 @@ WHERE id IN (
         db.execute(
           'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
           'VALUES (?, ?, ?, ?, ?, ?)',
-          [bookId, chapter, item['start'], item['end'], item['color'], item['createdAt']],
+          [
+            bookId,
+            chapter,
+            item['start'],
+            item['end'],
+            item['color'],
+            item['createdAt'],
+          ],
         );
       }
     } finally {
       db.close();
     }
   }
-
 
   void upsertNote({
     required String dbPath,

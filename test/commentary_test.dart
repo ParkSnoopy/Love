@@ -17,7 +17,9 @@ void main() {
       // Copy the crawled Korean commentary databases
       final hochmaSrc = File('assets/data/comment/com_kor_hochma.sqlite');
       if (hochmaSrc.existsSync()) {
-        hochmaSrc.copySync(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+        hochmaSrc.copySync(
+          p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
+        );
       }
 
       final mhwSrc = File('assets/data/comment/com_kor_mhw.sqlite');
@@ -37,22 +39,27 @@ void main() {
       }
     });
 
-    test('Loads Genesis 1 commentary from Korean Hochma commentary (uses verse fallback)', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
-      expect(dbFile.existsSync(), isTrue);
+    test(
+      'Loads Genesis 1 commentary from Korean Hochma commentary (uses verse fallback)',
+      () {
+        final dbFile = File(
+          p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
+        );
+        expect(dbFile.existsSync(), isTrue);
 
-      final article = repository.loadCommentaryArticle(
-        dbPath: dbFile.path,
-        bookId: 1, // Genesis
-        chapter: 1,
-      );
+        final article = repository.loadCommentaryArticle(
+          dbPath: dbFile.path,
+          bookId: 1, // Genesis
+          chapter: 1,
+        );
 
-      expect(article, isNotNull);
-      expect(article!.title, contains('창세기'));
-      expect(article.title, contains('1'));
-      expect(article.text, isNotEmpty);
-      expect(article.text, contains('태초에'));
-    });
+        expect(article, isNotNull);
+        expect(article!.title, contains('창세기'));
+        expect(article.title, contains('1'));
+        expect(article.text, isNotEmpty);
+        expect(article.text, contains('태초에'));
+      },
+    );
 
     test('Loads Genesis 8 commentary from Matthew Henry commentary', () {
       final dbFile = File(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
@@ -111,7 +118,9 @@ void main() {
 
     test('Introductions are empty for crawled Korean databases', () {
       final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
-      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
+      final intros = repository.loadCommentaryIntroductions(
+        dbPath: dbFile.path,
+      );
       expect(intros, isEmpty);
     });
   });

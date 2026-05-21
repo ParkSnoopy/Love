@@ -39,15 +39,28 @@ class VerseActionPane extends ConsumerWidget {
     final sortedVersesList = [...selectedVerses]
       ..sort((a, b) => a.verse.compareTo(b.verse));
 
-    final allBookmarked = sortedVersesList.isNotEmpty && sortedVersesList.every((sv) =>
-        bookmarks.any((b) => b.bookId == bookId && b.chapter == chapter && b.verse == sv.verse));
+    final allBookmarked =
+        sortedVersesList.isNotEmpty &&
+        sortedVersesList.every(
+          (sv) => bookmarks.any(
+            (b) =>
+                b.bookId == bookId &&
+                b.chapter == chapter &&
+                b.verse == sv.verse,
+          ),
+        );
 
-    final isAnyHighlighted = sortedVersesList.isNotEmpty && sortedVersesList.any((sv) =>
-        highlights.any((h) =>
-            h.bookId == bookId &&
-            h.chapter == chapter &&
-            sv.verse >= h.verseStart &&
-            sv.verse <= h.verseEnd));
+    final isAnyHighlighted =
+        sortedVersesList.isNotEmpty &&
+        sortedVersesList.any(
+          (sv) => highlights.any(
+            (h) =>
+                h.bookId == bookId &&
+                h.chapter == chapter &&
+                sv.verse >= h.verseStart &&
+                sv.verse <= h.verseEnd,
+          ),
+        );
 
     final verseRangeStr = sortedVersesList.isEmpty
         ? ''
@@ -57,10 +70,7 @@ class VerseActionPane extends ConsumerWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
         border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 1,
-          ),
+          top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: SafeArea(
@@ -78,7 +88,7 @@ class VerseActionPane extends ConsumerWidget {
                     child: Text(
                       '$bookName $chapter장 $verseRangeStr 선택됨 (${sortedVersesList.length}개)',
                       style: theme.textTheme.titleSmall?.copyWith(
-                         fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -111,15 +121,18 @@ class VerseActionPane extends ConsumerWidget {
               onTap: () async {
                 final text = VerseExportFormatter.format(sortedVersesList);
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('공유: $text')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('공유: $text')));
                 }
                 ref.read(verseSelectionProvider.notifier).clear();
               },
             ),
             ListTile(
-              leading: Icon(allBookmarked ? Icons.bookmark_remove : Icons.bookmark_add, size: 20),
+              leading: Icon(
+                allBookmarked ? Icons.bookmark_remove : Icons.bookmark_add,
+                size: 20,
+              ),
               title: Text(allBookmarked ? '북마크에서 제거' : '북마크에 추가'),
               onTap: () {
                 if (allBookmarked) {
@@ -148,7 +161,11 @@ class VerseActionPane extends ConsumerWidget {
                   }
                   ref.invalidate(bookmarksProvider);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${sortedVersesList.length}개의 구절이 북마크에 추가되었습니다.')),
+                    SnackBar(
+                      content: Text(
+                        '${sortedVersesList.length}개의 구절이 북마크에 추가되었습니다.',
+                      ),
+                    ),
                   );
                 }
                 ref.read(verseSelectionProvider.notifier).clear();
@@ -229,9 +246,13 @@ class VerseActionPane extends ConsumerWidget {
               title: const Text('주석 보기'),
               onTap: () {
                 if (sortedVersesList.isNotEmpty) {
-                  ref.read(targetScrollCommentaryVerseProvider.notifier).state = sortedVersesList.first.verse;
+                  ref.read(targetScrollCommentaryVerseProvider.notifier).state =
+                      sortedVersesList.first.verse;
                 }
-                final activeCommentary = ref.read(activeCommentarySelectionProvider).asData?.value;
+                final activeCommentary = ref
+                    .read(activeCommentarySelectionProvider)
+                    .asData
+                    ?.value;
                 if (activeCommentary == null) {
                   showModalBottomSheet<void>(
                     context: context,
@@ -262,9 +283,11 @@ class VerseActionPane extends ConsumerWidget {
                     chapter: single.chapter,
                     verse: single.verse,
                   );
-                  final c = TextEditingController(text: existing?.content ?? '');
+                  final c = TextEditingController(
+                    text: existing?.content ?? '',
+                  );
                   final container = ProviderScope.containerOf(context);
-                  
+
                   final text = await showDialog<String>(
                     context: context,
                     builder: (ctx) => AlertDialog(
@@ -345,7 +368,11 @@ class VerseActionPane extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '형광펜 하이라이트(${colorName == "yellow" ? "노란색" : colorName == "green" ? "초록색" : "빨간색"})가 추가되었습니다.',
+              '형광펜 하이라이트(${colorName == "yellow"
+                  ? "노란색"
+                  : colorName == "green"
+                  ? "초록색"
+                  : "빨간색"})가 추가되었습니다.',
             ),
           ),
         );

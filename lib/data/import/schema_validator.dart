@@ -4,8 +4,6 @@ class SchemaValidator {
   static const _bibleTables = {'books', 'verses', 'version'};
   static const _commentaryTables = {'articles', 'indexing', 'comment'};
 
-
-
   static const _requiredCommentaryColumns = {
     'articles': {'article_id', 'title', 'text'},
     'indexing': {
@@ -111,7 +109,8 @@ class SchemaValidator {
     if (!hasArticles && !hasVerses) {
       throw ImportException(
         code: 'MISSING_TABLE',
-        message: 'Required tables missing: commentary must have either articles or verses table',
+        message:
+            'Required tables missing: commentary must have either articles or verses table',
         phase: 'Validate Commentary',
         detail: 'articles/verses',
       );

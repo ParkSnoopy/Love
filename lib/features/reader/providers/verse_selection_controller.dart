@@ -66,7 +66,10 @@ class VerseSelectionController extends Notifier<VerseSelectionState> {
       if (state.selected.contains(key)) {
         state = VerseSelectionState.empty;
       } else {
-        state = VerseSelectionState(mode: SelectionMode.single, selected: {key});
+        state = VerseSelectionState(
+          mode: SelectionMode.single,
+          selected: {key},
+        );
       }
       return;
     }
@@ -83,6 +86,7 @@ class VerseSelectionController extends Notifier<VerseSelectionState> {
     state = VerseSelectionState.empty;
   }
 }
+
 class TargetScrollVerseController extends Notifier<VerseKey?> {
   @override
   VerseKey? build() => null;
@@ -90,9 +94,10 @@ class TargetScrollVerseController extends Notifier<VerseKey?> {
   set state(VerseKey? value) => super.state = value;
 }
 
-final targetScrollVerseProvider = NotifierProvider<TargetScrollVerseController, VerseKey?>(
-  TargetScrollVerseController.new,
-);
+final targetScrollVerseProvider =
+    NotifierProvider<TargetScrollVerseController, VerseKey?>(
+      TargetScrollVerseController.new,
+    );
 
 class TargetScrollCommentaryVerseController extends Notifier<int?> {
   @override
@@ -101,6 +106,7 @@ class TargetScrollCommentaryVerseController extends Notifier<int?> {
   set state(int? value) => super.state = value;
 }
 
-final targetScrollCommentaryVerseProvider = NotifierProvider<TargetScrollCommentaryVerseController, int?>(
-  TargetScrollCommentaryVerseController.new,
-);
+final targetScrollCommentaryVerseProvider =
+    NotifierProvider<TargetScrollCommentaryVerseController, int?>(
+      TargetScrollCommentaryVerseController.new,
+    );

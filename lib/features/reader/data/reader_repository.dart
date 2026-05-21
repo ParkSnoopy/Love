@@ -40,11 +40,14 @@ class ReaderRepository {
   String loadBookName({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final columns = db.select('PRAGMA table_info(books)')
+      final columns = db
+          .select('PRAGMA table_info(books)')
           .map((row) => row['name'] as String)
           .toSet();
-      
-      final nameNativeCol = columns.contains('name_native') ? 'name_native' : 'name';
+
+      final nameNativeCol = columns.contains('name_native')
+          ? 'name_native'
+          : 'name';
       final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
 
       final rows = db.select(
@@ -68,11 +71,14 @@ class ReaderRepository {
   int loadMaxChapter({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final columns = db.select('PRAGMA table_info(books)')
+      final columns = db
+          .select('PRAGMA table_info(books)')
           .map((row) => row['name'] as String)
           .toSet();
-      
-      final chapterCol = columns.contains('chapter_count') ? 'chapter_count' : 'chapters';
+
+      final chapterCol = columns.contains('chapter_count')
+          ? 'chapter_count'
+          : 'chapters';
 
       final rows = db.select(
         'SELECT $chapterCol FROM books WHERE book_id = ? LIMIT 1',
@@ -143,7 +149,8 @@ class ReaderRepository {
       final text = (rows.first['text'] as String?) ?? '';
 
       var bookName = loadBookName(dbPath: dbPath, bookId: bookId);
-      if (dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+      if (dbPath.contains('com_kor_') &&
+          RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
         final names = bibleBookNames[bookId];
         if (names != null && names.isNotEmpty) {
           bookName = names.last;
@@ -151,10 +158,7 @@ class ReaderRepository {
       }
       final title = '$bookName $chapter장';
 
-      return CommentaryArticle(
-        title: title,
-        text: text,
-      );
+      return CommentaryArticle(title: title, text: text);
     } finally {
       db.close();
     }
@@ -237,8 +241,6 @@ class ReaderRepository {
     }
   }
 
-
-
   String _extractTitle(String text, String defaultTitle) {
     if (text.startsWith('#')) {
       final firstLine = text.split('\n').first;
@@ -247,17 +249,19 @@ class ReaderRepository {
     return defaultTitle;
   }
 
-  List<CommentaryIntroduction> loadCommentaryIntroductions({required String dbPath}) {
+  List<CommentaryIntroduction> loadCommentaryIntroductions({
+    required String dbPath,
+  }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
       // 1. General prefaces (book_id = 0, chapter = 0, verse > 0)
       final generalRows = db.select(
-        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id = 0 AND chapter = 0 AND verse > 0 ORDER BY verse ASC'
+        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id = 0 AND chapter = 0 AND verse > 0 ORDER BY verse ASC',
       );
 
       // 2. Book introductions (book_id > 0, chapter = 0, verse = 0)
       final bookRows = db.select(
-        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id > 0 AND chapter = 0 AND verse = 0 ORDER BY book_id ASC'
+        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id > 0 AND chapter = 0 AND verse = 0 ORDER BY book_id ASC',
       );
 
       final result = <CommentaryIntroduction>[];
@@ -268,13 +272,15 @@ class ReaderRepository {
         final v = (r['verse'] as int?) ?? 0;
         final text = (r['text'] as String?) ?? '';
         final defaultTitle = '일반 서론 $v';
-        result.add(CommentaryIntroduction(
-          bookId: bId,
-          chapter: ch,
-          verse: v,
-          title: _extractTitle(text, defaultTitle),
-          text: text,
-        ));
+        result.add(
+          CommentaryIntroduction(
+            bookId: bId,
+            chapter: ch,
+            verse: v,
+            title: _extractTitle(text, defaultTitle),
+            text: text,
+          ),
+        );
       }
 
       for (final r in bookRows) {
@@ -283,20 +289,23 @@ class ReaderRepository {
         final v = (r['verse'] as int?) ?? 0;
         final text = (r['text'] as String?) ?? '';
         var bookName = loadBookName(dbPath: dbPath, bookId: bId);
-        if (dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+        if (dbPath.contains('com_kor_') &&
+            RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
           final names = bibleBookNames[bId];
           if (names != null && names.isNotEmpty) {
             bookName = names.last;
           }
         }
         final defaultTitle = '$bookName 소개';
-        result.add(CommentaryIntroduction(
-          bookId: bId,
-          chapter: ch,
-          verse: v,
-          title: _extractTitle(text, defaultTitle),
-          text: text,
-        ));
+        result.add(
+          CommentaryIntroduction(
+            bookId: bId,
+            chapter: ch,
+            verse: v,
+            title: _extractTitle(text, defaultTitle),
+            text: text,
+          ),
+        );
       }
 
       return result;
@@ -358,7 +367,6 @@ class ReaderRepository {
       return null;
     }
   }
-
 }
 
 class CommentaryArticle {
@@ -374,7 +382,6 @@ class CommentaryVerse {
   final int verse;
   final String text;
 }
-
 
 const bibleBookNames = {
   1: ['Genesis', 'Gen', '창세기'],
@@ -444,4 +451,3 @@ const bibleBookNames = {
   65: ['Jude', '유다서'],
   66: ['Revelation', 'Rev', '요한계시록'],
 };
-

@@ -35,7 +35,9 @@ class SavedPage extends ConsumerWidget {
           data: (dbPath) {
             if (dbPath == null) {
               return const Center(
-                child: Text('No active Bible database. Please select a version in settings.'),
+                child: Text(
+                  'No active Bible database. Please select a version in settings.',
+                ),
               );
             }
             return TabBarView(
@@ -62,7 +64,8 @@ String _formatTimestamp(int ts) {
 String _getBookName(String dbPath, int bookId) {
   const repo = ReaderRepository();
   var bookName = repo.loadBookName(dbPath: dbPath, bookId: bookId);
-  if (dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+  if (dbPath.contains('com_kor_') &&
+      RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
     final names = bibleBookNames[bookId];
     if (names != null && names.isNotEmpty) {
       bookName = names.last;
@@ -90,9 +93,16 @@ class _BookmarksTab extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.bookmark_outline, size: 64, color: theme.colorScheme.outline),
+                Icon(
+                  Icons.bookmark_outline,
+                  size: 64,
+                  color: theme.colorScheme.outline,
+                ),
                 const SizedBox(height: 16),
-                const Text('No bookmarks saved yet.', style: TextStyle(fontSize: 16)),
+                const Text(
+                  'No bookmarks saved yet.',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             ),
           );
@@ -117,9 +127,14 @@ class _BookmarksTab extends ConsumerWidget {
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -141,7 +156,9 @@ class _BookmarksTab extends ConsumerWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    verseText.isNotEmpty ? verseText : '[Verse text not found in current translation]',
+                    verseText.isNotEmpty
+                        ? verseText
+                        : '[Verse text not found in current translation]',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -163,11 +180,18 @@ class _BookmarksTab extends ConsumerWidget {
                   },
                 ),
                 onTap: () {
-                  final targetKey = VerseKey(bookId: entry.bookId, chapter: entry.chapter, verse: entry.verse);
-                  ref.read(readerRefProvider.notifier).jumpTo(bookId: entry.bookId, chapter: entry.chapter);
+                  final targetKey = VerseKey(
+                    bookId: entry.bookId,
+                    chapter: entry.chapter,
+                    verse: entry.verse,
+                  );
+                  ref
+                      .read(readerRefProvider.notifier)
+                      .jumpTo(bookId: entry.bookId, chapter: entry.chapter);
                   ref.read(verseSelectionProvider.notifier).clear();
                   ref.read(verseSelectionProvider.notifier).tap(targetKey);
-                  ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+                  ref.read(targetScrollVerseProvider.notifier).state =
+                      targetKey;
                   context.go('/reader');
                 },
               ),
@@ -198,9 +222,16 @@ class _HighlightsTab extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.border_color, size: 64, color: theme.colorScheme.outline),
+                Icon(
+                  Icons.border_color,
+                  size: 64,
+                  color: theme.colorScheme.outline,
+                ),
                 const SizedBox(height: 16),
-                const Text('No highlights saved yet.', style: TextStyle(fontSize: 16)),
+                const Text(
+                  'No highlights saved yet.',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             ),
           );
@@ -230,9 +261,14 @@ class _HighlightsTab extends ConsumerWidget {
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -254,7 +290,9 @@ class _HighlightsTab extends ConsumerWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    verseText.isNotEmpty ? verseText : '[Verses not found in current translation]',
+                    verseText.isNotEmpty
+                        ? verseText
+                        : '[Verses not found in current translation]',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -274,15 +312,28 @@ class _HighlightsTab extends ConsumerWidget {
                   },
                 ),
                 onTap: () {
-                  final targetKey = VerseKey(bookId: entry.bookId, chapter: entry.chapter, verse: entry.verseStart);
-                  ref.read(readerRefProvider.notifier).jumpTo(bookId: entry.bookId, chapter: entry.chapter);
+                  final targetKey = VerseKey(
+                    bookId: entry.bookId,
+                    chapter: entry.chapter,
+                    verse: entry.verseStart,
+                  );
+                  ref
+                      .read(readerRefProvider.notifier)
+                      .jumpTo(bookId: entry.bookId, chapter: entry.chapter);
                   ref.read(verseSelectionProvider.notifier).clear();
                   for (int v = entry.verseStart; v <= entry.verseEnd; v++) {
-                    ref.read(verseSelectionProvider.notifier).tap(
-                      VerseKey(bookId: entry.bookId, chapter: entry.chapter, verse: v),
-                    );
+                    ref
+                        .read(verseSelectionProvider.notifier)
+                        .tap(
+                          VerseKey(
+                            bookId: entry.bookId,
+                            chapter: entry.chapter,
+                            verse: v,
+                          ),
+                        );
                   }
-                  ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+                  ref.read(targetScrollVerseProvider.notifier).state =
+                      targetKey;
                   context.go('/reader');
                 },
               ),
@@ -313,9 +364,16 @@ class _NotesTab extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.note_alt_outlined, size: 64, color: theme.colorScheme.outline),
+                Icon(
+                  Icons.note_alt_outlined,
+                  size: 64,
+                  color: theme.colorScheme.outline,
+                ),
                 const SizedBox(height: 16),
-                const Text('No notes saved yet.', style: TextStyle(fontSize: 16)),
+                const Text(
+                  'No notes saved yet.',
+                  style: TextStyle(fontSize: 16),
+                ),
               ],
             ),
           );
@@ -340,7 +398,9 @@ class _NotesTab extends ConsumerWidget {
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -378,7 +438,9 @@ class _NotesTab extends ConsumerWidget {
                                 );
                                 ref.invalidate(notesProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Note deleted.')),
+                                  const SnackBar(
+                                    content: Text('Note deleted.'),
+                                  ),
                                 );
                               },
                             ),
@@ -393,7 +455,9 @@ class _NotesTab extends ConsumerWidget {
                         final text = await showDialog<String>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: Text('노트 수정 ($bookName ${entry.chapter}:${entry.verse})'),
+                            title: Text(
+                              '노트 수정 ($bookName ${entry.chapter}:${entry.verse})',
+                            ),
                             content: TextField(
                               controller: c,
                               maxLines: 5,
@@ -450,10 +514,13 @@ class _NotesTab extends ConsumerWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                          color: theme.colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                         ),
                         child: Text(
@@ -465,11 +532,23 @@ class _NotesTab extends ConsumerWidget {
                     const SizedBox(height: 10),
                     InkWell(
                       onTap: () {
-                        final targetKey = VerseKey(bookId: entry.bookId, chapter: entry.chapter, verse: entry.verse);
-                        ref.read(readerRefProvider.notifier).jumpTo(bookId: entry.bookId, chapter: entry.chapter);
+                        final targetKey = VerseKey(
+                          bookId: entry.bookId,
+                          chapter: entry.chapter,
+                          verse: entry.verse,
+                        );
+                        ref
+                            .read(readerRefProvider.notifier)
+                            .jumpTo(
+                              bookId: entry.bookId,
+                              chapter: entry.chapter,
+                            );
                         ref.read(verseSelectionProvider.notifier).clear();
-                        ref.read(verseSelectionProvider.notifier).tap(targetKey);
-                        ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+                        ref
+                            .read(verseSelectionProvider.notifier)
+                            .tap(targetKey);
+                        ref.read(targetScrollVerseProvider.notifier).state =
+                            targetKey;
                         context.go('/reader');
                       },
                       child: Row(
@@ -477,7 +556,11 @@ class _NotesTab extends ConsumerWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 2.0),
-                            child: Icon(Icons.menu_book, size: 14, color: theme.colorScheme.primary),
+                            child: Icon(
+                              Icons.menu_book,
+                              size: 14,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
                           const SizedBox(width: 4),
                           Expanded(

@@ -40,18 +40,23 @@ void main() {
       SharedPreferences.setMockInitialValues({});
     });
 
-    test('initializes with default values if no SharedPreferences exist', () async {
-      final container = ProviderContainer(
-        overrides: [
-          activeDbPathProvider.overrideWith((ref) => Future.value(bibleDbPath)),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'initializes with default values if no SharedPreferences exist',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            activeDbPathProvider.overrideWith(
+              (ref) => Future.value(bibleDbPath),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final state = await container.read(readerRefProvider.future);
-      expect(state.bookId, equals(1));
-      expect(state.chapter, equals(1));
-    });
+        final state = await container.read(readerRefProvider.future);
+        expect(state.bookId, equals(1));
+        expect(state.chapter, equals(1));
+      },
+    );
 
     test('loads saved reader position from SharedPreferences', () async {
       SharedPreferences.setMockInitialValues({
@@ -114,24 +119,29 @@ void main() {
       expect(state.chapter, equals(1));
     });
 
-    test('clamps invalid out-of-bound chapter of valid book to max chapter', () async {
-      // Genesis has 50 chapters. Let's save chapter 99.
-      SharedPreferences.setMockInitialValues({
-        'reader_book_id': 1,
-        'reader_chapter': 99,
-      });
+    test(
+      'clamps invalid out-of-bound chapter of valid book to max chapter',
+      () async {
+        // Genesis has 50 chapters. Let's save chapter 99.
+        SharedPreferences.setMockInitialValues({
+          'reader_book_id': 1,
+          'reader_chapter': 99,
+        });
 
-      final container = ProviderContainer(
-        overrides: [
-          activeDbPathProvider.overrideWith((ref) => Future.value(bibleDbPath)),
-        ],
-      );
-      addTearDown(container.dispose);
+        final container = ProviderContainer(
+          overrides: [
+            activeDbPathProvider.overrideWith(
+              (ref) => Future.value(bibleDbPath),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final state = await container.read(readerRefProvider.future);
-      // It should clamp to Genesis max chapter (50)
-      expect(state.bookId, equals(1));
-      expect(state.chapter, equals(50));
-    });
+        final state = await container.read(readerRefProvider.future);
+        // It should clamp to Genesis max chapter (50)
+        expect(state.bookId, equals(1));
+        expect(state.chapter, equals(50));
+      },
+    );
   });
 }

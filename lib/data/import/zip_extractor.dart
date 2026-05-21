@@ -33,7 +33,8 @@ class ZipExtractor {
     for (final file in archive) {
       if (file.isFile) {
         final entryNameLower = file.name.toLowerCase().replaceAll('\\', '/');
-        if (entryNameLower == targetLower || entryNameLower.endsWith('/$targetLower')) {
+        if (entryNameLower == targetLower ||
+            entryNameLower.endsWith('/$targetLower')) {
           matchedFile = file;
           break;
         }
