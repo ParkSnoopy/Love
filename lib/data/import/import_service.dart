@@ -14,7 +14,7 @@ class ImportService {
       final snapshot = inspector.inspect(db);
       validator.validateBibleSchema(snapshot.tables, snapshot.columnsByTable);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -26,7 +26,7 @@ class ImportService {
       final snapshot = inspector.inspect(db);
       validator.validateCommentarySchema(snapshot.tables, snapshot.columnsByTable);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 }

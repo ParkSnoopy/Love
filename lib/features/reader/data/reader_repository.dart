@@ -24,7 +24,7 @@ class ReaderRepository {
           ? (rows.first['name_en'] as String)
           : 'Book$bookId';
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -50,7 +50,7 @@ class ReaderRepository {
           )
           .toList(growable: false);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 }

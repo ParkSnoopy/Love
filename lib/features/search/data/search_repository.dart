@@ -34,7 +34,7 @@ class SearchRepository {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
       final rows = db.select(
-        'SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE "\\" ORDER BY book_id, chapter, verse LIMIT ? OFFSET ?',
+        "SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE '\\' ORDER BY book_id, chapter, verse LIMIT ? OFFSET ?",
         [pattern, limit, offset],
       );
       return rows
@@ -48,7 +48,7 @@ class SearchRepository {
           )
           .toList(growable: false);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 

@@ -50,6 +50,7 @@ class UserDataRepository {
   void init(String dbPath) {
     final db = sqlite3.open(dbPath);
     try {
+      db.execute('PRAGMA busy_timeout = 3000;');
       db.execute('''
 CREATE TABLE IF NOT EXISTS bookmarks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,8 +93,10 @@ CREATE TABLE IF NOT EXISTS history (
   visited_at INTEGER NOT NULL
 );
 ''');
+    } on SqliteException catch (e) {
+      if (!e.toString().contains('database is locked')) rethrow;
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -119,7 +122,7 @@ WHERE id IN (
 )
 ''');
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -137,7 +140,7 @@ WHERE id IN (
         [bookId, chapter, verse, createdAt],
       );
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -158,7 +161,7 @@ WHERE id IN (
           )
           .toList(growable: false);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -178,7 +181,7 @@ WHERE id IN (
         [bookId, chapter, verseStart, verseEnd, color, createdAt],
       );
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -198,7 +201,7 @@ WHERE id IN (
         [bookId, chapter, verse, content, now, now],
       );
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -224,7 +227,7 @@ WHERE id IN (
         updatedAt: (r['updated_at'] as int?) ?? 0,
       );
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 
@@ -246,7 +249,7 @@ WHERE id IN (
           )
           .toList(growable: false);
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 }

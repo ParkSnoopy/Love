@@ -6,7 +6,7 @@ import '../lib/data/import/schema_inspector.dart';
 void main() {
   test('inspector returns table and column sets from sqlite db', () {
     final db = sqlite3.openInMemory();
-    addTearDown(db.dispose);
+    addTearDown(db.close);
 
     db.execute('CREATE TABLE books(book_id INTEGER, name_en TEXT);');
     db.execute('CREATE TABLE verses(book_id INTEGER, chapter INTEGER, verse INTEGER, text TEXT);');
