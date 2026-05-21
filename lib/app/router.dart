@@ -17,7 +17,7 @@ final shellNavigatorSearchKey = GlobalKey<NavigatorState>(debugLabel: 'search');
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/reader',
+    initialLocation: '/library',
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
