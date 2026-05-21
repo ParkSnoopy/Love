@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/font_controller.dart';
@@ -12,7 +13,12 @@ import 'features/reader/presentation/reader_page.dart';
 import 'features/search/presentation/search_page.dart';
 import 'features/study/providers/user_data_controller.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -47,7 +47,10 @@ class NoteEntry {
 class UserDataRepository {
   const UserDataRepository();
 
+  static final Set<String> _initializedPaths = <String>{};
+
   void init(String dbPath) {
+    if (_initializedPaths.contains(dbPath)) return;
     final db = sqlite3.open(dbPath);
     try {
       db.execute('PRAGMA busy_timeout = 3000;');
@@ -93,6 +96,7 @@ CREATE TABLE IF NOT EXISTS history (
   visited_at INTEGER NOT NULL
 );
 ''');
+      _initializedPaths.add(dbPath);
     } on SqliteException catch (e) {
       if (!e.toString().contains('database is locked')) rethrow;
     } finally {

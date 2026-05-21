@@ -1,3 +1,6 @@
+# Private database
+*.db
+
 # Miscellaneous
 *.class
 *.log
