@@ -176,18 +176,25 @@ class NocrBoardCrawler:
         articles = extract_articles_from_list_page(html1, self.board_id)
         seen_srls = {s for s, _ in articles}
 
-        # Discover true last page by probing the boundary
+        # Discover true last page by walking the sliding pagination window.
+        # Some boards (e.g. korkrv) expose only a few future links per page:
+        # page 1 -> 10, page 10 -> 14, ... until final page 60.
         initial_max = max_page_number(html1)
-
-        # If the paginator shows a window, fetch the boundary page to get the real last page.
         true_max = initial_max
-        if initial_max > 1:
+        while true_max > 1:
             boundary_html = fetch(
-                f"{BASE_URL}/{self.board_id}/page/{initial_max}?listStyle=viewer",
+                f"{BASE_URL}/{self.board_id}/page/{true_max}?listStyle=viewer",
                 retries=self.retries,
-                label=f"list page {initial_max}",
+                label=f"list page {true_max}",
             )
-            true_max = max(max_page_number(boundary_html), initial_max)
+            next_max = max(max_page_number(boundary_html), true_max)
+            if next_max == true_max:
+                break
+            print(
+                f"[{self.board_id}] Pagination window extends: {true_max} -> {next_max}",
+                flush=True,
+            )
+            true_max = next_max
 
         print(
             f"[{self.board_id}] {true_max} list pages, {len(articles)} articles on p.1"
