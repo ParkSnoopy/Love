@@ -8,10 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/manifest_repository.dart';
 
 class ActiveBibleSelection {
-  const ActiveBibleSelection({required this.id, required this.file});
+  const ActiveBibleSelection({required this.id, required this.file, required this.name});
 
   final String id;
   final String file;
+  final String name;
 }
 
 final activeBibleSelectionProvider =
@@ -24,24 +25,35 @@ class ActiveBibleSelectionController
     extends AsyncNotifier<ActiveBibleSelection?> {
   static const _prefsKeyId = 'active_bible_id';
   static const _prefsKeyFile = 'active_bible_file';
+  static const _prefsKeyName = 'active_bible_name';
 
   @override
   Future<ActiveBibleSelection?> build() async {
     final prefs = await SharedPreferences.getInstance();
     final savedId = prefs.getString(_prefsKeyId);
     final savedFile = prefs.getString(_prefsKeyFile);
+    final savedName = prefs.getString(_prefsKeyName);
 
     if (savedId != null &&
         savedFile != null &&
         await _looksInstalled(savedFile)) {
-      return ActiveBibleSelection(id: savedId, file: savedFile);
+      String name = savedName ?? savedId;
+      if (savedName == null) {
+        const repo = ManifestRepository();
+        final packs = await repo.loadBiblePacksFromAsset();
+        final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+        if (match.isNotEmpty) {
+          name = match.first.name;
+        }
+      }
+      return ActiveBibleSelection(id: savedId, file: savedFile, name: name);
     }
 
     const repo = ManifestRepository();
     final packs = await repo.loadBiblePacksFromAsset();
     for (final p in packs) {
-      if (await _looksInstalled(p.file)) {
-        final picked = ActiveBibleSelection(id: p.id, file: p.file);
+      if (p.type == 'bible' && await _looksInstalled(p.file)) {
+        final picked = ActiveBibleSelection(id: p.id, file: p.file, name: p.name);
         await _save(picked);
         return picked;
       }
@@ -50,8 +62,8 @@ class ActiveBibleSelectionController
     return null;
   }
 
-  Future<void> select({required String id, required String file}) async {
-    final picked = ActiveBibleSelection(id: id, file: file);
+  Future<void> select({required String id, required String file, required String name}) async {
+    final picked = ActiveBibleSelection(id: id, file: file, name: name);
     state = AsyncData(picked);
     await _save(picked);
   }
@@ -78,14 +90,16 @@ class ActiveBibleSelectionController
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsKeyId, picked.id);
     await prefs.setString(_prefsKeyFile, picked.file);
+    await prefs.setString(_prefsKeyName, picked.name);
   }
 }
 
 class ActiveCommentarySelection {
-  const ActiveCommentarySelection({required this.id, required this.file});
+  const ActiveCommentarySelection({required this.id, required this.file, required this.name});
 
   final String id;
   final String file;
+  final String name;
 }
 
 final activeCommentarySelectionProvider =
@@ -98,23 +112,34 @@ class ActiveCommentarySelectionController
     extends AsyncNotifier<ActiveCommentarySelection?> {
   static const _prefsKeyId = 'active_commentary_id';
   static const _prefsKeyFile = 'active_commentary_file';
+  static const _prefsKeyName = 'active_commentary_name';
 
   @override
   Future<ActiveCommentarySelection?> build() async {
     final prefs = await SharedPreferences.getInstance();
     final savedId = prefs.getString(_prefsKeyId);
     final savedFile = prefs.getString(_prefsKeyFile);
+    final savedName = prefs.getString(_prefsKeyName);
 
     if (savedId != null &&
         savedFile != null &&
         await _looksInstalled(savedFile)) {
-      return ActiveCommentarySelection(id: savedId, file: savedFile);
+      String name = savedName ?? savedId;
+      if (savedName == null) {
+        const repo = ManifestRepository();
+        final packs = await repo.loadBiblePacksFromAsset();
+        final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+        if (match.isNotEmpty) {
+          name = match.first.name;
+        }
+      }
+      return ActiveCommentarySelection(id: savedId, file: savedFile, name: name);
     }
     return null;
   }
 
-  Future<void> select({required String id, required String file}) async {
-    final picked = ActiveCommentarySelection(id: id, file: file);
+  Future<void> select({required String id, required String file, required String name}) async {
+    final picked = ActiveCommentarySelection(id: id, file: file, name: name);
     state = AsyncData(picked);
     await _save(picked);
   }
@@ -124,6 +149,7 @@ class ActiveCommentarySelectionController
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefsKeyId);
     await prefs.remove(_prefsKeyFile);
+    await prefs.remove(_prefsKeyName);
   }
 
   Future<bool> _looksInstalled(String manifestFile) async {
@@ -147,6 +173,7 @@ class ActiveCommentarySelectionController
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsKeyId, picked.id);
     await prefs.setString(_prefsKeyFile, picked.file);
+    await prefs.setString(_prefsKeyName, picked.name);
   }
 }
 

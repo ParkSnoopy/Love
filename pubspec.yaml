@@ -41,6 +41,7 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   collection: ^1.19.1
+  archive: ^3.6.1
 
 dev_dependencies:
   flutter_test:
@@ -64,12 +65,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/data/
+    - assets/data.zip
     - assets/data/manifest.json
-    - assets/data/nocr/
-    - assets/data/getbible/
-    - assets/data/bible4u/
-    - assets/data/comment/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

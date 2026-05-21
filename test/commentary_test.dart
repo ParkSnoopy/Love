@@ -2,14 +2,48 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:Love/features/reader/data/reader_repository.dart';
+import 'package:Love/data/import/zip_extractor.dart';
 
 void main() {
-  group('Commentary Database Tests', () {
+  group('Commentary Database Tests (via ZIP Extraction)', () {
     const repository = ReaderRepository();
-    final commentaryDir = Directory('assets/data/comment');
+    const extractor = ZipExtractor();
+    final tempExtractDir = Directory('test/temp_extracted');
+
+    setUpAll(() async {
+      if (tempExtractDir.existsSync()) {
+        tempExtractDir.deleteSync(recursive: true);
+      }
+      tempExtractDir.createSync(recursive: true);
+
+      // Extract required dbs for the tests
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_geneva.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_geneva.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_barne.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_barne.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_kor_hochma.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+    });
+
+    tearDownAll(() {
+      if (tempExtractDir.existsSync()) {
+        tempExtractDir.deleteSync(recursive: true);
+      }
+    });
 
     test('Loads Genesis 1 commentary from Geneva Bible commentary', () {
-      final dbFile = File(p.join(commentaryDir.path, 'com_geneva.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -25,7 +59,7 @@ void main() {
     });
 
     test('Loads Matthew 5 commentary from Barnes commentary', () {
-      final dbFile = File(p.join(commentaryDir.path, 'com_barne.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'com_barne.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -41,7 +75,7 @@ void main() {
     });
 
     test('Loads Genesis 1 commentary from Korean Hochma commentary', () {
-      final dbFile = File(p.join(commentaryDir.path, 'com_kor_hochma.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -57,7 +91,7 @@ void main() {
     });
 
     test('Returns null for invalid/out-of-bounds chapter', () {
-      final dbFile = File(p.join(commentaryDir.path, 'com_geneva.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
       final article = repository.loadCommentaryArticle(
         dbPath: dbFile.path,
         bookId: 1,

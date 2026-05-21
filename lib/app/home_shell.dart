@@ -16,11 +16,6 @@ class HomeShell extends ConsumerWidget {
         onDestinationSelected: (i) => navigationShell.goBranch(i),
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.library_books_outlined),
-            selectedIcon: Icon(Icons.library_books),
-            label: 'Library',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
             selectedIcon: Icon(Icons.menu_book),
             label: 'Reader',
@@ -29,6 +24,11 @@ class HomeShell extends ConsumerWidget {
             icon: Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
             label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Setting',
           ),
         ],
       ),

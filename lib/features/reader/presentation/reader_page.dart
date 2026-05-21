@@ -612,6 +612,11 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
 
     final theme = Theme.of(context);
     final baseTextStyle = theme.textTheme.bodyMedium ?? const TextStyle();
+    final activeCommentary = ref.watch(activeCommentarySelectionProvider).asData?.value;
+    final articleTitle = article?.title;
+    final headerTitle = activeCommentary != null
+        ? '${activeCommentary.name}${articleTitle != null ? ' - $articleTitle' : ''}'
+        : (articleTitle ?? 'No Commentary');
 
     return Container(
       decoration: BoxDecoration(
@@ -633,7 +638,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
               children: [
                 Expanded(
                   child: Text(
-                    article?.title ?? 'No Commentary',
+                    headerTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(
@@ -745,7 +750,7 @@ class _CommentarySelectionSheet extends ConsumerWidget {
                       onTap: () async {
                         await ref
                             .read(activeCommentarySelectionProvider.notifier)
-                            .select(id: p.id, file: p.file);
+                            .select(id: p.id, file: p.file, name: p.name);
                         onSelected();
                       },
                     );
