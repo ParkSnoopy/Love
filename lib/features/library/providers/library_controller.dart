@@ -34,19 +34,20 @@ class ActiveBibleSelectionController
     final savedFile = prefs.getString(_prefsKeyFile);
     final savedName = prefs.getString(_prefsKeyName);
 
-    if (savedId != null &&
-        savedFile != null &&
-        await _looksInstalled(savedFile)) {
-      String name = savedName ?? savedId;
-      if (savedName == null) {
-        const repo = ManifestRepository();
-        final packs = await repo.loadBiblePacksFromAsset();
-        final match = packs.where((p) => p.id == savedId || p.file == savedFile);
-        if (match.isNotEmpty) {
-          name = match.first.name;
+    if (savedId != null && savedFile != null) {
+      const repo = ManifestRepository();
+      final packs = await repo.loadBiblePacksFromAsset();
+      final existsInManifest = packs.any((p) => p.id == savedId || p.file == savedFile);
+      if (existsInManifest || await _looksInstalled(savedFile)) {
+        String name = savedName ?? savedId;
+        if (savedName == null) {
+          final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+          if (match.isNotEmpty) {
+            name = match.first.name;
+          }
         }
+        return ActiveBibleSelection(id: savedId, file: savedFile, name: name);
       }
-      return ActiveBibleSelection(id: savedId, file: savedFile, name: name);
     }
 
     const repo = ManifestRepository();
@@ -121,19 +122,20 @@ class ActiveCommentarySelectionController
     final savedFile = prefs.getString(_prefsKeyFile);
     final savedName = prefs.getString(_prefsKeyName);
 
-    if (savedId != null &&
-        savedFile != null &&
-        await _looksInstalled(savedFile)) {
-      String name = savedName ?? savedId;
-      if (savedName == null) {
-        const repo = ManifestRepository();
-        final packs = await repo.loadBiblePacksFromAsset();
-        final match = packs.where((p) => p.id == savedId || p.file == savedFile);
-        if (match.isNotEmpty) {
-          name = match.first.name;
+    if (savedId != null && savedFile != null) {
+      const repo = ManifestRepository();
+      final packs = await repo.loadBiblePacksFromAsset();
+      final existsInManifest = packs.any((p) => p.id == savedId || p.file == savedFile);
+      if (existsInManifest || await _looksInstalled(savedFile)) {
+        String name = savedName ?? savedId;
+        if (savedName == null) {
+          final match = packs.where((p) => p.id == savedId || p.file == savedFile);
+          if (match.isNotEmpty) {
+            name = match.first.name;
+          }
         }
+        return ActiveCommentarySelection(id: savedId, file: savedFile, name: name);
       }
-      return ActiveCommentarySelection(id: savedId, file: savedFile, name: name);
     }
     return null;
   }

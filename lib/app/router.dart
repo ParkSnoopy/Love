@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../features/library/presentation/library_page.dart';
 import '../features/reader/presentation/reader_page.dart';
 import '../features/search/presentation/search_page.dart';
+import '../features/study/presentation/saved_page.dart';
 import 'home_shell.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -13,6 +14,7 @@ final shellNavigatorSettingKey = GlobalKey<NavigatorState>(
 );
 final shellNavigatorReaderKey = GlobalKey<NavigatorState>(debugLabel: 'reader');
 final shellNavigatorSearchKey = GlobalKey<NavigatorState>(debugLabel: 'search');
+final shellNavigatorSavedKey = GlobalKey<NavigatorState>(debugLabel: 'saved');
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -39,6 +41,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/search',
                 builder: (context, state) => const SearchPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: shellNavigatorSavedKey,
+            routes: [
+              GoRoute(
+                path: '/saved',
+                builder: (context, state) => const SavedPage(),
               ),
             ],
           ),

@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../data/search_repository.dart';
 import '../../reader/data/reader_repository.dart';
+import '../../reader/providers/reader_controller.dart';
+import '../../reader/providers/verse_selection_controller.dart';
 import '../../../data/storage/db_path_provider.dart';
 
 class SearchPage extends ConsumerWidget {
@@ -36,16 +39,16 @@ class SearchPage extends ConsumerWidget {
   }
 }
 
-class _SearchContentView extends StatefulWidget {
+class _SearchContentView extends ConsumerStatefulWidget {
   const _SearchContentView({required this.dbPath});
 
   final String dbPath;
 
   @override
-  State<_SearchContentView> createState() => _SearchContentViewState();
+  ConsumerState<_SearchContentView> createState() => _SearchContentViewState();
 }
 
-class _SearchContentViewState extends State<_SearchContentView> {
+class _SearchContentViewState extends ConsumerState<_SearchContentView> {
   static const _pageSize = 100;
   static const _repo = SearchRepository();
 
@@ -165,6 +168,21 @@ class _SearchContentViewState extends State<_SearchContentView> {
                 return ListTile(
                   title: Text('$bookName ${h.chapter}:${h.verse}'),
                   subtitle: Text(h.text),
+                  onTap: () {
+                    final targetKey = VerseKey(
+                      bookId: h.bookId,
+                      chapter: h.chapter,
+                      verse: h.verse,
+                    );
+                    ref.read(readerRefProvider.notifier).jumpTo(
+                          bookId: h.bookId,
+                          chapter: h.chapter,
+                        );
+                    ref.read(verseSelectionProvider.notifier).clear();
+                    ref.read(verseSelectionProvider.notifier).tap(targetKey);
+                    ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+                    context.go('/reader');
+                  },
                 );
               },
             ),

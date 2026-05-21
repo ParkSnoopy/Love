@@ -6,6 +6,7 @@ import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../../app/theme_controller.dart';
 import '../../../app/font_controller.dart';
+import '../../../app/reader_settings_controller.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -41,10 +42,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
-    final fontType = ref.watch(fontTypeProvider);
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
     final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
+    final readerSettingsAsync = ref.watch(readerSettingsProvider);
+    final readerSettings = readerSettingsAsync.value ?? const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
 
     return Scaffold(
       appBar: AppBar(
@@ -79,6 +82,76 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   onTap: () => ref.read(fontTypeProvider.notifier).cycle(),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionHeader('Reader Typography'),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Font Size',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      Text(
+                        '${readerSettings.fontSize.toStringAsFixed(1)} px',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: readerSettings.fontSize,
+                    min: 12.0,
+                    max: 30.0,
+                    divisions: 18,
+                    onChanged: (val) {
+                      ref.read(readerSettingsProvider.notifier).setFontSize(val);
+                    },
+                  ),
+                  const Divider(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Line Spacing',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      Text(
+                        '${readerSettings.lineSpacing.toStringAsFixed(2)} x',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: readerSettings.lineSpacing,
+                    min: 1.0,
+                    max: 2.5,
+                    divisions: 15,
+                    onChanged: (val) {
+                      ref.read(readerSettingsProvider.notifier).setLineSpacing(val);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),

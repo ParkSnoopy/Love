@@ -7,12 +7,14 @@ import '../data/reader_repository.dart';
 import '../providers/reader_controller.dart';
 import '../providers/verse_selection_controller.dart';
 import '../../study/providers/user_data_controller.dart';
+import '../../study/data/user_data_repository.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../library/domain/manifest_repository.dart';
 import '../providers/commentary_visibility_provider.dart';
 import 'verse_action_pane.dart';
+import '../../../app/reader_settings_controller.dart';
 
 class CommentaryFullScreenNotifier extends Notifier<bool> {
   @override
@@ -56,13 +58,26 @@ class ReaderPage extends ConsumerWidget {
   }
 }
 
-class _ReaderContentView extends ConsumerWidget {
+class _ReaderContentView extends ConsumerStatefulWidget {
   const _ReaderContentView({required this.dbPath});
 
   final String dbPath;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ReaderContentView> createState() => _ReaderContentViewState();
+}
+
+class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
+  final Map<VerseKey, GlobalKey> _verseKeys = {};
+  int? _lastBookId;
+  int? _lastChapter;
+
+  GlobalKey _getKeyForVerse(VerseKey key) {
+    return _verseKeys.putIfAbsent(key, () => GlobalKey());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final rrAsync = ref.watch(readerRefProvider);
 
     ref.listen<bool>(commentaryVisibilityProvider, (prev, next) {
@@ -81,6 +96,13 @@ class _ReaderContentView extends ConsumerWidget {
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
       data: (rr) {
+        // Clear keys if chapter changed
+        if (_lastBookId != rr.bookId || _lastChapter != rr.chapter) {
+          _verseKeys.clear();
+          _lastBookId = rr.bookId;
+          _lastChapter = rr.chapter;
+        }
+
         final selection = ref.watch(verseSelectionProvider);
         final userDataRepo = ref.watch(userDataRepositoryProvider);
         final userDataDbPath = ref.watch(userDataDbPathProvider);
@@ -89,19 +111,52 @@ class _ReaderContentView extends ConsumerWidget {
         final isCommentaryActive = activeCommentaryDbPath != null && isCommentaryVisible;
         final isFullScreen = ref.watch(commentaryFullScreenProvider);
 
+        final bookmarksAsync = ref.watch(bookmarksProvider);
+        final bookmarkedVerses = bookmarksAsync.value
+                ?.where((b) => b.bookId == rr.bookId && b.chapter == rr.chapter)
+                .map((b) => b.verse)
+                .toSet() ??
+            const <int>{};
+
+        final highlightsAsync = ref.watch(highlightsProvider);
+        final highlights = highlightsAsync.value
+                ?.where((h) => h.bookId == rr.bookId && h.chapter == rr.chapter)
+                .toList() ??
+            const <HighlightEntry>[];
+
+        final readerSettingsAsync = ref.watch(readerSettingsProvider);
+        final readerSettings = readerSettingsAsync.value ??
+            const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+
+        // Check if we need to scroll to a verse
+        final targetScroll = ref.watch(targetScrollVerseProvider);
+        if (targetScroll != null && targetScroll.bookId == rr.bookId && targetScroll.chapter == rr.chapter) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final key = _verseKeys[targetScroll];
+            if (key != null && key.currentContext != null) {
+              Scrollable.ensureVisible(
+                key.currentContext!,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+              ref.read(targetScrollVerseProvider.notifier).state = null;
+            }
+          });
+        }
+
         const repo = ReaderRepository();
         var verses = const <VerseLine>[];
         var bookName = 'Bible';
         String? loadError;
         try {
           verses = repo.loadChapter(
-            dbPath: dbPath,
+            dbPath: widget.dbPath,
             bookId: rr.bookId,
             chapter: rr.chapter,
           );
-          bookName = repo.loadBookName(dbPath: dbPath, bookId: rr.bookId);
+          bookName = repo.loadBookName(dbPath: widget.dbPath, bookId: rr.bookId);
         } on SqliteException catch (e) {
-          loadError = 'DB Error: ${e.message}\nPath: $dbPath';
+          loadError = 'DB Error: ${e.message}\nPath: ${widget.dbPath}';
         }
         final selectedVerseLines = verses
             .where(
@@ -122,7 +177,7 @@ class _ReaderContentView extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: InkWell(
-              onTap: () => _showPicker(context, ref, rr, dbPath),
+              onTap: () => _showPicker(context, ref, rr, widget.dbPath),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -143,7 +198,7 @@ class _ReaderContentView extends ConsumerWidget {
                   if (activeCommentary == null) {
                     showModalBottomSheet<void>(
                       context: context,
-                      builder: (ctx) => _CommentarySelectionSheet(
+                      builder: (ctx) => CommentarySelectionSheet(
                         onSelected: () => Navigator.of(ctx).pop(),
                       ),
                     );
@@ -173,48 +228,92 @@ class _ReaderContentView extends ConsumerWidget {
                             child: Text(loadError, textAlign: TextAlign.center),
                           ),
                         )
-                      : ListView.builder(
-                          itemCount: verses.length,
-                          itemBuilder: (context, i) {
-                            final v = verses[i];
-                            final key = VerseKey(
-                              bookId: v.bookId,
-                              chapter: v.chapter,
-                              verse: v.verse,
-                            );
-                            final selected = selection.selected.contains(key);
-                            return ListTile(
-                              selected: selected,
-                              onTap: () {
-                                ref.read(verseSelectionProvider.notifier).tap(key);
-                                userDataRepo.addHistory(
-                                  dbPath: userDataDbPath,
-                                  bookId: v.bookId,
-                                  chapter: v.chapter,
-                                  verse: v.verse,
-                                  visitedAt: DateTime.now().millisecondsSinceEpoch,
-                                );
-                              },
-                              onLongPress: () => ref
-                                  .read(verseSelectionProvider.notifier)
-                                  .longPress(key),
-                              title: Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '${v.verse} ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).colorScheme.primary,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    TextSpan(text: v.text),
-                                  ],
+                      : SingleChildScrollView(
+                          child: Column(
+                            children: verses.map((v) {
+                              final key = VerseKey(
+                                bookId: v.bookId,
+                                chapter: v.chapter,
+                                verse: v.verse,
+                              );
+                              final selected = selection.selected.contains(key);
+                              final isBookmarked = bookmarkedVerses.contains(v.verse);
+
+                              final matchingHighlight = highlights.firstWhere(
+                                (h) => v.verse >= h.verseStart && v.verse <= h.verseEnd,
+                                orElse: () => const HighlightEntry(
+                                  id: -1,
+                                  bookId: 0,
+                                  chapter: 0,
+                                  verseStart: 0,
+                                  verseEnd: 0,
+                                  color: '',
+                                  createdAt: 0,
                                 ),
-                              ),
-                            );
-                          },
+                              );
+
+                              Color? textColor;
+                              if (matchingHighlight.id != -1) {
+                                final isDark = Theme.of(context).brightness == Brightness.dark;
+                                textColor = switch (matchingHighlight.color) {
+                                  'yellow' => isDark ? Colors.yellow[300] : const Color(0xFFB58900),
+                                  'green' => isDark ? Colors.green[300] : Colors.green[700],
+                                  'red' => isDark ? Colors.red[300] : Colors.red[700],
+                                  _ => isDark ? Colors.yellow[300] : const Color(0xFFB58900),
+                                };
+                              }
+
+                              return ListTile(
+                                key: _getKeyForVerse(key),
+                                selected: selected,
+                                onTap: () {
+                                  ref.read(verseSelectionProvider.notifier).tap(key);
+                                  userDataRepo.addHistory(
+                                    dbPath: userDataDbPath,
+                                    bookId: v.bookId,
+                                    chapter: v.chapter,
+                                    verse: v.verse,
+                                    visitedAt: DateTime.now().millisecondsSinceEpoch,
+                                  );
+                                },
+                                onLongPress: () => ref
+                                    .read(verseSelectionProvider.notifier)
+                                    .longPress(key),
+                                title: Text.rich(
+                                  TextSpan(
+                                    style: TextStyle(
+                                      fontSize: readerSettings.fontSize,
+                                      height: readerSettings.lineSpacing,
+                                      color: textColor,
+                                    ),
+                                    children: [
+                                      if (isBookmarked)
+                                        const WidgetSpan(
+                                          alignment: PlaceholderAlignment.middle,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(right: 4.0),
+                                            child: Icon(
+                                              Icons.bookmark,
+                                              color: Colors.amber,
+                                              size: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      TextSpan(
+                                        text: '${v.verse} ',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: textColor ?? Theme.of(context).colorScheme.primary,
+                                          fontSize: readerSettings.fontSize * 0.75,
+                                        ),
+                                      ),
+                                      TextSpan(text: v.text),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
                         ),
                 ),
               if (isCommentaryActive)
@@ -240,29 +339,29 @@ class _ReaderContentView extends ConsumerWidget {
       },
     );
   }
+}
 
-  void _showPicker(
-    BuildContext context,
-    WidgetRef ref,
-    ReaderRef rr,
-    String dbPath,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) => _BookChapterPicker(
-        dbPath: dbPath,
-        initialBookId: rr.bookId,
-        initialChapter: rr.chapter,
-        onSelected: (bookId, chapter) {
-          ref
-              .read(readerRefProvider.notifier)
-              .jumpTo(bookId: bookId, chapter: chapter);
-          Navigator.of(ctx).pop();
-        },
-      ),
-    );
-  }
+void _showPicker(
+  BuildContext context,
+  WidgetRef ref,
+  ReaderRef rr,
+  String dbPath,
+) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (ctx) => _BookChapterPicker(
+      dbPath: dbPath,
+      initialBookId: rr.bookId,
+      initialChapter: rr.chapter,
+      onSelected: (bookId, chapter) {
+        ref
+            .read(readerRefProvider.notifier)
+            .jumpTo(bookId: bookId, chapter: chapter);
+        Navigator.of(ctx).pop();
+      },
+    ),
+  );
 }
 
 class _BookChapterPicker extends StatefulWidget {
@@ -286,11 +385,34 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
   late int _selectedBookId = widget.initialBookId;
   List<Map<String, dynamic>> _books = [];
   bool _loading = true;
+  final ScrollController _booksScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadBooks();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final idx = _books.indexWhere((b) => b['id'] == _selectedBookId);
+      if (idx != -1 && _booksScrollController.hasClients) {
+        _booksScrollController.jumpTo(idx * 48.0);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _booksScrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBook(int index) {
+    if (index >= 0 && index < _books.length && _booksScrollController.hasClients) {
+      _booksScrollController.animateTo(
+        index * 48.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _loadBooks() {
@@ -303,9 +425,11 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
       final nameNativeCol = columns.contains('name_native') ? 'name_native' : 'name';
       final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
       final chapterCol = columns.contains('chapter_count') ? 'chapter_count' : 'chapters';
+      final hasTestament = columns.contains('testament');
+      final testamentCol = hasTestament ? 'testament' : 'NULL';
 
       final rows = db.select(
-        'SELECT book_id, $nameNativeCol, $nameEnCol, $chapterCol FROM books ORDER BY book_id',
+        'SELECT book_id, $nameNativeCol, $nameEnCol, $chapterCol, $testamentCol AS testament FROM books ORDER BY book_id',
       );
       setState(() {
         _books = rows
@@ -316,6 +440,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                     ? r[nameNativeCol]
                     : r[nameEnCol],
                 'count': r[chapterCol],
+                'testament': r['testament'] as String? ?? (r['book_id'] as int <= 39 ? 'OT' : 'NT'),
               },
             )
             .toList();
@@ -360,19 +485,64 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: ListView.builder(
-                    controller: scrollController,
-                    itemCount: _books.length,
-                    itemBuilder: (ctx, i) {
-                      final b = _books[i];
-                      return ListTile(
-                        selected: _selectedBookId == b['id'],
-                        title: Text(b['name']),
-                        onTap: () => setState(() {
-                          _selectedBookId = b['id'];
-                        }),
-                      );
-                    },
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                ),
+                                onPressed: () {
+                                  final idx = _books.indexWhere((b) => b['testament'] == 'OT');
+                                  if (idx != -1) _scrollToBook(idx);
+                                },
+                                child: const Text('구약 (OT)'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                ),
+                                onPressed: () {
+                                  final idx = _books.indexWhere((b) => b['testament'] == 'NT');
+                                  if (idx != -1) _scrollToBook(idx);
+                                },
+                                child: const Text('신약 (NT)'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: _booksScrollController,
+                          itemExtent: 48.0,
+                          itemCount: _books.length,
+                          itemBuilder: (ctx, i) {
+                            final b = _books[i];
+                            return ListTile(
+                              selected: _selectedBookId == b['id'],
+                              title: Text(b['name']),
+                              onTap: () => setState(() {
+                                _selectedBookId = b['id'];
+                              }),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const VerticalDivider(width: 1),
@@ -540,48 +710,84 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         ),
       );
     } else if (hasVerseComments) {
+      final keys = <int, GlobalKey>{};
+      for (final v in verses) {
+        if (v.text.trim().isNotEmpty) {
+          keys[v.verse] = GlobalKey();
+        }
+      }
+
+      final targetVerse = ref.watch(targetScrollCommentaryVerseProvider);
+      if (targetVerse != null && verses.isNotEmpty) {
+        CommentaryVerse? targetComment;
+        for (final cv in verses) {
+          if (cv.text.trim().isEmpty) continue;
+          if (cv.verse <= targetVerse) {
+            if (targetComment == null || cv.verse > targetComment.verse) {
+              targetComment = cv;
+            }
+          }
+        }
+        targetComment ??= verses.firstWhere((cv) => cv.text.trim().isNotEmpty, orElse: () => verses.first);
+        final key = keys[targetComment.verse];
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (key != null) {
+            final context = key.currentContext;
+            if (context != null) {
+              Scrollable.ensureVisible(
+                context,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+          }
+          ref.read(targetScrollCommentaryVerseProvider.notifier).state = null;
+        });
+      }
+
       contentWidget = Scrollbar(
         controller: _scrollController,
         thumbVisibility: true,
-        child: ListView.builder(
+        child: SingleChildScrollView(
           controller: _scrollController,
           padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: verses.length,
-          itemBuilder: (context, i) {
-            final v = verses[i];
-            if (v.text.trim().isEmpty) return const SizedBox.shrink();
-
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-              color: theme.colorScheme.surfaceContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      v.verse == 0 ? '장의 서론 / 개요' : '${v.verse}절',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
+          child: Column(
+            children: [
+              for (final v in verses)
+                if (v.text.trim().isNotEmpty)
+                  Card(
+                    key: keys[v.verse],
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                    color: theme.colorScheme.surfaceContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            v.verse == 0 ? '장의 서론 / 개요' : '${v.verse}절',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text.rich(
+                            TextSpan(
+                              children: _parseHtmlToTextSpans(
+                                v.text,
+                                baseTextStyle.copyWith(height: 1.5),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text.rich(
-                      TextSpan(
-                        children: _parseHtmlToTextSpans(
-                          v.text,
-                          baseTextStyle.copyWith(height: 1.5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+            ],
+          ),
         ),
       );
     } else {
@@ -668,8 +874,8 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   }
 }
 
-class _CommentarySelectionSheet extends ConsumerWidget {
-  const _CommentarySelectionSheet({required this.onSelected});
+class CommentarySelectionSheet extends ConsumerWidget {
+  const CommentarySelectionSheet({required this.onSelected, super.key});
 
   final VoidCallback onSelected;
 

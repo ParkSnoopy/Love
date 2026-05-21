@@ -167,22 +167,76 @@ class ReaderRepository {
   }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final rows = db.select(
-        'SELECT verse, text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse ASC',
-        [bookId, chapter],
-      );
-      return rows
-          .map(
-            (r) => CommentaryVerse(
-              verse: (r['verse'] as int?) ?? 0,
-              text: (r['text'] as String?) ?? '',
-            ),
-          )
-          .toList(growable: false);
+      int checkChapter = chapter;
+      while (checkChapter >= 1) {
+        final rows = db.select(
+          'SELECT verse, text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse ASC',
+          [bookId, checkChapter],
+        );
+        final list = rows
+            .map(
+              (r) => CommentaryVerse(
+                verse: (r['verse'] as int?) ?? 0,
+                text: (r['text'] as String?) ?? '',
+              ),
+            )
+            .toList();
+
+        // Filter out empty text, "없음", and "없음."
+        final filtered = list.where((v) {
+          final t = v.text.trim();
+          return t.isNotEmpty && t != '없음' && t != '없음.';
+        }).toList();
+
+        if (filtered.isNotEmpty) {
+          return filtered;
+        }
+        checkChapter--;
+      }
+      return const <CommentaryVerse>[];
     } finally {
       db.close();
     }
   }
+
+  String loadVerseText({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+    required int verse,
+  }) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT text FROM verses WHERE book_id = ? AND chapter = ? AND verse = ? LIMIT 1',
+        [bookId, chapter, verse],
+      );
+      if (rows.isEmpty) return '';
+      return (rows.first['text'] as String?) ?? '';
+    } finally {
+      db.close();
+    }
+  }
+
+  String loadVersesTextRange({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+    required int verseStart,
+    required int verseEnd,
+  }) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT text FROM verses WHERE book_id = ? AND chapter = ? AND verse >= ? AND verse <= ? ORDER BY verse ASC',
+        [bookId, chapter, verseStart, verseEnd],
+      );
+      return rows.map((r) => (r['text'] as String?) ?? '').join(' ');
+    } finally {
+      db.close();
+    }
+  }
+
 
 
   String _extractTitle(String text, String defaultTitle) {

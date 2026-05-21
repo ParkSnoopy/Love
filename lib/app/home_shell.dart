@@ -26,6 +26,11 @@ class HomeShell extends ConsumerWidget {
             label: 'Search',
           ),
           NavigationDestination(
+            icon: Icon(Icons.bookmark_outline),
+            selectedIcon: Icon(Icons.bookmark),
+            label: 'Saved',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings),
             label: 'Setting',

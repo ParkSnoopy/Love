@@ -44,6 +44,26 @@ class NoteEntry {
   final int updatedAt;
 }
 
+class HighlightEntry {
+  const HighlightEntry({
+    required this.id,
+    required this.bookId,
+    required this.chapter,
+    required this.verseStart,
+    required this.verseEnd,
+    required this.color,
+    required this.createdAt,
+  });
+
+  final int id;
+  final int bookId;
+  final int chapter;
+  final int verseStart;
+  final int verseEnd;
+  final String color;
+  final int createdAt;
+}
+
 class UserDataRepository {
   const UserDataRepository();
 
@@ -180,14 +200,128 @@ WHERE id IN (
   }) {
     final db = sqlite3.open(dbPath);
     try {
+      // Find overlapping highlights
+      final rows = db.select(
+        'SELECT id, verse_start, verse_end, color, created_at FROM highlights '
+        'WHERE book_id = ? AND chapter = ? AND verse_start <= ? AND ? <= verse_end',
+        [bookId, chapter, verseEnd, verseStart],
+      );
+
+      final toInsert = <Map<String, dynamic>>[];
+
+      for (final r in rows) {
+        final oldId = r['id'] as int;
+        final oldStart = r['verse_start'] as int;
+        final oldEnd = r['verse_end'] as int;
+        final oldColor = r['color'] as String;
+        final oldCreatedAt = r['created_at'] as int;
+
+        // Delete the old highlight
+        db.execute('DELETE FROM highlights WHERE id = ?', [oldId]);
+
+        // Keep left leftover
+        if (oldStart < verseStart) {
+          toInsert.add({
+            'start': oldStart,
+            'end': verseStart - 1,
+            'color': oldColor,
+            'createdAt': oldCreatedAt,
+          });
+        }
+
+        // Keep right leftover
+        if (oldEnd > verseEnd) {
+          toInsert.add({
+            'start': verseEnd + 1,
+            'end': oldEnd,
+            'color': oldColor,
+            'createdAt': oldCreatedAt,
+          });
+        }
+      }
+
+      // Insert leftovers
+      for (final item in toInsert) {
+        db.execute(
+          'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
+          'VALUES (?, ?, ?, ?, ?, ?)',
+          [bookId, chapter, item['start'], item['end'], item['color'], item['createdAt']],
+        );
+      }
+
+      // Insert new highlight
       db.execute(
-        'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+        'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
+        'VALUES (?, ?, ?, ?, ?, ?)',
         [bookId, chapter, verseStart, verseEnd, color, createdAt],
       );
     } finally {
       db.close();
     }
   }
+
+  void removeHighlightRange({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+    required int verseStart,
+    required int verseEnd,
+  }) {
+    final db = sqlite3.open(dbPath);
+    try {
+      // Find overlapping highlights
+      final rows = db.select(
+        'SELECT id, verse_start, verse_end, color, created_at FROM highlights '
+        'WHERE book_id = ? AND chapter = ? AND verse_start <= ? AND ? <= verse_end',
+        [bookId, chapter, verseEnd, verseStart],
+      );
+
+      final toInsert = <Map<String, dynamic>>[];
+
+      for (final r in rows) {
+        final oldId = r['id'] as int;
+        final oldStart = r['verse_start'] as int;
+        final oldEnd = r['verse_end'] as int;
+        final oldColor = r['color'] as String;
+        final oldCreatedAt = r['created_at'] as int;
+
+        // Delete the old highlight
+        db.execute('DELETE FROM highlights WHERE id = ?', [oldId]);
+
+        // Keep left leftover
+        if (oldStart < verseStart) {
+          toInsert.add({
+            'start': oldStart,
+            'end': verseStart - 1,
+            'color': oldColor,
+            'createdAt': oldCreatedAt,
+          });
+        }
+
+        // Keep right leftover
+        if (oldEnd > verseEnd) {
+          toInsert.add({
+            'start': verseEnd + 1,
+            'end': oldEnd,
+            'color': oldColor,
+            'createdAt': oldCreatedAt,
+          });
+        }
+      }
+
+      // Insert leftovers
+      for (final item in toInsert) {
+        db.execute(
+          'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
+          'VALUES (?, ?, ?, ?, ?, ?)',
+          [bookId, chapter, item['start'], item['end'], item['color'], item['createdAt']],
+        );
+      }
+    } finally {
+      db.close();
+    }
+  }
+
 
   void upsertNote({
     required String dbPath,
@@ -272,6 +406,78 @@ WHERE id IN (
             ),
           )
           .toList(growable: false);
+    } finally {
+      db.close();
+    }
+  }
+
+  List<HighlightEntry> loadHighlights({required String dbPath}) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT id, book_id, chapter, verse_start, verse_end, color, created_at FROM highlights ORDER BY created_at DESC, id DESC',
+      );
+      return rows
+          .map(
+            (r) => HighlightEntry(
+              id: (r['id'] as int?) ?? 0,
+              bookId: (r['book_id'] as int?) ?? 0,
+              chapter: (r['chapter'] as int?) ?? 0,
+              verseStart: (r['verse_start'] as int?) ?? 0,
+              verseEnd: (r['verse_end'] as int?) ?? 0,
+              color: (r['color'] as String?) ?? 'yellow',
+              createdAt: (r['created_at'] as int?) ?? 0,
+            ),
+          )
+          .toList(growable: false);
+    } finally {
+      db.close();
+    }
+  }
+
+  void deleteHighlight({required String dbPath, required int id}) {
+    final db = sqlite3.open(dbPath);
+    try {
+      db.execute('DELETE FROM highlights WHERE id = ?', [id]);
+    } finally {
+      db.close();
+    }
+  }
+
+  List<NoteEntry> loadAllNotes({required String dbPath}) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT book_id, chapter, verse, content, updated_at FROM notes ORDER BY updated_at DESC, id DESC',
+      );
+      return rows
+          .map(
+            (r) => NoteEntry(
+              bookId: (r['book_id'] as int?) ?? 0,
+              chapter: (r['chapter'] as int?) ?? 0,
+              verse: (r['verse'] as int?) ?? 0,
+              content: (r['content'] as String?) ?? '',
+              updatedAt: (r['updated_at'] as int?) ?? 0,
+            ),
+          )
+          .toList(growable: false);
+    } finally {
+      db.close();
+    }
+  }
+
+  void deleteBookmark({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+    required int verse,
+  }) {
+    final db = sqlite3.open(dbPath);
+    try {
+      db.execute(
+        'DELETE FROM bookmarks WHERE book_id = ? AND chapter = ? AND verse = ?',
+        [bookId, chapter, verse],
+      );
     } finally {
       db.close();
     }

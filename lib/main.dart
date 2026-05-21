@@ -22,8 +22,8 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(userDataInitProvider);
-    final themeMode = ref.watch(themeModeProvider);
-    final fontType = ref.watch(fontTypeProvider);
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
     final fontFamily = switch (fontType) {
       FontType.sans => 'NotoSansKR',
       FontType.serif => 'NotoSerifKR',
