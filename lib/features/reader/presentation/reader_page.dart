@@ -72,11 +72,41 @@ class _ReaderContentView extends ConsumerStatefulWidget {
 
 class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
   final Map<VerseKey, GlobalKey> _verseKeys = {};
+  final ScrollController _readerScrollController = ScrollController();
   int? _lastBookId;
   int? _lastChapter;
 
   GlobalKey _getKeyForVerse(VerseKey key) {
     return _verseKeys.putIfAbsent(key, () => GlobalKey());
+  }
+
+  Future<void> _changeChapterAndScrollToTop(
+    ReaderRef current,
+    Future<void> Function() changeChapter,
+  ) async {
+    await changeChapter();
+    if (!mounted) return;
+
+    final next = ref.read(readerRefProvider).value;
+    if (next == null ||
+        (next.bookId == current.bookId && next.chapter == current.chapter)) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_readerScrollController.hasClients) return;
+      _readerScrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _readerScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -249,13 +279,17 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                 },
               ),
               IconButton(
-                onPressed: () =>
-                    ref.read(readerRefProvider.notifier).prevChapter(),
+                onPressed: () => _changeChapterAndScrollToTop(
+                  rr,
+                  () => ref.read(readerRefProvider.notifier).prevChapter(),
+                ),
                 icon: const Icon(Icons.chevron_left),
               ),
               IconButton(
-                onPressed: () =>
-                    ref.read(readerRefProvider.notifier).nextChapter(),
+                onPressed: () => _changeChapterAndScrollToTop(
+                  rr,
+                  () => ref.read(readerRefProvider.notifier).nextChapter(),
+                ),
                 icon: const Icon(Icons.chevron_right),
               ),
             ],
@@ -272,6 +306,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                           ),
                         )
                       : SingleChildScrollView(
+                          controller: _readerScrollController,
                           child: Column(
                             children: verses.map((v) {
                               final key = VerseKey(

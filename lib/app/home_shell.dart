@@ -12,6 +12,7 @@ class HomeShell extends ConsumerWidget {
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
+        height: 64,
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (i) => navigationShell.goBranch(i),
         destinations: const [

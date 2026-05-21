@@ -21,15 +21,15 @@ class FontTypeController extends AsyncNotifier<FontType> {
   @override
   Future<FontType> build() async {
     final prefs = await SharedPreferences.getInstance();
-    final index = prefs.getInt(_key) ?? FontType.sans.index;
+    final index = prefs.getInt(_key) ?? FontType.serif.index;
     if (index >= 0 && index < FontType.values.length) {
       return FontType.values[index];
     }
-    return FontType.sans;
+    return FontType.serif;
   }
 
   Future<void> cycle() async {
-    final current = state.value ?? FontType.sans;
+    final current = state.value ?? FontType.serif;
     final next = switch (current) {
       FontType.sans => FontType.serif,
       FontType.serif => FontType.mono,
