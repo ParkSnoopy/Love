@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:Love/features/reader/data/reader_repository.dart';
 
 void main() {
-  group('Commentary Database Tests (via ZIP Extraction)', () {
+  group('Commentary Database Tests (Korean Crawled Databases)', () {
     const repository = ReaderRepository();
     final tempExtractDir = Directory('test/temp_extracted');
 
@@ -14,20 +14,20 @@ void main() {
       }
       tempExtractDir.createSync(recursive: true);
 
-      // Copy the converted/migrated sqlite files from assets/data/comment/ directly
-      final genevaSrc = File('assets/data/comment/com_geneva.sqlite');
-      if (genevaSrc.existsSync()) {
-        genevaSrc.copySync(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
-      }
-
-      final barneSrc = File('assets/data/comment/com_barne.sqlite');
-      if (barneSrc.existsSync()) {
-        barneSrc.copySync(p.join(tempExtractDir.path, 'com_barne.sqlite'));
-      }
-
+      // Copy the crawled Korean commentary databases
       final hochmaSrc = File('assets/data/comment/com_kor_hochma.sqlite');
       if (hochmaSrc.existsSync()) {
         hochmaSrc.copySync(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+      }
+
+      final mhwSrc = File('assets/data/comment/com_kor_mhw.sqlite');
+      if (mhwSrc.existsSync()) {
+        mhwSrc.copySync(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
+      }
+
+      final pysSrc = File('assets/data/comment/com_kor_pys.sqlite');
+      if (pysSrc.existsSync()) {
+        pysSrc.copySync(p.join(tempExtractDir.path, 'com_kor_pys.sqlite'));
       }
     });
 
@@ -37,8 +37,8 @@ void main() {
       }
     });
 
-    test('Loads Genesis 1 commentary from Geneva Bible commentary', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
+    test('Loads Genesis 1 commentary from Korean Hochma commentary (uses verse fallback)', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -48,34 +48,35 @@ void main() {
       );
 
       expect(article, isNotNull);
-      expect(article!.title, contains('Genesis'));
+      expect(article!.title, contains('창세기'));
       expect(article.title, contains('1'));
       expect(article.text, isNotEmpty);
+      expect(article.text, contains('태초에'));
     });
 
-    test('Loads Matthew 5 commentary from Barnes commentary', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_barne.sqlite'));
+    test('Loads Genesis 8 commentary from Matthew Henry commentary', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
         dbPath: dbFile.path,
-        bookId: 40, // Matthew
-        chapter: 5,
+        bookId: 1, // Genesis
+        chapter: 8,
       );
 
       expect(article, isNotNull);
-      expect(article!.title, contains('Matthew'));
-      expect(article.title, contains('5'));
+      expect(article!.title, contains('창세기'));
+      expect(article.title, contains('8'));
       expect(article.text, isNotEmpty);
     });
 
-    test('Loads Genesis 1 commentary from Korean Hochma commentary', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+    test('Loads Genesis 1 commentary from Korean Park Yun Sun commentary', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_pys.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
         dbPath: dbFile.path,
-        bookId: 1, // Genesis / 창세기
+        bookId: 1, // Genesis
         chapter: 1,
       );
 
@@ -83,10 +84,11 @@ void main() {
       expect(article!.title, contains('창세기'));
       expect(article.title, contains('1'));
       expect(article.text, isNotEmpty);
+      expect(article.text, contains('태초에'));
     });
 
     test('Returns null for invalid/out-of-bounds chapter', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
       final article = repository.loadCommentaryArticle(
         dbPath: dbFile.path,
         bookId: 1,
@@ -95,36 +97,22 @@ void main() {
       expect(article, isNull);
     });
 
-    test('Loads commentary introductions and prefaces', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_geneva.sqlite'));
-      expect(dbFile.existsSync(), isTrue);
+    test('Loads commentary verses (used in UI CommentaryPane)', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
+      final verses = repository.loadCommentaryVerses(
+        dbPath: dbFile.path,
+        bookId: 1,
+        chapter: 8,
+      );
+      expect(verses, isNotEmpty);
+      // Matthew Henry Gen 8:1 has text
+      expect(verses.any((v) => v.verse == 1 && v.text.contains('노아')), isTrue);
+    });
 
+    test('Introductions are empty for crawled Korean databases', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
       final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
       expect(intros, isEmpty);
-    });
-
-    test('Loads Korean commentary introductions (prefaces) correctly', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
-      expect(dbFile.existsSync(), isTrue);
-
-      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
-      expect(intros, isNotEmpty);
-      expect(intros.first.bookId, equals(0));
-      expect(intros.first.title, isNotEmpty);
-      expect(intros.first.text, isNotEmpty);
-    });
-
-    test('Loads Barnes commentary book introductions', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_barne.sqlite'));
-      expect(dbFile.existsSync(), isTrue);
-
-      final intros = repository.loadCommentaryIntroductions(dbPath: dbFile.path);
-      expect(intros, isNotEmpty);
-
-      final bookIntros = intros.where((i) => i.bookId > 0).toList();
-      expect(bookIntros, isNotEmpty);
-      expect(bookIntros.first.title, isNotEmpty);
-      expect(bookIntros.first.text, isNotEmpty);
     });
   });
 }

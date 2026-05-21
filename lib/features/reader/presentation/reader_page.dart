@@ -296,18 +296,26 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
   void _loadBooks() {
     final db = sqlite3.open(widget.dbPath, mode: OpenMode.readOnly);
     try {
+      final columns = db.select('PRAGMA table_info(books)')
+          .map((row) => row['name'] as String)
+          .toSet();
+
+      final nameNativeCol = columns.contains('name_native') ? 'name_native' : 'name';
+      final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
+      final chapterCol = columns.contains('chapter_count') ? 'chapter_count' : 'chapters';
+
       final rows = db.select(
-        'SELECT book_id, name_native, name_en, chapter_count FROM books ORDER BY book_id',
+        'SELECT book_id, $nameNativeCol, $nameEnCol, $chapterCol FROM books ORDER BY book_id',
       );
       setState(() {
         _books = rows
             .map(
               (r) => <String, dynamic>{
                 'id': r['book_id'],
-                'name': (r['name_native'] as String?)?.trim().isNotEmpty == true
-                    ? r['name_native']
-                    : r['name_en'],
-                'count': r['chapter_count'],
+                'name': (r[nameNativeCol] as String?)?.trim().isNotEmpty == true
+                    ? r[nameNativeCol]
+                    : r[nameEnCol],
+                'count': r[chapterCol],
               },
             )
             .toList();

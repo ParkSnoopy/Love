@@ -40,16 +40,23 @@ class ReaderRepository {
   String loadBookName({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
+      final columns = db.select('PRAGMA table_info(books)')
+          .map((row) => row['name'] as String)
+          .toSet();
+      
+      final nameNativeCol = columns.contains('name_native') ? 'name_native' : 'name';
+      final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
+
       final rows = db.select(
-        'SELECT name_native, name_en FROM books WHERE book_id = ? LIMIT 1',
+        'SELECT $nameNativeCol, $nameEnCol FROM books WHERE book_id = ? LIMIT 1',
         [bookId],
       );
       if (rows.isEmpty) return 'Book$bookId';
       final row = rows.first;
-      final native = (row['name_native'] as String?)?.trim();
+      final native = (row[nameNativeCol] as String?)?.trim();
       if (native != null && native.isNotEmpty) return native;
 
-      final en = (row['name_en'] as String?)?.trim();
+      final en = (row[nameEnCol] as String?)?.trim();
       if (en != null && en.isNotEmpty) return en;
 
       return 'Book$bookId';
@@ -61,12 +68,18 @@ class ReaderRepository {
   int loadMaxChapter({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
+      final columns = db.select('PRAGMA table_info(books)')
+          .map((row) => row['name'] as String)
+          .toSet();
+      
+      final chapterCol = columns.contains('chapter_count') ? 'chapter_count' : 'chapters';
+
       final rows = db.select(
-        'SELECT chapter_count FROM books WHERE book_id = ? LIMIT 1',
+        'SELECT $chapterCol FROM books WHERE book_id = ? LIMIT 1',
         [bookId],
       );
       if (rows.isEmpty) return 0;
-      return (rows.first['chapter_count'] as int?) ?? 0;
+      return (rows.first[chapterCol] as int?) ?? 0;
     } finally {
       db.close();
     }
@@ -116,10 +129,16 @@ class ReaderRepository {
   }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final rows = db.select(
+      var rows = db.select(
         'SELECT text FROM verses WHERE book_id = ? AND chapter = ? AND verse = 0 LIMIT 1',
         [bookId, chapter],
       );
+      if (rows.isEmpty) {
+        rows = db.select(
+          'SELECT text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse ASC LIMIT 1',
+          [bookId, chapter],
+        );
+      }
       if (rows.isEmpty) return null;
       final text = (rows.first['text'] as String?) ?? '';
 
