@@ -13,7 +13,9 @@ def quote_identifier(name: str) -> str:
     return '"' + name.replace('"', '""') + '"'
 
 
-def xlsx_path_for_db(db_path: Path, output: str | None = None, root: Path | None = None) -> Path:
+def xlsx_path_for_db(
+    db_path: Path, output: str | None = None, root: Path | None = None
+) -> Path:
     """Return output xlsx path for one db."""
     if output is None:
         return db_path.with_suffix(".xlsx")
@@ -45,8 +47,12 @@ def sqlite_to_xlsx(db_path: Path, output_path: Path) -> bool:
             with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
                 for table in table_names:
                     sheet_name = table[:31]
-                    print(f"  Exporting table: {table} -> sheet: {sheet_name}", flush=True)
-                    df = pd.read_sql_query(f"SELECT * FROM {quote_identifier(table)}", conn)
+                    print(
+                        f"  Exporting table: {table} -> sheet: {sheet_name}", flush=True
+                    )
+                    df = pd.read_sql_query(
+                        f"SELECT * FROM {quote_identifier(table)}", conn
+                    )
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
 
         print(f"Successfully converted to {output_path}", flush=True)
@@ -84,7 +90,9 @@ def convert_path(db_path: str, output: str | None = None) -> int:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert SQLite DB(s) to XLSX")
-    parser.add_argument("db_path", help="SQLite database file, or folder to scan recursively")
+    parser.add_argument(
+        "db_path", help="SQLite database file, or folder to scan recursively"
+    )
     parser.add_argument(
         "-o",
         "--output",

@@ -28,6 +28,8 @@ from nocr_crawler import (  # noqa: E402
 )
 from run_crawl import _REGISTRY_MAP  # noqa: E402
 
+SQLITE_SUFFIXES = {".sqlite", ".sqlite3", ".db"}
+
 
 def existing_chapters(db_path: Path) -> set[tuple[int, int]]:
     with sqlite3.connect(db_path) as con:
@@ -51,7 +53,9 @@ def synthetic_title(book_id: int, chapter: int) -> str:
     return f"Repair, {eng_name}, Chapter {chapter:02d}"
 
 
-def infer_unparseable_articles(articles: list[tuple[int, str]]) -> list[tuple[int, str, int, int, str]]:
+def infer_unparseable_articles(
+    articles: list[tuple[int, str]],
+) -> list[tuple[int, str, int, int, str]]:
     """Return (srl, original_title, inferred_book_id, inferred_chapter, reason)."""
     parsed: list[tuple[int, str, tuple[int, int] | None]] = [
         (srl, title, title_to_book_chapter(title)) for srl, title in articles
@@ -87,7 +91,9 @@ def infer_unparseable_articles(articles: list[tuple[int, str]]) -> list[tuple[in
     return fixes
 
 
-def repair_target(target_id: str, db_path: str | None, dry_run: bool, retries: int) -> int:
+def repair_target(
+    target_id: str, db_path: str | None, dry_run: bool, retries: int
+) -> int:
     if target_id not in _REGISTRY_MAP:
         print(f"[ERROR] Unknown target: {target_id}")
         return 1
@@ -159,13 +165,82 @@ def repair_target(target_id: str, db_path: str | None, dry_run: bool, retries: i
     return 0 if failed == 0 else 1
 
 
+def iter_sqlite_files(folder: Path):
+    for path in sorted(folder.rglob("*")):
+        if path.is_file() and path.suffix.lower() in SQLITE_SUFFIXES:
+            yield path
+
+
+def target_for_db_path(db_path: Path) -> str | None:
+    """Infer target id by matching sqlite filename to run_crawl registry output filename."""
+    matches = [
+        target_id
+        for target_id, entry in _REGISTRY_MAP.items()
+        if entry.get("type") == "bible" and Path(entry["out_path"]).name == db_path.name
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    return None
+
+
+def repair_folder(folder: Path, dry_run: bool, retries: int) -> int:
+    db_files = list(iter_sqlite_files(folder))
+    print(f"Found {len(db_files)} SQLite file(s) under {folder}", flush=True)
+    repaired_targets = 0
+    skipped_unknown = 0
+    failed = 0
+
+    for db_file in db_files:
+        target_id = target_for_db_path(db_file)
+        if target_id is None:
+            skipped_unknown += 1
+            print(f"[SKIP] Cannot infer target for {db_file}", flush=True)
+            continue
+
+        print(
+            f"\n{'=' * 60}\nTarget: {target_id}\nDB: {db_file}\n{'=' * 60}", flush=True
+        )
+        code = repair_target(target_id, str(db_file), dry_run, retries)
+        if code == 0:
+            repaired_targets += 1
+        else:
+            failed += 1
+
+    print(
+        f"Folder done. ok={repaired_targets}, skipped_unknown={skipped_unknown}, failed={failed}",
+        flush=True,
+    )
+    return 0 if failed == 0 else 1
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Find and repair missing chapters in crawled Bible SQLite files")
-    parser.add_argument("--target", "-t", required=True, help="Target ID from run_crawl.py, e.g. aram_phv")
-    parser.add_argument("--db", help="SQLite path override. Defaults to target output path.")
-    parser.add_argument("--dry-run", action="store_true", help="Only report fixes; do not write SQLite")
-    parser.add_argument("--retries", type=int, default=5, help="HTTP retries for article repair fetches")
+    parser = argparse.ArgumentParser(
+        description="Find and repair missing chapters in crawled Bible SQLite files"
+    )
+    parser.add_argument(
+        "--target",
+        "-t",
+        help="Target ID from run_crawl.py, e.g. aram_phv. Optional when --db is a folder.",
+    )
+    parser.add_argument(
+        "--db",
+        help="SQLite path override, or folder to scan recursively. Defaults to target output path.",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Only report fixes; do not write SQLite"
+    )
+    parser.add_argument(
+        "--retries", type=int, default=5, help="HTTP retries for article repair fetches"
+    )
     args = parser.parse_args()
+
+    if args.db and Path(args.db).is_dir():
+        return repair_folder(Path(args.db), args.dry_run, args.retries)
+
+    if not args.target:
+        print("[ERROR] --target is required unless --db is a folder")
+        return 1
+
     return repair_target(args.target, args.db, args.dry_run, args.retries)
 
 
