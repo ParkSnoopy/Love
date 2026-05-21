@@ -16,6 +16,7 @@ import '../providers/commentary_visibility_provider.dart';
 import 'verse_action_pane.dart';
 import '../../../app/reader_settings_controller.dart';
 import '../../../app/font_controller.dart';
+import '../../../app/app_localizations.dart';
 
 class CommentaryFullScreenNotifier extends Notifier<bool> {
   @override
@@ -40,15 +41,16 @@ class ReaderPage extends ConsumerWidget {
     return dbPathAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+      error: (err, stack) =>
+          Scaffold(body: Center(child: Text(context.l10n.error(err)))),
       data: (dbPath) {
         if (dbPath == null) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Text(
-                  'No Bible selected or installed.\nPlease go to Library and select a version.',
+                  context.l10n.t('noBibleSelected'),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -128,7 +130,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
     return rrAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+      error: (err, stack) =>
+          Scaffold(body: Center(child: Text(context.l10n.error(err)))),
       data: (rr) {
         // Clear keys if chapter changed
         if (_lastBookId != rr.bookId || _lastChapter != rr.chapter) {
@@ -152,7 +155,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             .watch(activeBibleSelectionProvider)
             .asData
             ?.value;
-        final activeBibleName = activeBible?.name ?? 'Unknown Bible';
+        final l10n = context.l10n;
+        final activeBibleName = activeBible?.name ?? l10n.t('unknownBible');
 
         final bookmarksAsync = ref.watch(bookmarksProvider);
         final bookmarkedVerses =
@@ -194,7 +198,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
 
         const repo = ReaderRepository();
         var verses = const <VerseLine>[];
-        var bookName = 'Bible';
+        var bookName = l10n.t('bible');
         String? loadError;
         try {
           verses = repo.loadChapter(
@@ -207,7 +211,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             bookId: rr.bookId,
           );
         } on SqliteException catch (e) {
-          loadError = 'DB Error: ${e.message}\nPath: ${widget.dbPath}';
+          loadError = l10n.dbError(e.message, widget.dbPath);
         }
         final selectedVerseLines = verses
             .where(
@@ -254,7 +258,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             ),
             actions: [
               IconButton(
-                tooltip: 'Toggle Commentary',
+                tooltip: l10n.t('toggleCommentary'),
                 icon: Icon(
                   isCommentaryActive ? Icons.comment : Icons.comment_outlined,
                   color: isCommentaryActive
@@ -597,7 +601,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Select Book & Chapter',
+                  context.l10n.t('selectBookChapter'),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 4),
@@ -644,7 +648,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                                   );
                                   if (idx != -1) _scrollToBook(idx);
                                 },
-                                child: const Text('구약 (OT)'),
+                                child: Text(context.l10n.t('oldTestament')),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -664,7 +668,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                                   );
                                   if (idx != -1) _scrollToBook(idx);
                                 },
-                                child: const Text('신약 (NT)'),
+                                child: Text(context.l10n.t('newTestament')),
                               ),
                             ),
                           ],
@@ -812,6 +816,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   @override
   Widget build(BuildContext context) {
     const repo = ReaderRepository();
+    final l10n = context.l10n;
     List<CommentaryVerse> verses = [];
     String? err;
     try {
@@ -821,14 +826,14 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         chapter: widget.chapter,
       );
     } catch (e) {
-      err = 'Commentary Error: $e';
+      err = '${l10n.t('commentaryError')}: $e';
     }
 
     final theme = Theme.of(context);
     final readerSettings =
         ref.watch(readerSettingsProvider).value ??
         const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
-    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final baseTextStyle =
         theme.textTheme.bodyMedium?.copyWith(
           fontFamily: fontFamilyForType(fontType),
@@ -857,8 +862,8 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
       }
     }
     final headerTitle = activeCommentary != null
-        ? '${activeCommentary.name} - $bookName ${widget.chapter}장'
-        : '$bookName ${widget.chapter}장';
+        ? '${activeCommentary.name} - $bookName ${widget.chapter}'
+        : '$bookName ${widget.chapter}';
 
     final isFullScreen = ref.watch(commentaryFullScreenProvider);
     final hasVerseComments = verses.any((v) => v.verse > 0);
@@ -870,11 +875,11 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         child: Text(err, style: const TextStyle(color: Colors.red)),
       );
     } else if (verses.isEmpty) {
-      contentWidget = const Padding(
-        padding: EdgeInsets.all(16),
+      contentWidget = Padding(
+        padding: const EdgeInsets.all(16),
         child: Center(
           child: Text(
-            'No commentary available for this chapter.',
+            l10n.t('noCommentaryForChapter'),
             textAlign: TextAlign.center,
           ),
         ),
@@ -945,7 +950,9 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            v.verse == 0 ? '장의 서론 / 개요' : '${v.verse}절',
+                            v.verse == 0
+                                ? l10n.t('chapterIntro')
+                                : '${v.verse}${l10n.t('verseLabel')}',
                             style: theme.textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.colorScheme.primary,
@@ -1018,7 +1025,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                 if (activeCommentary != null)
                   IconButton(
                     icon: const Icon(Icons.menu_book, size: 18),
-                    tooltip: '서론 및 소개 보기',
+                    tooltip: context.l10n.t('viewIntro'),
                     onPressed: () {
                       _showCommentaryIntros(
                         context,
@@ -1032,7 +1039,9 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                     isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
                     size: 18,
                   ),
-                  tooltip: isFullScreen ? '전체화면 종료' : '전체화면으로 보기',
+                  tooltip: isFullScreen
+                      ? l10n.t('exitFullscreen')
+                      : l10n.t('enterFullscreen'),
                   onPressed: () {
                     ref.read(commentaryFullScreenProvider.notifier).toggle();
                   },
@@ -1073,10 +1082,10 @@ class CommentarySelectionSheet extends ConsumerWidget {
         final packs =
             snapshot.data?.where((p) => p.type == 'commentary').toList() ?? [];
         if (packs.isEmpty) {
-          return const SafeArea(
+          return SafeArea(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('No commentaries found.'),
+              padding: const EdgeInsets.all(24),
+              child: Text(context.l10n.t('noCommentariesFound')),
             ),
           );
         }
@@ -1089,7 +1098,7 @@ class CommentarySelectionSheet extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Select Commentary to Activate',
+                  context.l10n.t('selectCommentaryToActivate'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -1106,7 +1115,7 @@ class CommentarySelectionSheet extends ConsumerWidget {
                       subtitle: Text('${p.language} - ${p.name}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.info_outline),
-                        tooltip: '서론 및 소개 보기',
+                        tooltip: context.l10n.t('viewIntro'),
                         onPressed: () {
                           _showCommentaryIntros(context, p.file, p.name);
                         },
@@ -1228,7 +1237,7 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                   padding: const EdgeInsets.all(24),
                   child: Center(
                     child: Text(
-                      '이 주석에는 서론 및 배경 설명 정보가 없습니다.',
+                      context.l10n.t('noIntroInfo'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -1260,7 +1269,7 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${widget.commentaryName} - 서론 및 소개',
+                      '${widget.commentaryName} - ${context.l10n.t('introAndInfo')}',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -1328,7 +1337,7 @@ class _CommentaryIntroViewerPage extends ConsumerWidget {
     final readerSettings =
         ref.watch(readerSettingsProvider).value ??
         const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
-    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final baseTextStyle =
         theme.textTheme.bodyMedium?.copyWith(
           fontFamily: fontFamilyForType(fontType),

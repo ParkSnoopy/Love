@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app/app_localizations.dart';
 import 'app/font_controller.dart';
+import 'app/locale_controller.dart';
 import 'app/reader_settings_controller.dart';
 import 'app/theme_controller.dart';
 import 'app/router.dart';
@@ -23,14 +26,23 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(userDataInitProvider);
-    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
-    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.light;
+    final locale = ref.watch(appLocaleProvider).value;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final fontFamily = fontFamilyForType(fontType);
     final uiScale = ref.watch(readerSettingsProvider).value?.uiScale ?? 1.0;
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       title: 'Love',
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       themeMode: themeMode,
       theme: ThemeData.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: fontFamily),

@@ -9,6 +9,7 @@ import '../../study/providers/user_data_controller.dart';
 import '../../study/data/user_data_repository.dart';
 import '../../library/providers/library_controller.dart';
 import 'reader_page.dart';
+import '../../../app/app_localizations.dart';
 
 class VerseActionPane extends ConsumerWidget {
   const VerseActionPane({
@@ -27,6 +28,7 @@ class VerseActionPane extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final bookmarksAsync = ref.watch(bookmarksProvider);
     final highlightsAsync = ref.watch(highlightsProvider);
     final userDataRepo = ref.watch(userDataRepositoryProvider);
@@ -64,7 +66,7 @@ class VerseActionPane extends ConsumerWidget {
 
     final verseRangeStr = sortedVersesList.isEmpty
         ? ''
-        : '${VerseExportFormatter.formatVerseNumbers(sortedVersesList.map((v) => v.verse).toList())}절';
+        : '${VerseExportFormatter.formatVerseNumbers(sortedVersesList.map((v) => v.verse).toList())}${l10n.t('verseLabel')}';
 
     return Container(
       decoration: BoxDecoration(
@@ -86,7 +88,10 @@ class VerseActionPane extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '$bookName $chapter장 $verseRangeStr 선택됨 (${sortedVersesList.length}개)',
+                      l10n.selectedVerses(
+                        '$bookName $chapter $verseRangeStr',
+                        sortedVersesList.length,
+                      ),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -103,13 +108,13 @@ class VerseActionPane extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.copy, size: 20),
-              title: const Text('클립보드에 복사'),
+              title: Text(l10n.t('copyToClipboard')),
               onTap: () async {
                 final text = VerseExportFormatter.format(sortedVersesList);
                 await Clipboard.setData(ClipboardData(text: text));
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('클립보드에 복사되었습니다.')),
+                    SnackBar(content: Text(l10n.t('copiedToClipboard'))),
                   );
                 }
                 ref.read(verseSelectionProvider.notifier).clear();
@@ -117,13 +122,13 @@ class VerseActionPane extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.share, size: 20),
-              title: const Text('공유하기'),
+              title: Text(l10n.t('share')),
               onTap: () async {
                 final text = VerseExportFormatter.format(sortedVersesList);
                 if (context.mounted) {
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(SnackBar(content: Text('공유: $text')));
+                  ).showSnackBar(SnackBar(content: Text(l10n.shareText(text))));
                 }
                 ref.read(verseSelectionProvider.notifier).clear();
               },
@@ -133,7 +138,11 @@ class VerseActionPane extends ConsumerWidget {
                 allBookmarked ? Icons.bookmark_remove : Icons.bookmark_add,
                 size: 20,
               ),
-              title: Text(allBookmarked ? '북마크에서 제거' : '북마크에 추가'),
+              title: Text(
+                allBookmarked
+                    ? l10n.t('removeBookmark')
+                    : l10n.t('addBookmark'),
+              ),
               onTap: () {
                 if (allBookmarked) {
                   for (final v in sortedVersesList) {
@@ -146,7 +155,7 @@ class VerseActionPane extends ConsumerWidget {
                   }
                   ref.invalidate(bookmarksProvider);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('북마크가 제거되었습니다.')),
+                    SnackBar(content: Text(l10n.t('bookmarkRemoved'))),
                   );
                 } else {
                   final now = DateTime.now().millisecondsSinceEpoch;
@@ -163,7 +172,7 @@ class VerseActionPane extends ConsumerWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '${sortedVersesList.length}개의 구절이 북마크에 추가되었습니다.',
+                        l10n.addedBookmarks(sortedVersesList.length),
                       ),
                     ),
                   );
@@ -173,7 +182,11 @@ class VerseActionPane extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.border_color, size: 20),
-              title: Text(isAnyHighlighted ? '하이라이트 제거' : '형광펜 하이라이트'),
+              title: Text(
+                isAnyHighlighted
+                    ? l10n.t('highlightRemove')
+                    : l10n.t('highlightAdd'),
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -219,7 +232,7 @@ class VerseActionPane extends ConsumerWidget {
                   );
                   ref.invalidate(highlightsProvider);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('하이라이트가 제거되었습니다.')),
+                    SnackBar(content: Text(l10n.t('highlightRemoved'))),
                   );
                 } else {
                   final first = sortedVersesList.first;
@@ -235,7 +248,7 @@ class VerseActionPane extends ConsumerWidget {
                   );
                   ref.invalidate(highlightsProvider);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('형광펜 하이라이트가 추가되었습니다.')),
+                    SnackBar(content: Text(l10n.highlightAdded('yellow'))),
                   );
                 }
                 ref.read(verseSelectionProvider.notifier).clear();
@@ -243,7 +256,7 @@ class VerseActionPane extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.comment, size: 20),
-              title: const Text('주석 보기'),
+              title: Text(l10n.t('viewCommentary')),
               onTap: () {
                 if (sortedVersesList.isNotEmpty) {
                   ref.read(targetScrollCommentaryVerseProvider.notifier).state =
@@ -274,7 +287,7 @@ class VerseActionPane extends ConsumerWidget {
             if (selection.mode == SelectionMode.single)
               ListTile(
                 leading: const Icon(Icons.note_alt, size: 20),
-                title: const Text('노트 작성 및 수정'),
+                title: Text(l10n.t('writeEditNote')),
                 onTap: () async {
                   final single = selection.single!;
                   final existing = userDataRepo.loadNote(
@@ -291,23 +304,25 @@ class VerseActionPane extends ConsumerWidget {
                   final text = await showDialog<String>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: Text('노트 작성 (${single.chapter}:${single.verse})'),
+                      title: Text(
+                        l10n.noteTitle('${single.chapter}:${single.verse}'),
+                      ),
                       content: TextField(
                         controller: c,
                         maxLines: 5,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: '여기에 구절에 대한 주석이나 묵상을 적어보세요...',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: l10n.t('noteHint'),
                         ),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(),
-                          child: const Text('취소'),
+                          child: Text(l10n.t('cancel')),
                         ),
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(c.text),
-                          child: const Text('저장'),
+                          child: Text(l10n.t('save')),
                         ),
                       ],
                     ),
@@ -366,15 +381,7 @@ class VerseActionPane extends ConsumerWidget {
         );
         ref.invalidate(highlightsProvider);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '형광펜 하이라이트(${colorName == "yellow"
-                  ? "노란색"
-                  : colorName == "green"
-                  ? "초록색"
-                  : "빨간색"})가 추가되었습니다.',
-            ),
-          ),
+          SnackBar(content: Text(context.l10n.highlightAdded(colorName))),
         );
         ref.read(verseSelectionProvider.notifier).clear();
       },

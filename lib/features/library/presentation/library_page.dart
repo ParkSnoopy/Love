@@ -6,7 +6,9 @@ import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../../app/theme_controller.dart';
 import '../../../app/font_controller.dart';
+import '../../../app/locale_controller.dart';
 import '../../../app/reader_settings_controller.dart';
+import '../../../app/app_localizations.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -16,17 +18,26 @@ class SettingPage extends ConsumerStatefulWidget {
 }
 
 class _SettingPageState extends ConsumerState<SettingPage> {
-  String _themeLabel(ThemeMode mode) => switch (mode) {
-    ThemeMode.system => 'System',
-    ThemeMode.light => 'Light',
-    ThemeMode.dark => 'Dark',
+  String _themeLabel(AppLocalizations l10n, ThemeMode mode) => switch (mode) {
+    ThemeMode.system => l10n.t('system'),
+    ThemeMode.light => l10n.t('light'),
+    ThemeMode.dark => l10n.t('dark'),
   };
 
-  String _getFontLabel(FontType type) => switch (type) {
-    FontType.sans => 'Sans-Serif',
-    FontType.serif => 'Serif',
-    FontType.mono => 'Monospace',
+  String _fontLabel(AppLocalizations l10n, FontType type) => switch (type) {
+    FontType.sans => l10n.t('sansSerif'),
+    FontType.serif => l10n.t('serif'),
+    FontType.mono => l10n.t('monospace'),
   };
+
+  String _languageLabel(AppLocalizations l10n, Locale? locale) =>
+      switch (locale?.languageCode) {
+        'ko' => l10n.t('korean'),
+        'en' => l10n.t('english'),
+        'zh' => l10n.t('simplifiedChinese'),
+        'ja' => l10n.t('japanese'),
+        _ => l10n.t('system'),
+      };
 
   IconData _themeIcon(ThemeMode mode) => switch (mode) {
     ThemeMode.system => Icons.brightness_auto_outlined,
@@ -42,8 +53,10 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
-    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final l10n = context.l10n;
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.light;
+    final locale = ref.watch(appLocaleProvider).value;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
     final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
     final readerSettingsAsync = ref.watch(readerSettingsProvider);
@@ -53,7 +66,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l10n.t('settings')),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -61,7 +74,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
-          _buildSectionHeader('Appearance'),
+          _buildSectionHeader(l10n.t('appearance')),
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
@@ -75,10 +88,21 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     _themeIcon(themeMode),
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('Theme Mode'),
-                  subtitle: Text(_themeLabel(themeMode)),
+                  title: Text(l10n.t('themeMode')),
+                  subtitle: Text(_themeLabel(l10n, themeMode)),
                   trailing: const Icon(Icons.sync, size: 20),
                   onTap: () => ref.read(themeModeProvider.notifier).cycle(),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(
+                    Icons.language,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(l10n.t('appLanguage')),
+                  subtitle: Text(_languageLabel(l10n, locale)),
+                  trailing: const Icon(Icons.sync, size: 20),
+                  onTap: () => ref.read(appLocaleProvider.notifier).cycle(),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -86,8 +110,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     _fontIcon(fontType),
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('Reader Font'),
-                  subtitle: Text(_getFontLabel(fontType)),
+                  title: Text(l10n.t('readerFont')),
+                  subtitle: Text(_fontLabel(l10n, fontType)),
                   trailing: const Icon(Icons.sync, size: 20),
                   onTap: () => ref.read(fontTypeProvider.notifier).cycle(),
                 ),
@@ -95,7 +119,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             ),
           ),
           const SizedBox(height: 24),
-          _buildSectionHeader('Reader Typography'),
+          _buildSectionHeader(l10n.t('readerTypography')),
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
@@ -111,7 +135,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Font Size',
+                        l10n.t('fontSize'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -141,7 +165,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Line Spacing',
+                        l10n.t('lineSpacing'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -171,7 +195,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'UI Scale',
+                        l10n.t('uiScale'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -199,7 +223,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             ),
           ),
           const SizedBox(height: 24),
-          _buildSectionHeader('Bibles & Commentaries'),
+          _buildSectionHeader(l10n.t('biblesCommentaries')),
           Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
@@ -214,25 +238,27 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       Icons.book,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Active Bible'),
+                    title: Text(l10n.t('activeBible')),
                     subtitle: Text(
-                      activeBible != null ? activeBible.name : 'Select Bible',
+                      activeBible != null
+                          ? activeBible.name
+                          : l10n.t('selectBible'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _showBibleSelection(context),
                   ),
-                  loading: () => const ListTile(
-                    leading: SizedBox(
+                  loading: () => ListTile(
+                    leading: const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    title: Text('Loading Bible...'),
+                    title: Text(l10n.t('loadingBible')),
                   ),
                   error: (err, stack) => ListTile(
-                    title: const Text('Error loading Bible'),
+                    title: Text(l10n.t('errorLoadingBible')),
                     subtitle: Text(err.toString()),
                   ),
                 ),
@@ -243,11 +269,11 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       Icons.comment_bank,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Active Commentary'),
+                    title: Text(l10n.t('activeCommentary')),
                     subtitle: Text(
                       activeCommentary != null
                           ? activeCommentary.name
-                          : 'None (Off)',
+                          : l10n.t('noneOff'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -257,7 +283,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.clear, size: 20),
-                                tooltip: 'Turn off commentary',
+                                tooltip: l10n.t('turnOffCommentary'),
                                 onPressed: () {
                                   ref
                                       .read(
@@ -273,16 +299,16 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         : const Icon(Icons.chevron_right),
                     onTap: () => _showCommentarySelection(context),
                   ),
-                  loading: () => const ListTile(
-                    leading: SizedBox(
+                  loading: () => ListTile(
+                    leading: const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    title: Text('Loading Commentary...'),
+                    title: Text(l10n.t('loadingCommentary')),
                   ),
                   error: (err, stack) => ListTile(
-                    title: const Text('Error loading Commentary'),
+                    title: Text(l10n.t('errorLoadingCommentary')),
                     subtitle: Text(err.toString()),
                   ),
                 ),
@@ -348,6 +374,7 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final activeBible = ref.watch(activeBibleSelectionProvider).asData?.value;
 
     return DraggableScrollableSheet(
@@ -372,9 +399,12 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Select Bible Translation',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.t('selectBibleTranslation'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -384,7 +414,7 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search by language, source, or name...',
+                    hintText: l10n.t('searchByPack'),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -429,7 +459,7 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                         .toList();
 
                     if (bibles.isEmpty) {
-                      return const Center(child: Text('No translations found'));
+                      return Center(child: Text(l10n.t('noTranslationsFound')));
                     }
 
                     return ListView.builder(
@@ -494,6 +524,7 @@ class _CommentarySelectionSheetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final activeCommentary = ref
         .watch(activeCommentarySelectionProvider)
         .asData
@@ -521,9 +552,12 @@ class _CommentarySelectionSheetState
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Select Commentary',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.t('selectCommentary'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -533,7 +567,7 @@ class _CommentarySelectionSheetState
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search by language, source, or name...',
+                    hintText: l10n.t('searchByPack'),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -578,7 +612,7 @@ class _CommentarySelectionSheetState
                         .toList();
 
                     if (commentaries.isEmpty) {
-                      return const Center(child: Text('No commentaries found'));
+                      return Center(child: Text(l10n.t('noCommentariesFound')));
                     }
 
                     return ListView.builder(

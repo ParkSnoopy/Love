@@ -7,6 +7,7 @@ import '../../reader/providers/reader_controller.dart';
 import '../../reader/providers/verse_selection_controller.dart';
 import '../providers/user_data_controller.dart';
 import '../../../data/storage/db_path_provider.dart';
+import '../../../app/app_localizations.dart';
 
 class SavedPage extends ConsumerWidget {
   const SavedPage({super.key});
@@ -19,26 +20,31 @@ class SavedPage extends ConsumerWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Saved'),
+          title: Text(context.l10n.t('saved')),
           centerTitle: true,
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.bookmark), text: 'Bookmarks'),
-              Tab(icon: Icon(Icons.border_color), text: 'Highlights'),
-              Tab(icon: Icon(Icons.note_alt), text: 'Notes'),
+              Tab(
+                icon: const Icon(Icons.bookmark),
+                text: context.l10n.t('bookmarks'),
+              ),
+              Tab(
+                icon: const Icon(Icons.border_color),
+                text: context.l10n.t('highlights'),
+              ),
+              Tab(
+                icon: const Icon(Icons.note_alt),
+                text: context.l10n.t('notes'),
+              ),
             ],
           ),
         ),
         body: activeDbPathAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Error: $err')),
+          error: (err, stack) => Center(child: Text(context.l10n.error(err))),
           data: (dbPath) {
             if (dbPath == null) {
-              return const Center(
-                child: Text(
-                  'No active Bible database. Please select a version in settings.',
-                ),
-              );
+              return Center(child: Text(context.l10n.t('noActiveBibleDb')));
             }
             return TabBarView(
               children: [
@@ -83,10 +89,11 @@ class _BookmarksTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarksAsync = ref.watch(bookmarksProvider);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return bookmarksAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+      error: (err, stack) => Center(child: Text(context.l10n.error(err))),
       data: (bookmarks) {
         if (bookmarks.isEmpty) {
           return Center(
@@ -99,9 +106,9 @@ class _BookmarksTab extends ConsumerWidget {
                   color: theme.colorScheme.outline,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'No bookmarks saved yet.',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  l10n.t('noBookmarks'),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -158,7 +165,7 @@ class _BookmarksTab extends ConsumerWidget {
                   child: Text(
                     verseText.isNotEmpty
                         ? verseText
-                        : '[Verse text not found in current translation]',
+                        : l10n.t('verseTextNotFound'),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -175,7 +182,7 @@ class _BookmarksTab extends ConsumerWidget {
                     );
                     ref.invalidate(bookmarksProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Bookmark removed.')),
+                      SnackBar(content: Text(l10n.t('bookmarkRemoved'))),
                     );
                   },
                 ),
@@ -212,10 +219,11 @@ class _HighlightsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final highlightsAsync = ref.watch(highlightsProvider);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return highlightsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+      error: (err, stack) => Center(child: Text(context.l10n.error(err))),
       data: (highlights) {
         if (highlights.isEmpty) {
           return Center(
@@ -228,9 +236,9 @@ class _HighlightsTab extends ConsumerWidget {
                   color: theme.colorScheme.outline,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'No highlights saved yet.',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  l10n.t('noHighlights'),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -290,9 +298,7 @@ class _HighlightsTab extends ConsumerWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    verseText.isNotEmpty
-                        ? verseText
-                        : '[Verses not found in current translation]',
+                    verseText.isNotEmpty ? verseText : l10n.t('versesNotFound'),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -307,7 +313,7 @@ class _HighlightsTab extends ConsumerWidget {
                     );
                     ref.invalidate(highlightsProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Highlight removed.')),
+                      SnackBar(content: Text(l10n.t('highlightRemoved'))),
                     );
                   },
                 ),
@@ -354,10 +360,11 @@ class _NotesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notesAsync = ref.watch(notesProvider);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return notesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+      error: (err, stack) => Center(child: Text(context.l10n.error(err))),
       data: (notes) {
         if (notes.isEmpty) {
           return Center(
@@ -370,10 +377,7 @@ class _NotesTab extends ConsumerWidget {
                   color: theme.colorScheme.outline,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'No notes saved yet.',
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text(l10n.t('noNotes'), style: const TextStyle(fontSize: 16)),
               ],
             ),
           );
@@ -438,8 +442,8 @@ class _NotesTab extends ConsumerWidget {
                                 );
                                 ref.invalidate(notesProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Note deleted.'),
+                                  SnackBar(
+                                    content: Text(l10n.t('noteDeleted')),
                                   ),
                                 );
                               },
@@ -456,24 +460,26 @@ class _NotesTab extends ConsumerWidget {
                           context: context,
                           builder: (ctx) => AlertDialog(
                             title: Text(
-                              '노트 수정 ($bookName ${entry.chapter}:${entry.verse})',
+                              l10n.editNoteTitle(
+                                '$bookName ${entry.chapter}:${entry.verse}',
+                              ),
                             ),
                             content: TextField(
                               controller: c,
                               maxLines: 5,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: '여기에 구절에 대한 주석이나 묵상을 적어보세요...',
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                hintText: l10n.t('noteHint'),
                               ),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.of(ctx).pop(),
-                                child: const Text('취소'),
+                                child: Text(l10n.t('cancel')),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.of(ctx).pop(c.text),
-                                child: const Text('저장'),
+                                child: Text(l10n.t('save')),
                               ),
                             ],
                           ),
@@ -489,7 +495,7 @@ class _NotesTab extends ConsumerWidget {
                             );
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Note deleted.')),
+                                SnackBar(content: Text(l10n.t('noteDeleted'))),
                               );
                             }
                           } else {
@@ -503,7 +509,7 @@ class _NotesTab extends ConsumerWidget {
                             );
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Note updated.')),
+                                SnackBar(content: Text(l10n.t('noteUpdated'))),
                               );
                             }
                           }
@@ -567,7 +573,7 @@ class _NotesTab extends ConsumerWidget {
                             child: Text(
                               verseText.isNotEmpty
                                   ? verseText
-                                  : '[Verse text not found in current translation]',
+                                  : l10n.t('verseTextNotFound'),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontStyle: FontStyle.italic,

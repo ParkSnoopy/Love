@@ -16,6 +16,7 @@ import '../../library/domain/bible_pack.dart';
 import '../../../data/import/zip_extractor.dart';
 import '../../../app/font_controller.dart';
 import '../../../app/reader_settings_controller.dart';
+import '../../../app/app_localizations.dart';
 
 class SearchPage extends ConsumerWidget {
   const SearchPage({super.key});
@@ -28,15 +29,16 @@ class SearchPage extends ConsumerWidget {
     return dbPathAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+      error: (err, stack) =>
+          Scaffold(body: Center(child: Text(context.l10n.error(err)))),
       data: (dbPath) {
         if (dbPath == null) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Text(
-                  'No Bible selected or installed.\nPlease go to Library and select a version.',
+                  context.l10n.t('noBibleSelected'),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -47,7 +49,7 @@ class SearchPage extends ConsumerWidget {
           loading: () =>
               const Scaffold(body: Center(child: CircularProgressIndicator())),
           error: (err, stack) =>
-              Scaffold(body: Center(child: Text('Error: $err'))),
+              Scaffold(body: Center(child: Text(context.l10n.error(err)))),
           data: (commDbPath) {
             return _SearchContentView(
               dbPath: dbPath,
@@ -283,12 +285,13 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isComm = _selectedRange == 'commentary';
     final packsAsync = ref.watch(biblePacksProvider);
     final readerSettings =
         ref.watch(readerSettingsProvider).value ??
         const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
-    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final resultTextStyle =
         Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontFamily: fontFamilyForType(fontType),
@@ -302,10 +305,10 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
         );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Search')),
+      appBar: AppBar(title: Text(l10n.t('search'))),
       body: packsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text(l10n.error(err))),
         data: (packs) {
           final languages = packs
               .where((p) => isComm ? p.type == 'commentary' : p.type == 'bible')
@@ -325,10 +328,10 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                 padding: const EdgeInsets.all(12),
                 child: TextField(
                   controller: _queryController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search verse text...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: l10n.t('searchVerseText'),
+                    prefixIcon: const Icon(Icons.search),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
@@ -338,13 +341,13 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildRangeChip('성경 전체', 'all'),
+                      _buildRangeChip(l10n.t('allBible'), 'all'),
                       const SizedBox(width: 8),
-                      _buildRangeChip('구약 (OT)', 'ot'),
+                      _buildRangeChip(l10n.t('ot'), 'ot'),
                       const SizedBox(width: 8),
-                      _buildRangeChip('신약 (NT)', 'nt'),
+                      _buildRangeChip(l10n.t('nt'), 'nt'),
                       const SizedBox(width: 8),
-                      _buildRangeChip('주석', 'commentary'),
+                      _buildRangeChip(l10n.t('commentary'), 'commentary'),
                     ],
                   ),
                 ),
@@ -370,9 +373,9 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        '언어 범위: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Text(
+                        l10n.t('languageRange'),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -385,7 +388,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                               DropdownMenuItem(
                                 value: 'active',
                                 child: Text(
-                                  isComm ? '현재 설정된 주석만' : '현재 설정된 번역만',
+                                  l10n.currentLanguageOnly(commentary: isComm),
                                 ),
                               ),
                               ...languageOptions.map((lang) {
@@ -394,10 +397,11 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                                   value: lang,
                                   child: Text(
                                     isUnavailable
-                                        ? '$lang (현재 범위에 없음)'
-                                        : (isComm
-                                              ? '$lang 주석 전체'
-                                              : '$lang 번역 전체'),
+                                        ? l10n.unavailableLanguage(lang)
+                                        : l10n.wholeLanguage(
+                                            lang,
+                                            commentary: isComm,
+                                          ),
                                   ),
                                 );
                               }),
@@ -423,11 +427,14 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
               if (isComm &&
                   widget.commentaryDbPath == null &&
                   _selectedLanguage == 'active')
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Text(
-                    '선택된 주석이 없습니다. 설정/라이브러리에서 주석을 선택해주세요.',
-                    style: TextStyle(color: Colors.red),
+                    l10n.t('noActiveCommentary'),
+                    style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -437,9 +444,9 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                   !(isComm &&
                       widget.commentaryDbPath == null &&
                       _selectedLanguage == 'active'))
-                const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text('No hits'),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(l10n.t('noHits')),
                 ),
               Expanded(
                 child: ListView.builder(
@@ -462,7 +469,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                         ? '[${h.bibleName}] '
                         : '';
                     final titleText = isComm
-                        ? '[주석] $versionPrefix$bookName ${h.chapter}:${h.verse}'
+                        ? '[${l10n.t('commentaryPrefix')}] $versionPrefix$bookName ${h.chapter}:${h.verse}'
                         : '$versionPrefix$bookName ${h.chapter}:${h.verse}';
 
                     return ListTile(
