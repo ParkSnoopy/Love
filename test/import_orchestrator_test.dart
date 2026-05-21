@@ -8,20 +8,17 @@ void main() {
 
     final phases = await orchestrator.runDry();
 
-    expect(
-      phases,
-      const [
-        ImportPhase.discover,
-        ImportPhase.extract,
-        ImportPhase.validateBible,
-        ImportPhase.validateCommentary,
-        ImportPhase.buildAliasMap,
-        ImportPhase.parseReferences,
-        ImportPhase.resolveReferences,
-        ImportPhase.buildMappingTable,
-        ImportPhase.finalize,
-      ],
-    );
+    expect(phases, const [
+      ImportPhase.discover,
+      ImportPhase.extract,
+      ImportPhase.validateBible,
+      ImportPhase.validateCommentary,
+      ImportPhase.buildAliasMap,
+      ImportPhase.parseReferences,
+      ImportPhase.resolveReferences,
+      ImportPhase.buildMappingTable,
+      ImportPhase.finalize,
+    ]);
   });
 
   test('orchestrator validate-only runs bible then commentary', () async {
@@ -32,6 +29,9 @@ void main() {
       commentaryDbPath: 'assets/data/comment/com_tsk.sqlite',
     );
 
-    expect(phases, const [ImportPhase.validateBible, ImportPhase.validateCommentary]);
+    expect(phases, const [
+      ImportPhase.validateBible,
+      ImportPhase.validateCommentary,
+    ]);
   });
 }

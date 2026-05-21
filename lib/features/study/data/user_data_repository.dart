@@ -235,7 +235,10 @@ WHERE id IN (
     }
   }
 
-  List<HistoryEntry> loadRecentHistory({required String dbPath, int limit = 50}) {
+  List<HistoryEntry> loadRecentHistory({
+    required String dbPath,
+    int limit = 50,
+  }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
       final rows = db.select(

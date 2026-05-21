@@ -60,7 +60,13 @@ void main() {
 
     expect(
       () => parser.parse('Joh 3:16'),
-      throwsA(isA<ImportException>().having((e) => e.code, 'code', 'REF_UNKNOWN_BOOK')),
+      throwsA(
+        isA<ImportException>().having(
+          (e) => e.code,
+          'code',
+          'REF_UNKNOWN_BOOK',
+        ),
+      ),
     );
   });
 }

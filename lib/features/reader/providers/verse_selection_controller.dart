@@ -1,7 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VerseKey {
-  const VerseKey({required this.bookId, required this.chapter, required this.verse});
+  const VerseKey({
+    required this.bookId,
+    required this.chapter,
+    required this.verse,
+  });
 
   final int bookId;
   final int chapter;
@@ -29,7 +33,10 @@ class VerseSelectionState {
 
   VerseKey? get single => selected.length == 1 ? selected.first : null;
 
-  static const empty = VerseSelectionState(mode: SelectionMode.none, selected: <VerseKey>{});
+  static const empty = VerseSelectionState(
+    mode: SelectionMode.none,
+    selected: <VerseKey>{},
+  );
 }
 
 final verseSelectionProvider =

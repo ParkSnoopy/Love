@@ -37,9 +37,9 @@ void main() {
   test('clear resets state', () {
     final c = ProviderContainer();
     addTearDown(c.dispose);
-    c.read(verseSelectionProvider.notifier).longPress(
-      VerseKey(bookId: 1, chapter: 1, verse: 1),
-    );
+    c
+        .read(verseSelectionProvider.notifier)
+        .longPress(VerseKey(bookId: 1, chapter: 1, verse: 1));
 
     c.read(verseSelectionProvider.notifier).clear();
     final s = c.read(verseSelectionProvider);

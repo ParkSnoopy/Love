@@ -28,7 +28,10 @@ class SearchRepository {
     final minLen = _isCjk(trimmed) ? 1 : 2;
     if (trimmed.runes.length < minLen) return const [];
 
-    final escaped = trimmed.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+    final escaped = trimmed
+        .replaceAll('\\', '\\\\')
+        .replaceAll('%', '\\%')
+        .replaceAll('_', '\\_');
     final pattern = '%$escaped%';
 
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
@@ -54,7 +57,9 @@ class SearchRepository {
 
   bool _isCjk(String s) {
     for (final r in s.runes) {
-      if ((r >= 0x4E00 && r <= 0x9FFF) || (r >= 0x3040 && r <= 0x30FF) || (r >= 0xAC00 && r <= 0xD7AF)) {
+      if ((r >= 0x4E00 && r <= 0x9FFF) ||
+          (r >= 0x3040 && r <= 0x30FF) ||
+          (r >= 0xAC00 && r <= 0xD7AF)) {
         return true;
       }
     }

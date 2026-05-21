@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../lib/main.dart';
 
 void main() {
-  testWidgets('app boots to Library with primary actions visible', (tester) async {
+  testWidgets('app boots to Library with primary actions visible', (
+    tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: MyApp()));
     await tester.pumpAndSettle();
 

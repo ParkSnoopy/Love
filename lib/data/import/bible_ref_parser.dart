@@ -23,7 +23,9 @@ class BibleRefParser {
   final Map<String, int> _aliases;
 
   List<VerseRefRange> parse(String input) {
-    final main = RegExp(r'^\s*([1-3]?[A-Za-z]+)\s+(\d+):(\d+)(.*)\s*$').firstMatch(input);
+    final main = RegExp(
+      r'^\s*([1-3]?[A-Za-z]+)\s+(\d+):(\d+)(.*)\s*$',
+    ).firstMatch(input);
     if (main == null) {
       throw ImportException(
         code: 'REF_PARSE_FAIL',
@@ -93,7 +95,11 @@ class BibleRefParser {
     }
 
     if (tail.startsWith(',')) {
-      final list = tail.substring(1).split(',').map((e) => e.trim()).where((e) => e.isNotEmpty);
+      final list = tail
+          .substring(1)
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty);
       final out = <VerseRefRange>[
         VerseRefRange(
           bookId: bookId,

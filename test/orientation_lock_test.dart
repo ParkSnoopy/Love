@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../lib/main.dart' as app;
 
 void main() {
-  testWidgets('main requests portrait-only preferred orientations', (tester) async {
+  testWidgets('main requests portrait-only preferred orientations', (
+    tester,
+  ) async {
     MethodCall? captured;
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       SystemChannels.platform,
@@ -21,7 +23,13 @@ void main() {
 
     expect(captured, isNotNull);
     final args = (captured!.arguments as List<dynamic>).cast<String>();
-    expect(args, containsAllInOrder(<String>['DeviceOrientation.portraitUp', 'DeviceOrientation.portraitDown']));
+    expect(
+      args,
+      containsAllInOrder(<String>[
+        'DeviceOrientation.portraitUp',
+        'DeviceOrientation.portraitDown',
+      ]),
+    );
     expect(args, isNot(contains('DeviceOrientation.landscapeLeft')));
     expect(args, isNot(contains('DeviceOrientation.landscapeRight')));
 

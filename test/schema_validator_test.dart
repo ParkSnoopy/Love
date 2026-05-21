@@ -11,16 +11,19 @@ void main() {
       () => validator.validateBibleSchema(
         const {'books', 'version'},
         const {
-          'books': {'book_id', 'osis', 'name_en', 'name_native', 'testament', 'chapter_count'},
+          'books': {
+            'book_id',
+            'osis',
+            'name_en',
+            'name_native',
+            'testament',
+            'chapter_count',
+          },
           'version': {'slug', 'label'},
         },
       ),
       throwsA(
-        isA<ImportException>().having(
-          (e) => e.code,
-          'code',
-          'MISSING_TABLE',
-        ),
+        isA<ImportException>().having((e) => e.code, 'code', 'MISSING_TABLE'),
       ),
     );
   });
@@ -31,7 +34,14 @@ void main() {
     validator.validateBibleSchema(
       const {'books', 'verses', 'version'},
       const {
-        'books': {'book_id', 'osis', 'name_en', 'name_native', 'testament', 'chapter_count'},
+        'books': {
+          'book_id',
+          'osis',
+          'name_en',
+          'name_native',
+          'testament',
+          'chapter_count',
+        },
         'verses': {'book_id', 'chapter', 'verse', 'text'},
         'version': {'slug', 'label'},
       },
@@ -50,11 +60,7 @@ void main() {
         },
       ),
       throwsA(
-        isA<ImportException>().having(
-          (e) => e.code,
-          'code',
-          'MISSING_TABLE',
-        ),
+        isA<ImportException>().having((e) => e.code, 'code', 'MISSING_TABLE'),
       ),
     );
   });

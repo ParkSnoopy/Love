@@ -24,7 +24,10 @@ class ImportService {
       const inspector = SchemaInspector();
       final validator = SchemaValidator();
       final snapshot = inspector.inspect(db);
-      validator.validateCommentarySchema(snapshot.tables, snapshot.columnsByTable);
+      validator.validateCommentarySchema(
+        snapshot.tables,
+        snapshot.columnsByTable,
+      );
     } finally {
       db.close();
     }

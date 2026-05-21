@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../lib/features/reader/presentation/reader_page.dart';
+import '../lib/data/storage/db_path_provider.dart';
 
 void main() {
-  testWidgets('single tap shows action bar with enabled jump comment', (tester) async {
+  testWidgets('single tap shows action bar with enabled jump comment', (
+    tester,
+  ) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: MaterialApp(
-          home: ReaderPage(dbPath: 'assets/data/getbible/en_kjv.sqlite'),
-        ),
+      ProviderScope(
+        overrides: [
+          activeDbPathProvider.overrideWith(
+            (ref) => 'assets/data/getbible/en_kjv.sqlite',
+          ),
+        ],
+        child: const MaterialApp(home: ReaderPage()),
       ),
     );
     await tester.pumpAndSettle();
@@ -26,7 +32,10 @@ void main() {
     expect(find.text('Note'), findsOneWidget);
 
     final jumpBtn = tester.widget<TextButton>(
-      find.ancestor(of: find.text('Jump Comment'), matching: find.byType(TextButton)),
+      find.ancestor(
+        of: find.text('Jump Comment'),
+        matching: find.byType(TextButton),
+      ),
     );
     expect(jumpBtn.onPressed, isNotNull);
 
@@ -38,10 +47,13 @@ void main() {
 
   testWidgets('multi select disables jump comment', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: MaterialApp(
-          home: ReaderPage(dbPath: 'assets/data/getbible/en_kjv.sqlite'),
-        ),
+      ProviderScope(
+        overrides: [
+          activeDbPathProvider.overrideWith(
+            (ref) => 'assets/data/getbible/en_kjv.sqlite',
+          ),
+        ],
+        child: const MaterialApp(home: ReaderPage()),
       ),
     );
     await tester.pumpAndSettle();
@@ -52,7 +64,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final jumpBtn = tester.widget<TextButton>(
-      find.ancestor(of: find.text('Jump Comment'), matching: find.byType(TextButton)),
+      find.ancestor(
+        of: find.text('Jump Comment'),
+        matching: find.byType(TextButton),
+      ),
     );
     expect(jumpBtn.onPressed, isNull);
 

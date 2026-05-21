@@ -15,11 +15,12 @@ class SelectedVerse {
 class VerseExportFormatter {
   static String format(List<SelectedVerse> verses) {
     if (verses.isEmpty) return '';
-    final sorted = [...verses]..sort((a, b) {
-      final c = a.chapter.compareTo(b.chapter);
-      if (c != 0) return c;
-      return a.verse.compareTo(b.verse);
-    });
+    final sorted = [...verses]
+      ..sort((a, b) {
+        final c = a.chapter.compareTo(b.chapter);
+        if (c != 0) return c;
+        return a.verse.compareTo(b.verse);
+      });
 
     final first = sorted.first;
     final last = sorted.last;
@@ -29,7 +30,9 @@ class VerseExportFormatter {
         : '${first.chapter}:${first.verse}-${last.chapter}:${last.verse}';
 
     final header = '${first.bookName} $range';
-    final body = sorted.map((v) => '[${v.chapter}:${v.verse}] ${v.text}').join('\n');
+    final body = sorted
+        .map((v) => '[${v.chapter}:${v.verse}] ${v.text}')
+        .join('\n');
     return '$header\n\n$body';
   }
 }

@@ -14,7 +14,10 @@ class SchemaInspector {
     final tableRows = db.select(
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
     );
-    final tables = tableRows.map((r) => (r['name'] as String?) ?? '').where((t) => t.isNotEmpty).toSet();
+    final tables = tableRows
+        .map((r) => (r['name'] as String?) ?? '')
+        .where((t) => t.isNotEmpty)
+        .toSet();
 
     final columnsByTable = <String, Set<String>>{};
     for (final table in tables) {

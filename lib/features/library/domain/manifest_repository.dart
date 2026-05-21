@@ -13,7 +13,7 @@ class ManifestRepository {
         .whereType<Map>()
         .map((m) => m.map((k, v) => MapEntry(k.toString(), v)))
         .map(BiblePack.fromJson)
-        .where((p) => p.type == 'bible' && p.shortName.isNotEmpty)
+        .where((p) => p.shortName.isNotEmpty)
         .toList(growable: false);
   }
 
