@@ -24,11 +24,7 @@ class MyApp extends ConsumerWidget {
     ref.watch(userDataInitProvider);
     final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
-    final fontFamily = switch (fontType) {
-      FontType.sans => 'NotoSansKR',
-      FontType.serif => 'NotoSerifKR',
-      FontType.mono => 'NanumGothicCoding',
-    };
+    final fontFamily = fontFamilyForType(fontType);
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(

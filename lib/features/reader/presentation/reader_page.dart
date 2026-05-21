@@ -15,6 +15,7 @@ import '../../library/domain/manifest_repository.dart';
 import '../providers/commentary_visibility_provider.dart';
 import 'verse_action_pane.dart';
 import '../../../app/reader_settings_controller.dart';
+import '../../../app/font_controller.dart';
 
 class CommentaryFullScreenNotifier extends Notifier<bool> {
   @override
@@ -25,7 +26,9 @@ class CommentaryFullScreenNotifier extends Notifier<bool> {
 }
 
 final commentaryFullScreenProvider =
-    NotifierProvider<CommentaryFullScreenNotifier, bool>(CommentaryFullScreenNotifier.new);
+    NotifierProvider<CommentaryFullScreenNotifier, bool>(
+      CommentaryFullScreenNotifier.new,
+    );
 
 class ReaderPage extends ConsumerWidget {
   const ReaderPage({super.key});
@@ -93,7 +96,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
     });
 
     return rrAsync.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
       data: (rr) {
         // Clear keys if chapter changed
@@ -106,31 +110,40 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         final selection = ref.watch(verseSelectionProvider);
         final userDataRepo = ref.watch(userDataRepositoryProvider);
         final userDataDbPath = ref.watch(userDataDbPathProvider);
-        final activeCommentaryDbPath = ref.watch(activeCommentaryDbPathProvider).asData?.value;
+        final activeCommentaryDbPath = ref
+            .watch(activeCommentaryDbPathProvider)
+            .asData
+            ?.value;
         final isCommentaryVisible = ref.watch(commentaryVisibilityProvider);
-        final isCommentaryActive = activeCommentaryDbPath != null && isCommentaryVisible;
+        final isCommentaryActive =
+            activeCommentaryDbPath != null && isCommentaryVisible;
         final isFullScreen = ref.watch(commentaryFullScreenProvider);
 
         final bookmarksAsync = ref.watch(bookmarksProvider);
-        final bookmarkedVerses = bookmarksAsync.value
+        final bookmarkedVerses =
+            bookmarksAsync.value
                 ?.where((b) => b.bookId == rr.bookId && b.chapter == rr.chapter)
                 .map((b) => b.verse)
                 .toSet() ??
             const <int>{};
 
         final highlightsAsync = ref.watch(highlightsProvider);
-        final highlights = highlightsAsync.value
+        final highlights =
+            highlightsAsync.value
                 ?.where((h) => h.bookId == rr.bookId && h.chapter == rr.chapter)
                 .toList() ??
             const <HighlightEntry>[];
 
         final readerSettingsAsync = ref.watch(readerSettingsProvider);
-        final readerSettings = readerSettingsAsync.value ??
+        final readerSettings =
+            readerSettingsAsync.value ??
             const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
 
         // Check if we need to scroll to a verse
         final targetScroll = ref.watch(targetScrollVerseProvider);
-        if (targetScroll != null && targetScroll.bookId == rr.bookId && targetScroll.chapter == rr.chapter) {
+        if (targetScroll != null &&
+            targetScroll.bookId == rr.bookId &&
+            targetScroll.chapter == rr.chapter) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final key = _verseKeys[targetScroll];
             if (key != null && key.currentContext != null) {
@@ -154,7 +167,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             bookId: rr.bookId,
             chapter: rr.chapter,
           );
-          bookName = repo.loadBookName(dbPath: widget.dbPath, bookId: rr.bookId);
+          bookName = repo.loadBookName(
+            dbPath: widget.dbPath,
+            bookId: rr.bookId,
+          );
         } on SqliteException catch (e) {
           loadError = 'DB Error: ${e.message}\nPath: ${widget.dbPath}';
         }
@@ -191,10 +207,15 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                 tooltip: 'Toggle Commentary',
                 icon: Icon(
                   isCommentaryActive ? Icons.comment : Icons.comment_outlined,
-                  color: isCommentaryActive ? Theme.of(context).colorScheme.primary : null,
+                  color: isCommentaryActive
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
                 onPressed: () {
-                  final activeCommentary = ref.read(activeCommentarySelectionProvider).asData?.value;
+                  final activeCommentary = ref
+                      .read(activeCommentarySelectionProvider)
+                      .asData
+                      ?.value;
                   if (activeCommentary == null) {
                     showModalBottomSheet<void>(
                       context: context,
@@ -208,11 +229,13 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                 },
               ),
               IconButton(
-                onPressed: () => ref.read(readerRefProvider.notifier).prevChapter(),
+                onPressed: () =>
+                    ref.read(readerRefProvider.notifier).prevChapter(),
                 icon: const Icon(Icons.chevron_left),
               ),
               IconButton(
-                onPressed: () => ref.read(readerRefProvider.notifier).nextChapter(),
+                onPressed: () =>
+                    ref.read(readerRefProvider.notifier).nextChapter(),
                 icon: const Icon(Icons.chevron_right),
               ),
             ],
@@ -237,10 +260,14 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                 verse: v.verse,
                               );
                               final selected = selection.selected.contains(key);
-                              final isBookmarked = bookmarkedVerses.contains(v.verse);
+                              final isBookmarked = bookmarkedVerses.contains(
+                                v.verse,
+                              );
 
                               final matchingHighlight = highlights.firstWhere(
-                                (h) => v.verse >= h.verseStart && v.verse <= h.verseEnd,
+                                (h) =>
+                                    v.verse >= h.verseStart &&
+                                    v.verse <= h.verseEnd,
                                 orElse: () => const HighlightEntry(
                                   id: -1,
                                   bookId: 0,
@@ -254,12 +281,24 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
 
                               Color? textColor;
                               if (matchingHighlight.id != -1) {
-                                final isDark = Theme.of(context).brightness == Brightness.dark;
+                                final isDark =
+                                    Theme.of(context).brightness ==
+                                    Brightness.dark;
                                 textColor = switch (matchingHighlight.color) {
-                                  'yellow' => isDark ? Colors.yellow[300] : const Color(0xFFB58900),
-                                  'green' => isDark ? Colors.green[300] : Colors.green[700],
-                                  'red' => isDark ? Colors.red[300] : Colors.red[700],
-                                  _ => isDark ? Colors.yellow[300] : const Color(0xFFB58900),
+                                  'yellow' =>
+                                    isDark
+                                        ? Colors.yellow[300]
+                                        : const Color(0xFFB58900),
+                                  'green' =>
+                                    isDark
+                                        ? Colors.green[300]
+                                        : Colors.green[700],
+                                  'red' =>
+                                    isDark ? Colors.red[300] : Colors.red[700],
+                                  _ =>
+                                    isDark
+                                        ? Colors.yellow[300]
+                                        : const Color(0xFFB58900),
                                 };
                               }
 
@@ -267,13 +306,16 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                 key: _getKeyForVerse(key),
                                 selected: selected,
                                 onTap: () {
-                                  ref.read(verseSelectionProvider.notifier).tap(key);
+                                  ref
+                                      .read(verseSelectionProvider.notifier)
+                                      .tap(key);
                                   userDataRepo.addHistory(
                                     dbPath: userDataDbPath,
                                     bookId: v.bookId,
                                     chapter: v.chapter,
                                     verse: v.verse,
-                                    visitedAt: DateTime.now().millisecondsSinceEpoch,
+                                    visitedAt:
+                                        DateTime.now().millisecondsSinceEpoch,
                                   );
                                 },
                                 onLongPress: () => ref
@@ -289,9 +331,12 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                     children: [
                                       if (isBookmarked)
                                         const WidgetSpan(
-                                          alignment: PlaceholderAlignment.middle,
+                                          alignment:
+                                              PlaceholderAlignment.middle,
                                           child: Padding(
-                                            padding: EdgeInsets.only(right: 4.0),
+                                            padding: EdgeInsets.only(
+                                              right: 4.0,
+                                            ),
                                             child: Icon(
                                               Icons.bookmark,
                                               color: Colors.amber,
@@ -303,8 +348,13 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                         text: '${v.verse} ',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: textColor ?? Theme.of(context).colorScheme.primary,
-                                          fontSize: readerSettings.fontSize * 0.75,
+                                          color:
+                                              textColor ??
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.primary,
+                                          fontSize:
+                                              readerSettings.fontSize * 0.75,
                                         ),
                                       ),
                                       TextSpan(text: v.text),
@@ -406,7 +456,9 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
   }
 
   void _scrollToBook(int index) {
-    if (index >= 0 && index < _books.length && _booksScrollController.hasClients) {
+    if (index >= 0 &&
+        index < _books.length &&
+        _booksScrollController.hasClients) {
       _booksScrollController.animateTo(
         index * 48.0,
         duration: const Duration(milliseconds: 300),
@@ -418,13 +470,18 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
   void _loadBooks() {
     final db = sqlite3.open(widget.dbPath, mode: OpenMode.readOnly);
     try {
-      final columns = db.select('PRAGMA table_info(books)')
+      final columns = db
+          .select('PRAGMA table_info(books)')
           .map((row) => row['name'] as String)
           .toSet();
 
-      final nameNativeCol = columns.contains('name_native') ? 'name_native' : 'name';
+      final nameNativeCol = columns.contains('name_native')
+          ? 'name_native'
+          : 'name';
       final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
-      final chapterCol = columns.contains('chapter_count') ? 'chapter_count' : 'chapters';
+      final chapterCol = columns.contains('chapter_count')
+          ? 'chapter_count'
+          : 'chapters';
       final hasTestament = columns.contains('testament');
       final testamentCol = hasTestament ? 'testament' : 'NULL';
 
@@ -440,7 +497,9 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                     ? r[nameNativeCol]
                     : r[nameEnCol],
                 'count': r[chapterCol],
-                'testament': r['testament'] as String? ?? (r['book_id'] as int <= 39 ? 'OT' : 'NT'),
+                'testament':
+                    r['testament'] as String? ??
+                    (r['book_id'] as int <= 39 ? 'OT' : 'NT'),
               },
             )
             .toList();
@@ -488,7 +547,11 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                        padding: const EdgeInsets.only(
+                          bottom: 8.0,
+                          left: 8.0,
+                          right: 8.0,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
@@ -497,10 +560,14 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
                                 ),
                                 onPressed: () {
-                                  final idx = _books.indexWhere((b) => b['testament'] == 'OT');
+                                  final idx = _books.indexWhere(
+                                    (b) => b['testament'] == 'OT',
+                                  );
                                   if (idx != -1) _scrollToBook(idx);
                                 },
                                 child: const Text('구약 (OT)'),
@@ -513,10 +580,14 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
                                 ),
                                 onPressed: () {
-                                  final idx = _books.indexWhere((b) => b['testament'] == 'NT');
+                                  final idx = _books.indexWhere(
+                                    (b) => b['testament'] == 'NT',
+                                  );
                                   if (idx != -1) _scrollToBook(idx);
                                 },
                                 child: const Text('신약 (NT)'),
@@ -617,7 +688,8 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   @override
   void didUpdateWidget(covariant CommentaryPane oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.bookId != widget.bookId || oldWidget.chapter != widget.chapter) {
+    if (oldWidget.bookId != widget.bookId ||
+        oldWidget.chapter != widget.chapter) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
@@ -633,7 +705,10 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         .replaceAll(RegExp(r'<p>', caseSensitive: false), '');
 
     final spans = <TextSpan>[];
-    final tagRegex = RegExp(r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)', caseSensitive: false);
+    final tagRegex = RegExp(
+      r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)',
+      caseSensitive: false,
+    );
     final matches = tagRegex.allMatches(text);
 
     for (final match in matches) {
@@ -650,12 +725,12 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
           ),
         );
       } else if (match.group(3) != null) {
-        spans.add(TextSpan(text: match.group(3)));
+        spans.add(TextSpan(text: match.group(3), style: baseStyle));
       }
     }
 
     if (spans.isEmpty) {
-      spans.add(TextSpan(text: text));
+      spans.add(TextSpan(text: text, style: baseStyle));
     }
     return spans;
   }
@@ -676,11 +751,32 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
     }
 
     final theme = Theme.of(context);
-    final baseTextStyle = theme.textTheme.bodyMedium ?? const TextStyle();
-    final activeCommentary = ref.watch(activeCommentarySelectionProvider).asData?.value;
+    final readerSettings =
+        ref.watch(readerSettingsProvider).value ??
+        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final baseTextStyle =
+        theme.textTheme.bodyMedium?.copyWith(
+          fontFamily: fontFamilyForType(fontType),
+          fontSize: readerSettings.fontSize,
+          height: readerSettings.lineSpacing,
+        ) ??
+        TextStyle(
+          fontFamily: fontFamilyForType(fontType),
+          fontSize: readerSettings.fontSize,
+          height: readerSettings.lineSpacing,
+        );
+    final activeCommentary = ref
+        .watch(activeCommentarySelectionProvider)
+        .asData
+        ?.value;
 
-    var bookName = repo.loadBookName(dbPath: widget.dbPath, bookId: widget.bookId);
-    if (widget.dbPath.contains('com_kor_') && RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+    var bookName = repo.loadBookName(
+      dbPath: widget.dbPath,
+      bookId: widget.bookId,
+    );
+    if (widget.dbPath.contains('com_kor_') &&
+        RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
       final names = bibleBookNames[widget.bookId];
       if (names != null && names.isNotEmpty) {
         bookName = names.last;
@@ -728,7 +824,10 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
             }
           }
         }
-        targetComment ??= verses.firstWhere((cv) => cv.text.trim().isNotEmpty, orElse: () => verses.first);
+        targetComment ??= verses.firstWhere(
+          (cv) => cv.text.trim().isNotEmpty,
+          orElse: () => verses.first,
+        );
         final key = keys[targetComment.verse];
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (key != null) {
@@ -757,8 +856,13 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                 if (v.text.trim().isNotEmpty)
                   Card(
                     key: keys[v.verse],
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                     color: theme.colorScheme.surfaceContainer,
                     child: Padding(
@@ -776,9 +880,10 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                           const SizedBox(height: 8),
                           Text.rich(
                             TextSpan(
+                              style: baseTextStyle,
                               children: _parseHtmlToTextSpans(
                                 v.text,
-                                baseTextStyle.copyWith(height: 1.5),
+                                baseTextStyle,
                               ),
                             ),
                           ),
@@ -791,7 +896,10 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         ),
       );
     } else {
-      final intro = verses.firstWhere((v) => v.verse == 0, orElse: () => verses.first);
+      final intro = verses.firstWhere(
+        (v) => v.verse == 0,
+        orElse: () => verses.first,
+      );
       contentWidget = Scrollbar(
         controller: _scrollController,
         thumbVisibility: true,
@@ -800,10 +908,8 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
           padding: const EdgeInsets.all(16),
           child: Text.rich(
             TextSpan(
-              children: _parseHtmlToTextSpans(
-                intro.text,
-                baseTextStyle.copyWith(height: 1.5),
-              ),
+              style: baseTextStyle,
+              children: _parseHtmlToTextSpans(intro.text, baseTextStyle),
             ),
           ),
         ),
@@ -814,10 +920,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
         border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 1,
-          ),
+          top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: Column(
@@ -843,7 +946,11 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                     icon: const Icon(Icons.menu_book, size: 18),
                     tooltip: '서론 및 소개 보기',
                     onPressed: () {
-                      _showCommentaryIntros(context, activeCommentary.file, activeCommentary.name);
+                      _showCommentaryIntros(
+                        context,
+                        activeCommentary.file,
+                        activeCommentary.name,
+                      );
                     },
                   ),
                 IconButton(
@@ -865,9 +972,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
               ],
             ),
           ),
-          Expanded(
-            child: contentWidget,
-          ),
+          Expanded(child: contentWidget),
         ],
       ),
     );
@@ -891,10 +996,8 @@ class CommentarySelectionSheet extends ConsumerWidget {
             child: Center(child: CircularProgressIndicator()),
           );
         }
-        final packs = snapshot.data
-                ?.where((p) => p.type == 'commentary')
-                .toList() ??
-            [];
+        final packs =
+            snapshot.data?.where((p) => p.type == 'commentary').toList() ?? [];
         if (packs.isEmpty) {
           return const SafeArea(
             child: Padding(
@@ -914,8 +1017,8 @@ class CommentarySelectionSheet extends ConsumerWidget {
                 child: Text(
                   'Select Commentary to Activate',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Flexible(
@@ -953,7 +1056,11 @@ class CommentarySelectionSheet extends ConsumerWidget {
   }
 }
 
-void _showCommentaryIntros(BuildContext context, String manifestFile, String commentaryName) {
+void _showCommentaryIntros(
+  BuildContext context,
+  String manifestFile,
+  String commentaryName,
+) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -991,7 +1098,8 @@ class _CommentaryIntroListSheet extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<_CommentaryIntroListSheet> createState() => _CommentaryIntroListSheetState();
+  State<_CommentaryIntroListSheet> createState() =>
+      _CommentaryIntroListSheetState();
 }
 
 class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
@@ -1098,7 +1206,9 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                   final intro = intros[idx];
                   return ListTile(
                     leading: Icon(
-                      intro.bookId == 0 ? Icons.info_outline : Icons.book_outlined,
+                      intro.bookId == 0
+                          ? Icons.info_outline
+                          : Icons.book_outlined,
                       color: theme.colorScheme.primary,
                     ),
                     title: Text(
@@ -1129,7 +1239,7 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
   }
 }
 
-class _CommentaryIntroViewerPage extends StatelessWidget {
+class _CommentaryIntroViewerPage extends ConsumerWidget {
   const _CommentaryIntroViewerPage({
     required this.intro,
     required this.commentaryName,
@@ -1139,13 +1249,23 @@ class _CommentaryIntroViewerPage extends StatelessWidget {
   final String commentaryName;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final baseTextStyle = theme.textTheme.bodyMedium?.copyWith(
-          height: 1.6,
-          fontSize: 16,
+    final readerSettings =
+        ref.watch(readerSettingsProvider).value ??
+        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final baseTextStyle =
+        theme.textTheme.bodyMedium?.copyWith(
+          fontFamily: fontFamilyForType(fontType),
+          height: readerSettings.lineSpacing,
+          fontSize: readerSettings.fontSize,
         ) ??
-        const TextStyle(height: 1.6, fontSize: 16);
+        TextStyle(
+          fontFamily: fontFamilyForType(fontType),
+          height: readerSettings.lineSpacing,
+          fontSize: readerSettings.fontSize,
+        );
 
     return Scaffold(
       appBar: AppBar(
@@ -1174,6 +1294,7 @@ class _CommentaryIntroViewerPage extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Text.rich(
               TextSpan(
+                style: baseTextStyle,
                 children: _parseIntroMarkdownAndHtml(
                   intro.text,
                   baseTextStyle,
@@ -1188,7 +1309,11 @@ class _CommentaryIntroViewerPage extends StatelessWidget {
   }
 }
 
-List<TextSpan> _parseIntroMarkdownAndHtml(String rawText, TextStyle baseStyle, ThemeData theme) {
+List<TextSpan> _parseIntroMarkdownAndHtml(
+  String rawText,
+  TextStyle baseStyle,
+  ThemeData theme,
+) {
   final lines = rawText.split('\n');
   final spans = <TextSpan>[];
 
@@ -1200,13 +1325,14 @@ List<TextSpan> _parseIntroMarkdownAndHtml(String rawText, TextStyle baseStyle, T
     }
 
     if (line.startsWith('#')) {
-      final headerLevel = RegExp(r'^#+').firstMatch(line)?.group(0)?.length ?? 1;
+      final headerLevel =
+          RegExp(r'^#+').firstMatch(line)?.group(0)?.length ?? 1;
       final headerText = line.replaceAll(RegExp(r'^#+\s*'), '').trim();
-      
+
       double fontSizeFactor = 1.25;
       if (headerLevel == 1) fontSizeFactor = 1.45;
       if (headerLevel == 2) fontSizeFactor = 1.3;
-      
+
       spans.add(
         TextSpan(
           text: '$headerText\n',
@@ -1235,7 +1361,10 @@ List<TextSpan> _parseLineHtml(String line, TextStyle baseStyle) {
       .replaceAll(RegExp(r'<p>', caseSensitive: false), '');
 
   final spans = <TextSpan>[];
-  final tagRegex = RegExp(r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)', caseSensitive: false);
+  final tagRegex = RegExp(
+    r'<(b|i)>(.*?)</\1>|<[^>]+>|([^<]+)',
+    caseSensitive: false,
+  );
   final matches = tagRegex.allMatches(text);
 
   for (final match in matches) {
@@ -1252,13 +1381,12 @@ List<TextSpan> _parseLineHtml(String line, TextStyle baseStyle) {
         ),
       );
     } else if (match.group(3) != null) {
-      spans.add(TextSpan(text: match.group(3)));
+      spans.add(TextSpan(text: match.group(3), style: baseStyle));
     }
   }
 
   if (spans.isEmpty) {
-    spans.add(TextSpan(text: text));
+    spans.add(TextSpan(text: text, style: baseStyle));
   }
   return spans;
 }
-

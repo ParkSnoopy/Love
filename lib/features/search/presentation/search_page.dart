@@ -14,6 +14,8 @@ import '../../../data/storage/db_path_provider.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../../data/import/zip_extractor.dart';
+import '../../../app/font_controller.dart';
+import '../../../app/reader_settings_controller.dart';
 
 class SearchPage extends ConsumerWidget {
   const SearchPage({super.key});
@@ -42,10 +44,15 @@ class SearchPage extends ConsumerWidget {
           );
         }
         return commDbPathAsync.when(
-          loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-          error: (err, stack) => Scaffold(body: Center(child: Text('Error: $err'))),
+          loading: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+          error: (err, stack) =>
+              Scaffold(body: Center(child: Text('Error: $err'))),
           data: (commDbPath) {
-            return _SearchContentView(dbPath: dbPath, commentaryDbPath: commDbPath);
+            return _SearchContentView(
+              dbPath: dbPath,
+              commentaryDbPath: commDbPath,
+            );
           },
         );
       },
@@ -154,7 +161,11 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
       return targetPath;
     } catch (_) {
       try {
-        final targetPath = p.join(Directory.current.path, 'assets/data', manifestFile);
+        final targetPath = p.join(
+          Directory.current.path,
+          'assets/data',
+          manifestFile,
+        );
         if (File(targetPath).existsSync()) return targetPath;
       } catch (_) {}
       return null;
@@ -220,13 +231,15 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
             bookIdEnd: bookIdEnd,
           );
           for (final h in page) {
-            tempHits.add(SearchHit(
-              bookId: h.bookId,
-              chapter: h.chapter,
-              verse: h.verse,
-              text: h.text,
-              bibleName: pack.shortName,
-            ));
+            tempHits.add(
+              SearchHit(
+                bookId: h.bookId,
+                chapter: h.chapter,
+                verse: h.verse,
+                text: h.text,
+                bibleName: pack.shortName,
+              ),
+            );
           }
         }
 
@@ -258,7 +271,6 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
         if (selected) {
           setState(() {
             _selectedRange = value;
-            _selectedLanguage = 'active'; // Reset language when scope changes
             _hits = const [];
             _offset = 0;
             _hasMore = false;
@@ -273,6 +285,21 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
   Widget build(BuildContext context) {
     final isComm = _selectedRange == 'commentary';
     final packsAsync = ref.watch(biblePacksProvider);
+    final readerSettings =
+        ref.watch(readerSettingsProvider).value ??
+        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.sans;
+    final resultTextStyle =
+        Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontFamily: fontFamilyForType(fontType),
+          fontSize: readerSettings.fontSize,
+          height: readerSettings.lineSpacing,
+        ) ??
+        TextStyle(
+          fontFamily: fontFamilyForType(fontType),
+          fontSize: readerSettings.fontSize,
+          height: readerSettings.lineSpacing,
+        );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Search')),
@@ -286,6 +313,11 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
               .toSet()
               .toList();
           languages.sort();
+          final languageOptions = [...languages];
+          if (_selectedLanguage != 'active' &&
+              !languageOptions.contains(_selectedLanguage)) {
+            languageOptions.insert(0, _selectedLanguage);
+          }
 
           return Column(
             children: [
@@ -320,16 +352,28 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
               Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.language, size: 20, color: Theme.of(context).colorScheme.primary),
+                      Icon(
+                        Icons.language,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 8),
-                      const Text('언어 범위: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        '언어 범위: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonHideUnderline(
@@ -340,12 +384,23 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                             items: [
                               DropdownMenuItem(
                                 value: 'active',
-                                child: Text(isComm ? '현재 설정된 주석만' : '현재 설정된 번역만'),
+                                child: Text(
+                                  isComm ? '현재 설정된 주석만' : '현재 설정된 번역만',
+                                ),
                               ),
-                              ...languages.map((lang) => DropdownMenuItem(
-                                value: lang,
-                                child: Text(isComm ? '$lang 주석 전체' : '$lang 번역 전체'),
-                              )),
+                              ...languageOptions.map((lang) {
+                                final isUnavailable = !languages.contains(lang);
+                                return DropdownMenuItem(
+                                  value: lang,
+                                  child: Text(
+                                    isUnavailable
+                                        ? '$lang (현재 범위에 없음)'
+                                        : (isComm
+                                              ? '$lang 주석 전체'
+                                              : '$lang 번역 전체'),
+                                  ),
+                                );
+                              }),
                             ],
                             onChanged: (val) {
                               if (val != null) {
@@ -365,7 +420,9 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                   ),
                 ),
               ),
-              if (isComm && widget.commentaryDbPath == null && _selectedLanguage == 'active')
+              if (isComm &&
+                  widget.commentaryDbPath == null &&
+                  _selectedLanguage == 'active')
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Text(
@@ -374,8 +431,16 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-              if (_query.isNotEmpty && _hits.isEmpty && !_loading && !(isComm && widget.commentaryDbPath == null && _selectedLanguage == 'active'))
-                const Padding(padding: EdgeInsets.all(12), child: Text('No hits')),
+              if (_query.isNotEmpty &&
+                  _hits.isEmpty &&
+                  !_loading &&
+                  !(isComm &&
+                      widget.commentaryDbPath == null &&
+                      _selectedLanguage == 'active'))
+                const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text('No hits'),
+                ),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -393,15 +458,31 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                       dbPath: widget.dbPath,
                       bookId: h.bookId,
                     );
-                    final versionPrefix = h.bibleName != null ? '[${h.bibleName}] ' : '';
+                    final versionPrefix = h.bibleName != null
+                        ? '[${h.bibleName}] '
+                        : '';
                     final titleText = isComm
                         ? '[주석] $versionPrefix$bookName ${h.chapter}:${h.verse}'
                         : '$versionPrefix$bookName ${h.chapter}:${h.verse}';
 
                     return ListTile(
                       title: Text(titleText),
-                      subtitle: Text(h.text),
-                      onTap: () {
+                      subtitle: Text.rich(
+                        TextSpan(
+                          style: resultTextStyle,
+                          children: _highlightQuerySpans(
+                            text: h.text,
+                            query: _query,
+                            baseStyle: resultTextStyle,
+                            highlightStyle: resultTextStyle.copyWith(
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w800,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
                         final targetKey = VerseKey(
                           bookId: h.bookId,
                           chapter: h.chapter,
@@ -409,39 +490,64 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                         );
 
                         if (h.bibleName != null) {
-                          final match = packs.where((p) => p.shortName == h.bibleName || p.name == h.bibleName);
+                          final expectedType = isComm ? 'commentary' : 'bible';
+                          final match = packs.where(
+                            (p) =>
+                                p.type == expectedType &&
+                                (p.shortName == h.bibleName ||
+                                    p.name == h.bibleName),
+                          );
                           if (match.isNotEmpty) {
                             final pack = match.first;
                             if (pack.type == 'bible') {
-                              ref.read(activeBibleSelectionProvider.notifier).select(
+                              await ref
+                                  .read(activeBibleSelectionProvider.notifier)
+                                  .select(
                                     id: pack.id,
                                     file: pack.file,
                                     name: pack.name,
                                   );
+                              await ref.read(activeDbPathProvider.future);
                             } else if (pack.type == 'commentary') {
-                              ref.read(activeCommentarySelectionProvider.notifier).select(
+                              await ref
+                                  .read(
+                                    activeCommentarySelectionProvider.notifier,
+                                  )
+                                  .select(
                                     id: pack.id,
                                     file: pack.file,
                                     name: pack.name,
                                   );
+                              await ref.read(
+                                activeCommentaryDbPathProvider.future,
+                              );
                             }
                           }
                         }
 
-                        ref.read(readerRefProvider.notifier).jumpTo(
-                              bookId: h.bookId,
-                              chapter: h.chapter,
-                            );
+                        await ref
+                            .read(readerRefProvider.notifier)
+                            .jumpTo(bookId: h.bookId, chapter: h.chapter);
                         ref.read(verseSelectionProvider.notifier).clear();
-                        ref.read(verseSelectionProvider.notifier).tap(targetKey);
-                        ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+                        ref
+                            .read(verseSelectionProvider.notifier)
+                            .tap(targetKey);
+                        ref.read(targetScrollVerseProvider.notifier).state =
+                            targetKey;
 
                         if (isComm) {
-                          ref.read(commentaryVisibilityProvider.notifier).show();
-                          ref.read(targetScrollCommentaryVerseProvider.notifier).state = h.verse;
+                          ref
+                              .read(commentaryVisibilityProvider.notifier)
+                              .show();
+                          ref
+                              .read(
+                                targetScrollCommentaryVerseProvider.notifier,
+                              )
+                              .state = h
+                              .verse;
                         }
 
-                        context.go('/reader');
+                        if (context.mounted) context.go('/reader');
                       },
                     );
                   },
@@ -453,4 +559,37 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
       ),
     );
   }
+}
+
+List<TextSpan> _highlightQuerySpans({
+  required String text,
+  required String query,
+  required TextStyle baseStyle,
+  required TextStyle highlightStyle,
+}) {
+  final needle = query.trim();
+  if (needle.isEmpty) return [TextSpan(text: text, style: baseStyle)];
+
+  final lowerText = text.toLowerCase();
+  final lowerNeedle = needle.toLowerCase();
+  final spans = <TextSpan>[];
+  var start = 0;
+
+  while (start < text.length) {
+    final match = lowerText.indexOf(lowerNeedle, start);
+    if (match == -1) {
+      spans.add(TextSpan(text: text.substring(start), style: baseStyle));
+      break;
+    }
+    if (match > start) {
+      spans.add(TextSpan(text: text.substring(start, match), style: baseStyle));
+    }
+    final end = match + needle.length;
+    spans.add(
+      TextSpan(text: text.substring(match, end), style: highlightStyle),
+    );
+    start = end;
+  }
+
+  return spans.isEmpty ? [TextSpan(text: text, style: baseStyle)] : spans;
 }

@@ -3,6 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum FontType { sans, serif, mono }
 
+String fontFamilyForType(FontType fontType) {
+  return switch (fontType) {
+    FontType.sans => 'NotoSansKR',
+    FontType.serif => 'NotoSerifKR',
+    FontType.mono => 'NanumGothicCoding',
+  };
+}
+
 final fontTypeProvider = AsyncNotifierProvider<FontTypeController, FontType>(
   FontTypeController.new,
 );
