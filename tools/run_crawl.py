@@ -32,6 +32,7 @@ from extractors import (
     MatthewHenryKorExtractor,
     BakYunsenExtractor,
 )
+from book_names_localization import get_localized_book_names
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Output path helper
@@ -58,13 +59,17 @@ def comment_path(filename: str) -> str:
 def _localized_books_meta(target_id: str) -> list[dict]:
     """Return book metadata with localized display names.
 
-    Korean boards use Korean names. Non-Korean nocr boards currently expose
-    canonical English book names in article titles/navigation, so use eng_name
-    as books.name instead of Korean names.
+    Korean boards use Korean names. Non-Korean boards use language-localized book names.
     """
     if target_id.startswith("kor"):
         return BOOK_META_LIST
-    return [{**book, "name": book["eng_name"]} for book in BOOK_META_LIST]
+    
+    mapping = get_localized_book_names(target_id)
+    if mapping is None:
+        # Default/English
+        return [{**book, "name": book["eng_name"]} for book in BOOK_META_LIST]
+    
+    return [{**book, "name": mapping.get(book["book_id"], book["eng_name"])} for book in BOOK_META_LIST]
 
 
 def _bible(target_id: str, board_id: str, out_file: str, slug: str, label: str):
