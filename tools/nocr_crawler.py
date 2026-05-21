@@ -28,7 +28,7 @@ HEADERS = {
     ),
     "Accept-Language": "ko,en;q=0.9",
 }
-MAX_WORKERS = 8
+MAX_WORKERS = 12
 MAX_TIMEOUT = 120
 
 
@@ -57,8 +57,8 @@ def fetch(url: str, retries: int = 0, label: str | None = None) -> str:
             if attempt < retries:
                 where = label or url
                 print(
-                    f"  [WARN] {where} failed ({exc}); retry {attempt + 1}/{retries}",
-                    f"{f' -- [{label}] ({url})' if (attempt + 1 == retries) else ''}",
+                    f"  [WARN] {where}: retry {attempt + 1}/{retries} after error: {exc} "
+                    f"(url={url})",
                     flush=True,
                 )
                 continue
@@ -240,7 +240,7 @@ class NocrBoardCrawler:
                 return None
             return self.extractor.extract(srl, title, content_html)
         except Exception as exc:
-            print(f"  [WARN] article {srl} failed: {exc}")
+            print(f"  [WARN] article {srl} failed after {self.retries} retries: {exc}")
             return None
 
     # ── Main entry ────────────────────────────────────────────────────────────

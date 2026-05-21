@@ -85,115 +85,119 @@ def _commentary(
 
 REGISTRY = [
     # ── Korean Bibles ──────────────────────────────────────────────────────
-    _bible("korwrm", "korwrm", "ko_korwrm.sqlite", "korwrm", "우리말 성경"),
-    _bible("korkrv", "korkrv", "ko_korkrv.sqlite", "korkrv", "KOREAN 개역개정판"),
-    _bible("korkr4", "korkr4", "ko_korkr4.sqlite", "korkr4", "개역개정 4판"),
-    _bible("korkrb", "korkrb", "ko_korkrb.sqlite", "korkrb", "KOREAN 바른성경"),
-    _bible("korbbh", "korbbh", "ko_korbbh.sqlite", "korbbh", "바른성경 한문"),
-    _bible("kornks", "kornks", "ko_kornks.sqlite", "kornks", "KOREAN 표준새번역"),
-    _bible("kornrr", "kornrr", "ko_kornrr.sqlite", "kornrr", "새번역"),
-    _bible("korkjv", "korkjv", "ko_korkjv.sqlite", "korkjv", "한글 KJV"),
-    _bible("korhum", "korhum", "ko_korhum.sqlite", "korhum", "한글 흠정역"),
-    _bible("korkcb", "korkcb", "ko_korkcb.sqlite", "korkcb", "공동번역"),
-    _bible("korctr", "korctr", "ko_korctr.sqlite", "korctr", "KOREAN 공동번역 개정판"),
-    _bible("korcat", "korkcc", "ko_korcat.sqlite", "korcat", "KOREAN 카톨릭 성경"),
-    _bible("korkmb", "korklb", "ko_korkmb.sqlite", "korkmb", "KOREAN 현대인의 성경"),
-    _bible("korkml", "kortkv", "ko_korkml.sqlite", "korkml", "KOREAN 현대어 성경"),
+    _bible("korwrm", "korwrm", "kor_korwrm.sqlite", "korwrm", "우리말 성경"),
+    _bible("korkrv", "korkrv", "kor_korkrv.sqlite", "korkrv", "개역개정판"),
+    _bible("korkr4", "korkr4", "kor_korkr4.sqlite", "korkr4", "개역개정 4판"),
+    _bible("korkrb", "korkrb", "kor_korkrb.sqlite", "korkrb", "바른성경"),
+    _bible("korbbh", "korbbh", "kor_korbbh.sqlite", "korbbh", "바른성경 한문"),
+    _bible("kornks", "kornks", "kor_kornks.sqlite", "kornks", "표준새번역"),
+    _bible("kornrr", "kornrr", "kor_kornrr.sqlite", "kornrr", "새번역"),
+    _bible("korkjv", "korkjv", "kor_korkjv.sqlite", "korkjv", "한글 KJV"),
+    _bible("korhum", "korhum", "kor_korhum.sqlite", "korhum", "한글 흠정역"),
+    _bible("korkcb", "korkcb", "kor_korkcb.sqlite", "korkcb", "공동번역"),
+    _bible("korctr", "korctr", "kor_korctr.sqlite", "korctr", "공동번역 개정판"),
+    _bible("korcat", "korkcc", "kor_korcat.sqlite", "korcat", "카톨릭 성경"),
+    _bible("korkmb", "korklb", "kor_korkmb.sqlite", "korkmb", "현대인의 성경"),
+    _bible("korkml", "kortkv", "kor_korkml.sqlite", "korkml", "현대어 성경"),
     _bible(
-        "korhrc", "korhrv", "ko_korhrc.sqlite", "korhrc", "KOREAN 개역성경 국한문혼용"
-    ),
-    # ── Japanese Bibles ────────────────────────────────────────────────────
-    # Board IDs discovered from nav: japkougo → need to verify actual board IDs
-    # Update these if the actual board IDs differ from the manifest IDs.
-    # The manifest uses: ja_japbungo, ja_japkougo, ja_japshia
-    # Based on nocr.net URL structure (board = mid in XE), we try common patterns.
-    _bible(
-        "ja_japbungo",
-        "japbungo",
-        "ja_japbungo.sqlite",
-        "japbungo",
-        "JAPANESE 文語訳聖書",
-    ),
-    _bible(
-        "ja_japkougo",
-        "japkougo",
-        "ja_japkougo.sqlite",
-        "japkougo",
-        "JAPANESE 口語訳聖書 (1954/1955)",
-    ),
-    _bible(
-        "ja_japshia", "japshia", "ja_japshia.sqlite", "japshia", "JAPANESE 新共同訳聖書"
-    ),
-    # ── Chinese Bibles ─────────────────────────────────────────────────────
-    _bible(
-        "zh_chnlzzs",
-        "chnlzzs",
-        "zh_chnlzzs.sqlite",
-        "chnlzzs",
-        "CHINESE 吕振中版本简体",
-    ),
-    _bible(
-        "zh_chnlzzt",
-        "chnlzzt",
-        "zh_chnlzzt.sqlite",
-        "chnlzzt",
-        "CHINESE 吕振中版本繁体",
-    ),
-    _bible(
-        "zh_chnncvs",
-        "chnncvs",
-        "zh_chnncvs.sqlite",
-        "chnncvs",
-        "CHINESE 新中文版 (简体)",
-    ),
-    _bible(
-        "zh_chnncvt",
-        "chnncvt",
-        "zh_chnncvt.sqlite",
-        "chnncvt",
-        "CHINESE 新中文版 (繁体)",
-    ),
-    _bible(
-        "zh_ckjvgs",
-        "ckjvgs",
-        "zh_ckjvgs.sqlite",
-        "ckjvgs",
-        "CHINESE 中文英皇钦定本神版简体",
-    ),
-    _bible(
-        "zh_ckjvgt",
-        "ckjvgt",
-        "zh_ckjvgt.sqlite",
-        "ckjvgt",
-        "CHINESE 中文英皇钦定本神版繁體",
-    ),
-    _bible(
-        "zh_ckjvsds",
-        "ckjvsds",
-        "zh_ckjvsds.sqlite",
-        "ckjvsds",
-        "CHINESE 中文英皇钦定本上帝版 简体",
-    ),
-    _bible(
-        "zh_ckjvsdt",
-        "ckjvsdt",
-        "zh_ckjvsdt.sqlite",
-        "ckjvsdt",
-        "CHINESE 中文英皇钦定本上帝版 繁体",
-    ),
-    _bible(
-        "zh_twnthr", "twnthr", "zh_twnthr.sqlite", "twnthr", "TAIWAN 台語漢字羅馬本"
+        "korhrc", "korhrv", "kor_korhrc.sqlite", "korhrc", "개역성경 국한문혼용"
     ),
     # ── English Bibles ─────────────────────────────────────────────────────
+    _bible("eng_engniv", "engniv", "eng_engniv.sqlite", "engniv", "NIV 1984"),
     _bible(
-        "en_engniv", "engniv", "en_engniv.sqlite", "engniv", "New International Version"
+        "eng_niv2011",
+        "bible_engl_niv2011",
+        "eng_niv2011.sqlite",
+        "niv2011",
+        "NIV 2011",
     ),
     _bible(
-        "en_engrwb",
-        "engrwbs",
-        "en_engrwb.sqlite",
-        "engrwb",
-        "ENGLISH Revised Webter Version 1883",
+        "eng_nasb2020",
+        "bible_eng_nasb2020",
+        "eng_nasb2020.sqlite",
+        "nasb2020",
+        "NASB 2020",
+    ),
+    _bible(
+        "eng_wbs_rwbs",
+        "eng_wbs_rwbs",
+        "eng_wbs_rwbs.sqlite",
+        "wbs_rwbs",
+        "Webster / Revised Webster",
+    ),
+
+    # ── Hebrew / Aramaic Bibles ─────────────────────────────────────────────
+    _bible(
+        "heb_bhs_del",
+        "bible_heb_bhs_del",
+        "heb_bhs_del.sqlite",
+        "bhs_del",
+        "BHS (OT) & Delitzsche (NT)",
+    ),
+    _bible(
+        "heb_wlc_sge",
+        "bible_heb_wlc_sge",
+        "heb_wlc_sge.sqlite",
+        "wlc_sge",
+        "WLC (OT) & Salkinson (NT)",
+    ),
+    _bible(
+        "heb_allepo_mht",
+        "bible_heb_allepo_mht",
+        "heb_allepo_mht.sqlite",
+        "allepo_mht",
+        "Allepo (OT) & Modern Hebrew (NT)",
+    ),
+    _bible(
+        "heb_mapm",
+        "bible_heb_mapm",
+        "heb_mapm.sqlite",
+        "mapm",
+        "Miqra `al pi ha-Mesorah",
+    ),
+    _bible(
+        "aram_targum",
+        "bible_aram_targum",
+        "aram_targum.sqlite",
+        "aram_targum",
+        "Targum (OT / NT)",
+    ),
+    _bible("aram_pes", "bible_pes", "aram_pes.sqlite", "pes", "Peshitta New Testament"),
+    _bible("aram_peh", "bible_peh", "aram_peh.sqlite", "peh", "Peshitta NT Hebrew Letters"),
+    _bible("aram_phv", "bible_phv", "aram_phv.sqlite", "phv", "Peshitta NT Hebrew Letters with Vowels"),
+
+    # ── Greek Bibles ────────────────────────────────────────────────────────
+    _bible(
+        "grk_lxx_na28",
+        "bible_grk_lxx_na28",
+        "grk_lxx_na28.sqlite",
+        "lxx_na28",
+        "LXX (OT) & NA28 (NT)",
+    ),
+    _bible("grk_na27", "bible_grk_na27", "grk_na27.sqlite", "na27", "Nestle-Aland 27th Edition"),
+    _bible("grk_ubs4", "bible_grk_ubs4", "grk_ubs4.sqlite", "ubs4", "UBS 4th Edition"),
+    _bible("grk_ste", "bible_grk_ste", "grk_ste.sqlite", "ste", "Stephanus 1550 GNT"),
+    _bible("grk_byz", "bible_grk_byz", "grk_byz.sqlite", "byz", "Byzantine Text Form"),
+    _bible("grk_scr", "bible_grk_scr", "grk_scr.sqlite", "scr", "Scrivener's Edition"),
+    _bible("grk_wht", "bible_grk_wht", "grk_wht.sqlite", "wht", "Westcott / Hort Greek NT"),
+    _bible("grk_tis", "bible_grk_tis", "grk_tis.sqlite", "tis", "Tischendorf GNT"),
+    _bible("grk_sbl", "bible_grk_sbl", "grk_sbl.sqlite", "sbl", "SBL Greek NT"),
+    _bible("grk_vamas", "bible_grk_vamas", "grk_vamas.sqlite", "vamas", "Νεόφυτου Βάμβα Greek Bible"),
+
+    # ── Latin Bibles ────────────────────────────────────────────────────────
+    _bible(
+        "lat_vulgata",
+        "bible_latin_vulgata",
+        "lat_vulgata.sqlite",
+        "vulgata",
+        "Latin Vulgata Version",
+    ),
+    _bible(
+        "lat_vulglossa",
+        "bible_lat_vulglossa",
+        "lat_vulglossa.sqlite",
+        "vulglossa",
+        "Vulgata Glossa ordinara",
     ),
     # ── Korean Commentaries ────────────────────────────────────────────────
     _commentary(
@@ -209,7 +213,7 @@ REGISTRY = [
         "com_kor_mhw",
         "com_kor_mhw.sqlite",
         "mhw",
-        "메튜 헨리 주석 전체",
+        "메튜 헨리 주석",
         MatthewHenryKorExtractor(),
     ),
     _commentary(
@@ -229,9 +233,11 @@ _REGISTRY_MAP = {e["id"]: e for e in REGISTRY}
 _BIBLES = [e["id"] for e in REGISTRY if e["type"] == "bible"]
 _COMMENTARIES = [e["id"] for e in REGISTRY if e["type"] == "commentary"]
 _KO = [e["id"] for e in REGISTRY if e["id"].startswith("kor") and e["type"] == "bible"]
-_JA = [e["id"] for e in REGISTRY if e["id"].startswith("ja_")]
-_ZH = [e["id"] for e in REGISTRY if e["id"].startswith("zh_")]
-_EN = [e["id"] for e in REGISTRY if e["id"].startswith("en_")]
+_EN = [e["id"] for e in REGISTRY if e["id"].startswith("eng_")]
+_HEB = [e["id"] for e in REGISTRY if e["id"].startswith("heb_")]
+_ARAM = [e["id"] for e in REGISTRY if e["id"].startswith("aram_")]
+_GRK = [e["id"] for e in REGISTRY if e["id"].startswith("grk_")]
+_LAT = [e["id"] for e in REGISTRY if e["id"].startswith("lat_")]
 
 
 def resolve_targets(raw: str) -> list[dict]:
@@ -240,10 +246,16 @@ def resolve_targets(raw: str) -> list[dict]:
         "all": [e["id"] for e in REGISTRY],
         "bibles": _BIBLES,
         "commentaries": _COMMENTARIES,
-        "ko": _KO,
-        "ja": _JA,
-        "zh": _ZH,
-        "en": _EN,
+        "kor": _KO,
+        "eng": _EN,
+        "heb": _HEB,
+        "hebrew": _HEB,
+        "aram": _ARAM,
+        "aramaic": _ARAM,
+        "grk": _GRK,
+        "greek": _GRK,
+        "lat": _LAT,
+        "latin": _LAT,
     }
     ids = aliases.get(raw, [raw])
     result = []
@@ -261,6 +273,10 @@ def resolve_targets(raw: str) -> list[dict]:
 
 
 def crawl_target(entry: dict, retries: int):
+    if os.path.exists(entry["out_path"]):
+        print(f"  [SKIP] Existing SQLite file found: {entry['out_path']}")
+        return
+
     packager = SqlitePackager(
         out_path=entry["out_path"],
         slug=entry["slug"],
@@ -282,7 +298,7 @@ def main():
         "--target",
         "-t",
         default="all",
-        help="Target ID, group alias (all/bibles/commentaries/ko/ja/zh/en), or board ID",
+        help="Target ID, group alias (all/bibles/commentaries/ko/en/hebrew/aramaic/greek/latin), or board ID",
     )
     parser.add_argument(
         "--list", "-l", action="store_true", help="List all available targets and exit"
@@ -299,7 +315,7 @@ def main():
         print("Available targets:")
         for e in REGISTRY:
             print(f"  {e['id']:<25} {e['label']}  [{e['type']}]  board={e['board_id']}")
-        print("\nGroup aliases: all, bibles, commentaries, ko, ja, zh, en")
+        print("\nGroup aliases: all, bibles, commentaries, ko, en, hebrew, aramaic, greek, latin")
         return
 
     targets = resolve_targets(args.target)

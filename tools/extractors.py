@@ -142,6 +142,13 @@ _KOR_BOOK_NAME_TO_ID.update({
     "요한이서": 63,
     "요한삼서": 64,
 })
+_ENG_BOOK_NAME_TO_ID: dict[str, int] = {b[2].lower(): b[0] for b in BOOKS}
+_ENG_BOOK_NAME_TO_ID.update({
+    "psalm": 19,
+    "song of solomon": 22,
+    "canticles": 22,
+    "revelation of john": 66,
+})
 
 # Short abbreviations used in PYS ("창", "출", ...) → id
 _KOR_ABBREV_TO_ID: dict[str, int] = {
@@ -370,23 +377,34 @@ def clean_text(text: str) -> str:
 # Title format: "{Board prefix} {KorBookName} {NN}장"
 # e.g. "우리말성경 창세기 01장"  →  book_id=1, chapter=1
 _TITLE_BOOK_CHAPTER_RE = re.compile(r"([가-힣\s]+?)\s+(\d+)장$")
+_ENG_TITLE_BOOK_CHAPTER_RE = re.compile(
+    r"(?:^|,)\s*([1-3]?\s*[A-Za-z][A-Za-z\s]+?)\s*,?\s*Chapter\s+(\d+)$",
+    re.IGNORECASE,
+)
 
 
 def title_to_book_chapter(title: str) -> tuple[int, int] | None:
     """Parse title like '우리말성경 창세기 01장' → (1, 1)."""
     title = title.strip()
     m = _TITLE_BOOK_CHAPTER_RE.search(title)
-    if not m:
-        return None
-    book_phrase, chap_str = m.group(1).strip(), m.group(2)
-    # The book phrase may include the board prefix (e.g. "우리말성경 창세기")
-    # Try the last token first, then progressively longer suffixes.
-    tokens = book_phrase.split()
-    for start in range(len(tokens) - 1, -1, -1):
-        candidate = "".join(tokens[start:])
-        bid = kor_abbrev_to_book_id(candidate)
+    if m:
+        book_phrase, chap_str = m.group(1).strip(), m.group(2)
+        # The book phrase may include the board prefix (e.g. "우리말성경 창세기")
+        # Try the last token first, then progressively longer suffixes.
+        tokens = book_phrase.split()
+        for start in range(len(tokens) - 1, -1, -1):
+            candidate = "".join(tokens[start:])
+            bid = kor_abbrev_to_book_id(candidate)
+            if bid:
+                return (bid, int(chap_str))
+
+    m = _ENG_TITLE_BOOK_CHAPTER_RE.search(title)
+    if m:
+        book_name = re.sub(r"\s+", " ", m.group(1)).strip().lower()
+        bid = _ENG_BOOK_NAME_TO_ID.get(book_name)
         if bid:
-            return (bid, int(chap_str))
+            return (bid, int(m.group(2)))
+
     return None
 
 
