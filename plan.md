@@ -1,707 +1,153 @@
 # Bible App Implementation Plan (Flutter + Drift, Offline, Strict Validation)
 
-> For future execution after context compaction.
-> Project root: current Flutter repo.
-> Data source: `assets/data.zip` (already unpacked under `assets/data/` for analysis).
-> Tone constraints already decided in session. This file is execution spec.
-
-## 0) Locked Product Decisions (from grill)
-
-1. Platform: Flutter first.
-2. Scope: reader-first + study-core.
-3. Data packaging: ship `assets/data.zip`; user selects version/commentary; unzip selected packs on demand.
-4. Data integrity: strict fail import (any unresolved required mapping -> fail).
-5. Commentary: user picks commentary pack per selected Bible version.
-6. Search: no FTS; SQL `LIKE`; page size 100; infinite scroll by offset when bottom reached.
-7. Storage policy: keep `assets/data.zip`; keep all extracted sets.
-8. Navigation: book/chapter picker + chapter swipe + verse tap actions.
-9. Study v1: bookmarks, 3-color highlights, notes, recent history (50).
-10. User data in separate DB (`user_data.db`), source Bible/comment DB read-only.
-11. Import UX: background isolate + progress phases + retry.
-12. Failure UX split:
-   - debug: crash with verbose error
-   - release: simple error popup
-13. State management: Riverpod.
-14. DB layer: Drift (web-support path).
-15. Web: import selected packs once into browser storage; clear-packs option.
-16. License gate: skip in v1 (no blocking).
-17. Module split:
-   - features/library
-   - features/reader
-   - features/study
-   - features/search
-   - data/drift
-   - data/import
-18. Verse selection UX:
-   - tap = single select
-   - long-press = multi-select mode
-   - actions: Copy / Share / Jump Comment (jump disabled for multi)
-19. Export format:
-   - header: `Book Chapter:Verse-Range`
-   - blank line
-   - body lines: `[Chapter:Verse] verse_content`
-20. Comment jump fallback: open commentary pane with “No commentary installed/mapped…” + Manage packs button.
-21. Version switch: keep same ref; clamp if verse/chapter missing.
-22. Theme:
-   - mode: light/dark/system (default system)
-   - palette reference: `https://getdesign.md/design-md/claude/preview`
-   - controls: global font-type + font-size + line-height
-   - fonts: strict local only from `assets/fonts/*`
-23. Ship gate fixed (must all pass before v1 release).
-24. Commentary reference parser grammar: full set (single, ranges, cross-chapter, comma list, shorthand, aliases).
+This document details the architecture, design choices, data contracts, and implementation guidelines for reproducing this Bible application. It has been updated to reflect the completed development, emphasizing offline database pre-processing to minimize runtime overhead.
 
 ---
 
-## 1) Current Repo Baseline
+## 0) Locked Product Decisions
 
-Observed:
-- Flutter scaffold app only (`lib/main.dart` starter).
-- Assets exist:
-  - `assets/data.zip`
-  - unpacked DBs under `assets/data/`
-  - fonts under `assets/fonts/`
-- `pubspec.yaml` minimal dependencies currently.
-
-Implication: build from near-zero app layer. Keep architecture clean now.
-
----
-
-## 2) Target Architecture (high-level)
-
-### 2.1 Runtime data model
-
-Three storage zones:
-1. Bundled assets (read-only in package):
-   - `assets/data.zip`
-   - font files
-2. Imported content packs (app sandbox):
-   - extracted Bible DB(s)
-   - extracted commentary DB(s)
-   - generated mapping/index DB per pack pair
-3. User state DB (`user_data.db`):
-   - bookmarks
-   - highlights
-   - notes
-   - recent history
-   - settings (theme mode, font type, font size, line height, active pack IDs)
-
-### 2.2 Domain layers
-
-- `data/import`: zip extraction, schema validation, parser + commentary mapping build.
-- `data/drift`: DB connections, DAOs, migrations.
-- `features/library`: pack selection/install/activation.
-- `features/reader`: chapter display, verse selection, commentary jump.
-- `features/search`: LIKE search + offset pagination.
-- `features/study`: bookmark/highlight/note/history.
-- `app/theme`: Claude-inspired token mapping + local font switching.
-
-### 2.3 Strict validation principle
-
-Pack activation allowed only if all required checks pass:
-- required tables present
-- required columns present
-- no duplicate PK in verse key space
-- commentary reference parsing succeeds
-- unresolved verse refs count == 0
-
-If failure:
-- debug build: throw with verbose diagnostic
-- release build: concise popup
-- previous active pack remains active
+1. **Platform**: Flutter-first (cross-platform native and web support).
+2. **Scope**: Reader-first user experience combined with essential study tools.
+3. **Data Packaging**: Bundled `assets/data.zip` containing pre-processed databases. Assets are extracted to client storage on demand.
+4. **Commentary Integration**: User selects a commentary database corresponding to the active Bible translation.
+5. **Commentary Data Strategy (Pre-processed Sparse Schema)**: Commentaries are pre-migrated offline to use the exact same schema as Bibles. This eliminates runtime regex reference parsing, isolate mapping overhead, and database parsing errors on client devices.
+6. **Reader Navigation**: Persistent book/chapter picker, swipe gestures for chapter transitions, and tap/long-press actions on verses.
+7. **Position Persistence**: Active book and chapter are stored in persistent local storage. When switching Bibles, the position is clamped to the new database boundaries (max book/chapter).
+8. **Commentary Toggle**: A dedicated visibility toggle allows users to show or hide the commentary pane without losing their active selection or having to re-select the database.
+9. **Introduction & Preface Viewer**: General prefaces and book introductions are fully preserved in the database. A dedicated picker and styled viewer allow readers to inspect these materials directly from the selection screen or active pane.
+10. **Study Tools**: Three-color highlights, bookmarks, editable verse notes, and a recent history list capped at 50 entries.
+11. **Storage Separation**: System data (Bibles and commentaries) remains read-only. All user state (bookmarks, notes, history) is written to a separate SQLite database.
+12. **Search Implementation**: Debounced text search utilizing SQL wildcard operators with page-offset pagination. Min-length limits are applied based on writing system (longer for Latin scripts, shorter for CJK characters).
+13. **Theme & Typography**: Claude-inspired color palette supporting light, dark, and system-defined appearance. Typography relies strictly on local fonts to ensure complete offline usability.
 
 ---
 
-## 3) Proposed File/Folder Blueprint
+## 1) System Architecture
 
-Create under `lib/` (target structure):
-- `lib/app/app.dart`
-- `lib/app/router.dart`
-- `lib/app/theme/app_theme.dart`
-- `lib/app/theme/claude_palette.dart`
-- `lib/app/theme/typography.dart`
-- `lib/app/theme/theme_controller.dart`
-- `lib/core/constants/app_constants.dart`
-- `lib/core/constants/asset_paths.dart`
-- `lib/core/errors/app_exception.dart`
-- `lib/core/errors/import_exception.dart`
-- `lib/core/logging/logger.dart`
-- `lib/core/utils/ref_format.dart`
-- `lib/core/utils/bible_ref_parser.dart`
-- `lib/core/utils/verse_export_formatter.dart`
-- `lib/data/drift/content/content_db.dart`
-- `lib/data/drift/content/content_db_web.dart`
-- `lib/data/drift/content/content_db_native.dart`
-- `lib/data/drift/content/tables/content_pack_tables.dart`
-- `lib/data/drift/content/tables/commentary_map_tables.dart`
-- `lib/data/drift/content/dao/bible_read_dao.dart`
-- `lib/data/drift/content/dao/commentary_read_dao.dart`
-- `lib/data/drift/content/dao/search_dao.dart`
-- `lib/data/drift/user/user_db.dart`
-- `lib/data/drift/user/tables/bookmarks_table.dart`
-- `lib/data/drift/user/tables/highlights_table.dart`
-- `lib/data/drift/user/tables/notes_table.dart`
-- `lib/data/drift/user/tables/history_table.dart`
-- `lib/data/drift/user/tables/settings_table.dart`
-- `lib/data/drift/user/dao/study_dao.dart`
-- `lib/data/drift/user/dao/settings_dao.dart`
-- `lib/data/drift/converters/enum_converters.dart`
-- `lib/data/drift/migrations/user_migrations.dart`
-- `lib/data/import/import_orchestrator.dart`
-- `lib/data/import/zip_extractor.dart`
-- `lib/data/import/schema_validator.dart`
-- `lib/data/import/commentary_mapper.dart`
-- `lib/data/import/manifest_loader.dart`
-- `lib/data/import/import_progress.dart`
-- `lib/data/import/import_report.dart`
-- `lib/data/import/isolate_entrypoint.dart`
-- `lib/features/library/domain/models/bible_pack.dart`
-- `lib/features/library/domain/models/commentary_pack.dart`
-- `lib/features/library/domain/models/install_state.dart`
-- `lib/features/library/presentation/pages/library_page.dart`
-- `lib/features/library/presentation/widgets/pack_selector.dart`
-- `lib/features/library/presentation/widgets/install_progress_card.dart`
-- `lib/features/library/presentation/widgets/pack_manage_sheet.dart`
-- `lib/features/library/providers/library_providers.dart`
-- `lib/features/reader/domain/models/verse_view_model.dart`
-- `lib/features/reader/domain/models/selection_state.dart`
-- `lib/features/reader/presentation/pages/reader_page.dart`
-- `lib/features/reader/presentation/widgets/chapter_swiper.dart`
-- `lib/features/reader/presentation/widgets/verse_list.dart`
-- `lib/features/reader/presentation/widgets/verse_tile.dart`
-- `lib/features/reader/presentation/widgets/selection_action_bar.dart`
-- `lib/features/reader/presentation/widgets/book_chapter_picker.dart`
-- `lib/features/reader/presentation/widgets/commentary_pane.dart`
-- `lib/features/reader/providers/reader_providers.dart`
-- `lib/features/search/domain/models/search_result.dart`
-- `lib/features/search/presentation/pages/search_page.dart`
-- `lib/features/search/presentation/widgets/search_result_list.dart`
-- `lib/features/search/providers/search_providers.dart`
-- `lib/features/study/presentation/widgets/note_editor_sheet.dart`
-- `lib/features/study/presentation/widgets/highlight_palette_sheet.dart`
-- `lib/features/study/providers/study_providers.dart`
-- `lib/bootstrap.dart`
-- `lib/main.dart`
+### 1.1 Storage Zones
 
-Add tests (target structure):
-- `test/unit/core/bible_ref_parser_test.dart`
-- `test/unit/core/verse_export_formatter_test.dart`
-- `test/unit/data/import/schema_validator_test.dart`
-- `test/unit/data/import/commentary_mapper_test.dart`
-- `test/unit/data/search/like_pagination_test.dart`
-- `test/unit/data/study/study_dao_test.dart`
-- `test/widget/library/install_flow_test.dart`
-- `test/widget/reader/selection_action_bar_test.dart`
-- `test/widget/reader/comment_jump_test.dart`
-- `test/widget/search/infinite_scroll_test.dart`
-- `test/integration/app_smoke_test.dart`
+The application manages data across three distinct zones:
+- **Bundled Assets (Read-Only)**: `assets/data.zip` containing the compressed databases, alongside local font files.
+- **Imported Sandbox (Read-Only client-side)**: Extracted SQLite files for active Bible translations and commentary packs.
+- **User Database (Writeable)**: A standalone `user_data.db` file containing user state, history, bookmarks, notes, and application preferences.
+
+### 1.2 Database Schema & Data Contracts
+
+To maintain schema uniformity and enable direct SQLite index lookups, both Bible and commentary databases implement the following schema.
+
+#### Tables
+- **`version`**: Metadata containing the slug identifier and the display label.
+- **`books`**: Registry of books within the translation. Contains book ID, OSIS identifier, English name, native language name, testament category, and total chapter count.
+- **`verses`**: The text content indexed by book ID, chapter, and verse.
+
+#### Index
+- **`idx_v_bc`**: Index defined on `verses(book_id, chapter)` to optimize reader lookups.
+
+#### View
+- **`indexing`**: Virtual table joining books and version details to expose metadata to the application layer.
+
+### 1.3 Commentary Data Mapping Rules (Sparse Schema)
+
+Instead of a complex relational mapping database, commentaries map directly to the `verses` table schema:
+- **General Prefaces / Author Introductions**: Mapped under a dummy book `book_id = 0` (OSIS: `INTRO`, English Name: `General Intro`, Native Name: `일반 서론/소개`). Content is indexed under `chapter = 0` with sequential verse numbers (`verse = 1, 2, 3...`).
+- **Book-level Introductions / Background Details**: Saved under `book_id = X` (where X is the canonical book ID), `chapter = 0`, and `verse = 0`.
+- **Chapter-level Commentaries**: Written under `book_id = X`, `chapter = Y`, and `verse = 0`.
+- **Verse-specific Comments**: Written under `book_id = X`, `chapter = Y`, and `verse = Z` (for commentaries that target specific verses).
 
 ---
 
-## 4) Dependencies to add (pubspec)
+## 2) Offline Database Migration (Pre-computation Process)
 
-Core:
-- `flutter_riverpod`
-- `riverpod_annotation` (optional if using generator)
-- `go_router` (optional but recommended)
-- `drift`
-- `drift_flutter` (or drift + platform-specific executors)
-- `sqlite3`
-- `sqlite3_flutter_libs`
-- `path`
-- `path_provider`
-- `archive` (zip extract)
-- `collection`
-- `share_plus`
-- `package_info_plus` (optional)
-- `equatable` (optional)
+To avoid heavy text processing on client devices, a preprocessing script converts raw commentaries into the unified sparse schema.
 
-Dev:
-- `build_runner`
-- `drift_dev`
-- `riverpod_generator` (if using annotations)
-- `flutter_lints`
-- `mocktail`
+### 2.1 Regex Validation & Author Name Protection
+- During extraction, regex patterns match bible references to assign the correct `book_id` and `chapter`.
+- The matching logic uses explicit exclusion checks to prevent author names containing biblical terms (such as "John Gill" or "Matthew Henry") from being parsed as book matches ("John" or "Matthew").
 
-Assets/fonts config in `pubspec.yaml`:
-- include `assets/data.zip`
-- include `assets/data/` only if needed for debug fixtures (optional)
-- register font families:
-  - Sans: `assets/fonts/NotoSansKR.ttf`
-  - Serif: `assets/fonts/NotoSerifKR.ttf`
-  - Mono: `assets/fonts/NanumGothicCoding.ttf`
+### 2.2 Text Normalization & Correction
+- Common typographic errors and misspellings in legacy commentaries (e.g., "Zephahiah" for Zephaniah or misplaced chapter titles in Korean Matthew Henry commentaries) are programmatically corrected during this phase.
+- Headers (such as markdown style headers) are preserved at the beginning of the text to represent article titles.
+
+### 2.3 Optimization
+- The database is rebuilt from scratch, and a `VACUUM` command is executed to compress binary storage size and optimize indexing performance before packaging.
 
 ---
 
-## 5) Data Contract Specs
+## 3) Core Reader Implementation
 
-### 5.1 Bible DB expected schema (validated)
+### 3.1 State and Navigation Management
+- Navigation uses a centralized controller that tracks the user's active location.
+- **Persistence**: Book ID and chapter indices are updated in local preferences upon page changes.
+- **Database Boundary Clamping**: When the active Bible version is swapped, the controller validates the current position against the new database limits. If the book ID exceeds the maximum books, it resets to the first book; if the chapter exceeds the maximum chapters of the current book, it clamps to the maximum chapter limit.
 
-Tables:
-- `books(book_id, osis, name_en, name_native, testament, chapter_count)`
-- `verses(book_id, chapter, verse, text)`
-- `version(slug, label)`
+### 3.2 Commentary Pane and Toggle Logic
+- The reader layout features a split viewport showing the scripture text on top and commentary on the bottom.
+- A boolean visibility controller governs the commentary pane's display.
+- Users can close the pane or toggle it off via the toolbar. Toggling it back on immediately restores the last viewed commentary article for the active chapter.
 
-Required constraints (enforced by validator):
-- non-null keys for verse tuple
-- no duplicate `(book_id, chapter, verse)`
-- verse text non-empty after trim
-
-### 5.2 Commentary DB observed schema family
-
-Typical tables:
-- `articles(article_id, title, text)`
-- `indexing(book_id, osis, name_en, name_native, testament, chapter_count)`
-- `comment(slug, label)`
-
-Because commentary rows often not pre-linked by verse tuple, mapping pipeline required.
-
-### 5.3 Internal generated mapping table (app-owned)
-
-Create app-managed table (content DB side or separate mapping DB):
-- `commentary_verse_map`
-  - `commentary_pack_id TEXT`
-  - `article_id INTEGER`
-  - `book_id INTEGER`
-  - `chapter INTEGER`
-  - `verse_start INTEGER`
-  - `verse_end INTEGER`
-  - `source_ref_text TEXT`
-  - PK composite on (`commentary_pack_id`,`article_id`,`book_id`,`chapter`,`verse_start`,`verse_end`)
-
-Use this for jump + commentary fetch by verse.
+### 3.3 Introduction Viewer Modal
+- **Trigger Points**:
+  - Tapping the Book icon in the active Commentary Pane header.
+  - Tapping the Information icon on a commentary package entry inside the selection sheet.
+- **List Presentation**: Displays a sheet showing available general prefaces (using info icons) and book-specific introductions (using book icons).
+- **Styled Viewport**: A dedicated page parses and renders the introduction content. It interprets markdown-style headers (translating header symbols to scaled, bold primary-colored titles) and inline formatting tags (such as bold and italics tags) using appropriate text styling.
 
 ---
 
-## 6) Reference Parser Spec (strict)
+## 4) User Data Schema (`user_data.db`)
 
-Parser inputs from commentary `title` and if needed `text` lead segment.
-
-Must support:
-1. Single ref: `John 3:16`
-2. Same chapter range: `John 3:16-18`
-3. Cross chapter range: `John 3:16-4:2`
-4. Comma list same chapter: `John 3:16,18,20`
-5. Context shorthand: `3:16-18` (book inferred from prior token/context)
-6. Book aliases:
-   - `osis`
-   - `name_en`
-   - `name_native`
-   - curated alias table (e.g., `Gen`, `Ge`, localized abbreviations)
-
-Strict rules:
-- every parsed reference must map to existing Bible verse key.
-- if any reference token parsed-but-unmapped => import fail.
-- if commentary article expected to have reference but parser cannot extract deterministically => import fail.
-
-Ambiguity policy:
-- do not guess book if missing and no context.
-- fail fast with diagnostics containing article id + offending snippet.
+### 4.1 Tables
+- **`bookmarks`**: Logs marked verses with references and creation timestamps.
+- **`highlights`**: Stores verse keys paired with a color code.
+- **`notes`**: Saves user-written notes associated with specific verses, with creation and update timestamps.
+- **`history`**: Tracks recently opened locations. A clean-up routine runs during inserts to delete older entries and cap the total row count at 50.
+- **`settings`**: Key-value table storing active translations, font preferences, line heights, and theme settings.
 
 ---
 
-## 7) Search Spec (LIKE, no FTS)
+## 5) Selection and Exporting
 
-Query behavior:
-- trim input.
-- min length:
-  - CJK: >=1
-  - other scripts: >=2
-- SQL:
-  - `WHERE text LIKE ? ESCAPE '\\'`
-  - bind `%keyword%` with escaped wildcards.
-- ordered by canonical reference `(book_id, chapter, verse)`.
-- page size fixed 100.
-- offset increments by 100 on scroll bottom.
-- stop when fetched < 100.
+### 5.1 Selection State Machine
+- **None**: Neutral reading state. Tapping a verse selects it.
+- **Single Selection**: One verse is active. Shows the action bar with functions for Copy, Share, Jump to Commentary, Bookmark, Highlight, and Add Note.
+- **Multi-Selection**: Activated via long-press. Multiple verses can be selected. The action bar hides the "Jump to Commentary" button. Tapping selected verses toggles their state.
 
-Performance mitigations:
-- debounce input (300ms).
-- cancel stale in-flight query on new input.
-- optional lightweight prefix cache in-memory for recent queries.
+### 5.2 Export Formatting Contract
+- Exported text must follow this layout:
+  - Header: Book Name, Chapter, and Verse Range (e.g., John 3:16-18 or John 3:16,18,20).
+  - A blank line separator.
+  - Bulleted or bracketed verse lines containing the chapter, verse number, and the corresponding text.
+- Before formatting, selected verse tuples are sorted in canonical biblical order.
 
 ---
 
-## 8) Reader + Selection + Export Spec
+## 6) Debounced Search Spec (LIKE queries)
 
-### 8.1 Selection state machine
-
-States:
-- `none`
-- `single(verseKey)`
-- `multi(Set<verseKey>)`
-
-Transitions:
-- tap in `none` -> `single`
-- long-press in any -> `multi` with current verse included
-- tap in `multi` toggles membership
-- clear action -> `none`
-
-### 8.2 Action bar behavior
-
-Single mode:
-- Copy
-- Share
-- Jump Comment
-- Bookmark
-- Highlight
-- Add Note
-
-Multi mode:
-- Copy
-- Share
-- Bookmark (batch optional)
-- Highlight (batch optional)
-- Jump Comment disabled
-
-### 8.3 Export formatting exact
-
-Header line:
-`{BookName} {Chapter}:{VerseRange}`
-
-Blank line
-
-Body lines:
-`[{Chapter}:{Verse}] {VerseText}`
-
-Range derivation:
-- if all selected within same chapter contiguous, range `start-end`
-- if disjoint, show compact comma/range expression (e.g., `3:16-18,20`)
-- for cross chapter selection, header uses first ref to last ref: `3:16-4:2`
-
-Sort always by canonical ref before export.
-
-### 8.4 Jump commentary
-
-For single selected verse:
-- query `commentary_verse_map` by active commentary pack and verse key/range inclusion.
-- if found -> open commentary pane at first best match; allow next/prev article nav.
-- if none -> open pane with empty-state + `Manage commentary packs` button.
+- Search text inputs are trimmed of outer whitespace.
+- Query execution starts after a debounce delay (e.g., 300 milliseconds) and cancels any outstanding in-flight queries.
+- Input length limits:
+  - Latin or other alphabetic scripts require a minimum of 2 characters.
+  - CJK characters require a minimum of 1 character.
+- Searches execute database-level `LIKE` queries with escaped search wildcards.
+- Results are paginated by offset increments and sorted chronologically by book, chapter, and verse.
 
 ---
 
-## 9) Study Data Spec (`user_data.db`)
+## 7) Theme & Local Typography
 
-Tables:
-1. `bookmarks`
-   - id, created_at, bible_pack_id, book_id, chapter, verse
-2. `highlights`
-   - id, color_code (3 options), created_at, bible_pack_id, book_id, chapter, verse
-3. `notes`
-   - id, created_at, updated_at, bible_pack_id, book_id, chapter, verse, content
-4. `history`
-   - id, opened_at, bible_pack_id, book_id, chapter, verse
-   - retain max 50 (enforce via trigger or cleanup query)
-5. `settings`
-   - key/value table for:
-     - active_bible_pack_id
-     - active_commentary_pack_id
-     - theme_mode (system/light/dark)
-     - font_type (sans/serif/mono)
-     - font_size
-     - line_height
-
-Indexes:
-- composite indexes on reference tuples for fast lookup.
+- **Contrast Verification**: Contrasts for scripture body text must meet standard accessibility requirements across light and dark modes.
+- **Color Scheme**: Employs a warm, low-fatigue cream or paper canvas for light mode, and a deep charcoal or slate palette for dark mode.
+- **Local Assets Only**: No external font loaders or remote network requests are allowed. Fonts must be loaded strictly from local directories.
 
 ---
 
-## 10) Theme Spec (Claude-inspired, local fonts only)
-
-Reference palette from provided link (not remote runtime dependency).
-
-Token mapping example:
-- light background: warm canvas
-- dark background: dark navy-like
-- accent: coral
-- support accents: muted teal/amber where needed
-
-Rules:
-- no runtime web font fetch.
-- font families only local assets.
-- global font switch applies app-wide text theme.
-- separate sliders for font size + line height.
-- default mode = system.
-
-Accessibility checks:
-- ensure readable contrast in both themes for scripture body text.
-- minimum font size clamp.
-
----
-
-## 11) Import Pipeline Detailed
-
-Phases (progress UI should show each):
-1. `Discover`: load `manifest.json`, list available packs.
-2. `Extract`: unzip selected Bible/commentary DB files to app data directory.
-3. `Validate Bible`: schema + key uniqueness + non-empty text checks.
-4. `Validate Commentary`: schema checks.
-5. `Build Alias Map`: from Bible books + commentary indexing + known alias table.
-6. `Parse References`: extract references from commentary rows.
-7. `Resolve References`: map each parsed ref to verse keys.
-8. `Build Mapping Table`: persist `commentary_verse_map`.
-9. `Finalize`: write install metadata + mark pack active.
-
-Failure handling:
-- produce structured `ImportReport`:
-  - phase
-  - fatal message
-  - article id / row id if relevant
-  - snippet
-  - counters (parsed, mapped, unresolved)
-- debug: throw `ImportException.verbose(report)`
-- release: popup generic failure + short code (e.g., `IMPORT_REF_UNRESOLVED`)
-
-Concurrency:
-- run heavy parse/mapping in isolate.
-- progress updates via stream/provider.
-
----
-
-## 12) Web-specific Plan (Drift web)
-
-Storage target:
-- Drift web backend persisted in browser storage (IndexedDB/opfs depending adapter).
-
-Web install flow:
-1. user chooses pack
-2. app extracts selected files (from bundled zip or fetched asset)
-3. import/validation pipeline runs
-4. generated DB/mapping persisted locally
-5. settings retains active packs
-
-Management:
-- settings page action: `Clear installed packs` (confirm dialog)
-
-Caveats:
-- browser storage quota errors must surface gracefully.
-- for large commentary, show estimated size before install (optional stretch).
-
----
-
-## 13) Milestone Plan (execution order)
-
-### Milestone A: Foundation bootstrap
-- Add dependencies.
-- Configure assets/fonts in pubspec.
-- Replace scaffold `main.dart` with app bootstrap + Riverpod scope.
-- Add theme skeleton + settings persistence stubs.
-
-Exit criteria:
-- app boots on mobile + web.
-- theme mode switch works with placeholder UI.
-
-### Milestone B: Data infrastructure
-- Create Drift user DB schema + DAOs.
-- Create content DB access wrapper for external sqlite files.
-- Implement manifest loader for pack list.
-
-Exit criteria:
-- can list Bible/comment packs from manifest in UI.
-
-### Milestone C: Import pipeline strict
-- zip extractor.
-- schema validator.
-- commentary ref parser + resolver.
-- mapping table build.
-- import report + progress stream + isolate.
-
-Exit criteria:
-- selected pack install completes for known-good sample.
-- forced bad sample fails with expected diagnostics.
-
-### Milestone D: Reader core
-- book/chapter picker.
-- verse list by active version.
-- chapter swipe prev/next.
-- version switch keep reference + clamp.
-
-Exit criteria:
-- stable chapter navigation and render.
-
-### Milestone E: Selection + actions
-- single/multi selection state machine.
-- action bar.
-- copy/share export formatter exact spec.
-- jump commentary + empty state path.
-
-Exit criteria:
-- export output matches exact format.
-- jump works when mapped.
-
-### Milestone F: Search
-- LIKE search DAO.
-- min-length policy by script.
-- pagination + infinite scroll.
-
-Exit criteria:
-- first 100 results then load-next works.
-
-### Milestone G: Study features
-- bookmark/highlight/note/history.
-- history cap 50 enforcement.
-
-Exit criteria:
-- data persists across restart.
-
-### Milestone H: Polishing + release gate
-- release vs debug error split.
-- manage packs screen.
-- clear installed packs.
-- full regression + ship checklist.
-
-Exit criteria:
-- all ship-gate items green.
-
----
-
-## 14) QA/Testing Strategy
-
-### 14.1 Unit tests (must-have)
-- parser grammar coverage for all required forms.
-- resolver mapping correctness.
-- validator strict fail behavior.
-- export formatter exact string snapshots.
-- search pagination and offset logic.
-
-### 14.2 Widget tests
-- selection transitions tap/long-press.
-- action bar state (single vs multi).
-- commentary empty-state pane behavior.
-- import progress UI phase transitions.
-
-### 14.3 Integration tests
-- end-to-end install selected Bible + commentary.
-- navigate chapter, select verse, jump commentary.
-- perform search + infinite scroll.
-- add note/highlight/bookmark persists.
-
-### 14.4 Manual smoke matrix
-- Android debug
-- Android release
-- iOS debug/release (if env)
-- Web Chrome
-- Desktop optional
-
----
-
-## 15) Build/Run/Test Commands (planned)
-
-Initial:
-- `flutter pub get`
-- `dart run build_runner build --delete-conflicting-outputs`
-
-Run:
-- `flutter run -d android`
-- `flutter run -d chrome`
-
-Test:
-- `flutter test`
-- targeted:
-  - `flutter test test/unit/core/bible_ref_parser_test.dart`
-  - `flutter test test/widget/reader/selection_action_bar_test.dart`
-
-Release checks:
-- `flutter build apk --release`
-- `flutter build web --release`
-
----
-
-## 16) Key Risks + Mitigations
-
-1. Commentary reference heterogeneity
-   - Risk: many malformed ref patterns.
-   - Mitigation: staged parser with explicit diagnostics and fixture corpus from multiple commentary DBs.
-
-2. LIKE search performance on large DB
-   - Risk: slow query on low-end devices.
-   - Mitigation: strict page cap 100, debounce, cancellable queries, optional prefilter by book/chapter in UI later.
-
-3. Web storage quota
-   - Risk: install failure due quota.
-   - Mitigation: size estimate + clear-packs tool + actionable error.
-
-4. Drift + external sqlite interop complexity
-   - Risk: using read-only external DB alongside managed user DB.
-   - Mitigation: isolate DB responsibilities clearly; keep content DB read-only connectors and user DB separate.
-
-5. Debug/release behavior divergence
-   - Risk: hidden issues in release.
-   - Mitigation: run full import flow in release build during QA.
-
----
-
-## 17) Ship Gate Checklist (must all be true)
-
-- [ ] Bible/comment pack pick + unzip + strict validate passes for target fixtures.
-- [ ] Reader nav/swipe/picker stable.
-- [ ] Verse single/multi select stable.
-- [ ] Export exact format matches spec.
-- [ ] Commentary jump works; unresolved refs = 0 for installed pair.
-- [ ] Search LIKE pagination (100/page + infinite scroll) works.
-- [ ] Bookmarks/highlights/notes/history(50) persistent.
-- [ ] Theme mode + global font type/size + line-height work.
-- [ ] Debug build crashes verbose on strict-fail.
-- [ ] Release build shows simple popup on strict-fail.
-
----
-
-## 18) Suggested Implementation Sequence (tiny tasks, commit-friendly)
-
-Phase 1 commits:
-1. chore: add dependencies and asset/font config.
-2. feat: bootstrap app + Riverpod + base routing.
-3. feat: add theme tokens + settings persistence.
-
-Phase 2 commits:
-4. feat: add user_data drift schema + DAOs.
-5. feat: add manifest loader and pack list UI.
-
-Phase 3 commits:
-6. feat: zip extraction service.
-7. feat: bible schema validator.
-8. feat: commentary schema validator.
-9. feat: reference parser core grammar.
-10. feat: resolver + mapping table builder.
-11. feat: import orchestrator + progress stream.
-12. feat: debug/release fail split behavior.
-
-Phase 4 commits:
-13. feat: reader page + book/chapter picker + swipe nav.
-14. feat: verse selection state machine.
-15. feat: selection action bar + copy/share formatter.
-16. feat: commentary jump + empty state.
-
-Phase 5 commits:
-17. feat: LIKE search + pagination providers/UI.
-18. feat: study features (bookmark/highlight/note/history).
-19. feat: pack management screen + clear packs.
-
-Phase 6 commits:
-20. test: parser/validator/search/selection coverage.
-21. test: integration smoke paths.
-22. chore: release build QA and bug fixes.
-
----
-
-## 19) Non-goals (v1)
-
-- Licensing enforcement gate.
-- Cloud sync/account.
-- FTS index.
-- Complex study analytics.
-- Multi-pane comparison beyond initial design unless capacity remains.
-
----
-
-## 20) Ready-to-execute summary
-
-This plan intentionally over-specifies:
-- architecture
-- DB contracts
-- parser grammar
-- strict validation behavior
-- UI state transitions
-- milestone/commit sequence
-- QA gates
-
-After context compaction, execution can proceed directly from this file without re-grill.
+## 8) Replication and QA Protocol
+
+### 8.1 Automated Unit Tests
+- **Database Copying**: Unit tests should copy pre-processed SQLite databases directly from the assets directory into a temporary test directory rather than trying to extract them from raw zip archives.
+- **Commentary Extraction**: Tests must verify both normal chapter commentary retrieval and introduction/preface loading.
+- **Persistence Testing**: Verify that position values are stored and clamped correctly when Mock SharedPreferences are updated with boundary-breaking indices.
+
+### 8.2 Build & Compilation Checks
+- Run static analysis to verify that the project builds without warnings, unused imports, or deprecated library references.
+- Verify that runtime zip extraction logic extracts assets cleanly to the app's documents directory across target native platforms.
