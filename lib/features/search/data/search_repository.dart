@@ -6,12 +6,14 @@ class SearchHit {
     required this.chapter,
     required this.verse,
     required this.text,
+    this.bibleName,
   });
 
   final int bookId;
   final int chapter;
   final int verse;
   final String text;
+  final String? bibleName;
 }
 
 class SearchRepository {
@@ -22,6 +24,8 @@ class SearchRepository {
     required String query,
     required int limit,
     required int offset,
+    int? bookIdStart,
+    int? bookIdEnd,
   }) {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const [];
@@ -36,10 +40,23 @@ class SearchRepository {
 
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final rows = db.select(
-        "SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE '\\' ORDER BY book_id, chapter, verse LIMIT ? OFFSET ?",
-        [pattern, limit, offset],
-      );
+      var sql = "SELECT book_id, chapter, verse, text FROM verses WHERE text LIKE ? ESCAPE '\\'";
+      final args = <Object>[pattern];
+
+      if (bookIdStart != null) {
+        sql += " AND book_id >= ?";
+        args.add(bookIdStart);
+      }
+      if (bookIdEnd != null) {
+        sql += " AND book_id <= ?";
+        args.add(bookIdEnd);
+      }
+
+      sql += " ORDER BY book_id, chapter, verse LIMIT ? OFFSET ?";
+      args.add(limit);
+      args.add(offset);
+
+      final rows = db.select(sql, args);
       return rows
           .map(
             (r) => SearchHit(

@@ -473,19 +473,22 @@ class _NotesTab extends ConsumerWidget {
                         context.go('/reader');
                       },
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.menu_book, size: 14, color: theme.colorScheme.primary),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2.0),
+                            child: Icon(Icons.menu_book, size: 14, color: theme.colorScheme.primary),
+                          ),
                           const SizedBox(width: 4),
-                          Text(
-                            verseText.isNotEmpty
-                                ? '$verseText'
-                                : '[Verse text not found in current translation]',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontStyle: FontStyle.italic,
+                          Expanded(
+                            child: Text(
+                              verseText.isNotEmpty
+                                  ? verseText
+                                  : '[Verse text not found in current translation]',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           ),
                         ],

@@ -6,6 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/manifest_repository.dart';
+import '../domain/bible_pack.dart';
+
+final biblePacksProvider = FutureProvider<List<BiblePack>>((ref) async {
+  const repo = ManifestRepository();
+  return repo.loadBiblePacksFromAsset();
+});
 
 class ActiveBibleSelection {
   const ActiveBibleSelection({required this.id, required this.file, required this.name});
