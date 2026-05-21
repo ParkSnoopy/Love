@@ -137,18 +137,22 @@ ALL_BOOKS_META = [INTRO_BOOK_META] + BOOK_META_LIST
 
 # Full-name → id
 _KOR_BOOK_NAME_TO_ID: dict[str, int] = {b[3]: b[0] for b in BOOKS}
-_KOR_BOOK_NAME_TO_ID.update({
-    "요한일서": 62,
-    "요한이서": 63,
-    "요한삼서": 64,
-})
+_KOR_BOOK_NAME_TO_ID.update(
+    {
+        "요한일서": 62,
+        "요한이서": 63,
+        "요한삼서": 64,
+    }
+)
 _ENG_BOOK_NAME_TO_ID: dict[str, int] = {b[2].lower(): b[0] for b in BOOKS}
-_ENG_BOOK_NAME_TO_ID.update({
-    "psalm": 19,
-    "song of solomon": 22,
-    "canticles": 22,
-    "revelation of john": 66,
-})
+_ENG_BOOK_NAME_TO_ID.update(
+    {
+        "psalm": 19,
+        "song of solomon": 22,
+        "canticles": 22,
+        "revelation of john": 66,
+    }
+)
 
 # Short abbreviations used in PYS ("창", "출", ...) → id
 _KOR_ABBREV_TO_ID: dict[str, int] = {

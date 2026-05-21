@@ -55,6 +55,18 @@ def comment_path(filename: str) -> str:
 # Each entry: (target_id, board_id, out_path, slug, label, extractor, books_meta)
 
 
+def _localized_books_meta(target_id: str) -> list[dict]:
+    """Return book metadata with localized display names.
+
+    Korean boards use Korean names. Non-Korean nocr boards currently expose
+    canonical English book names in article titles/navigation, so use eng_name
+    as books.name instead of Korean names.
+    """
+    if target_id.startswith("kor"):
+        return BOOK_META_LIST
+    return [{**book, "name": book["eng_name"]} for book in BOOK_META_LIST]
+
+
 def _bible(target_id: str, board_id: str, out_file: str, slug: str, label: str):
     return {
         "id": target_id,
@@ -63,7 +75,7 @@ def _bible(target_id: str, board_id: str, out_file: str, slug: str, label: str):
         "slug": slug,
         "label": label,
         "extractor": BibleExtractor(),
-        "books_meta": BOOK_META_LIST,
+        "books_meta": _localized_books_meta(target_id),
         "type": "bible",
     }
 
@@ -99,9 +111,7 @@ REGISTRY = [
     _bible("korcat", "korkcc", "kor_korcat.sqlite", "korcat", "카톨릭 성경"),
     _bible("korkmb", "korklb", "kor_korkmb.sqlite", "korkmb", "현대인의 성경"),
     _bible("korkml", "kortkv", "kor_korkml.sqlite", "korkml", "현대어 성경"),
-    _bible(
-        "korhrc", "korhrv", "kor_korhrc.sqlite", "korhrc", "개역성경 국한문혼용"
-    ),
+    _bible("korhrc", "korhrv", "kor_korhrc.sqlite", "korhrc", "개역성경 국한문혼용"),
     # ── English Bibles ─────────────────────────────────────────────────────
     _bible("eng_engniv", "engniv", "eng_engniv.sqlite", "engniv", "NIV 1984"),
     _bible(
@@ -125,7 +135,6 @@ REGISTRY = [
         "wbs_rwbs",
         "Webster / Revised Webster",
     ),
-
     # ── Hebrew / Aramaic Bibles ─────────────────────────────────────────────
     _bible(
         "heb_bhs_del",
@@ -163,9 +172,16 @@ REGISTRY = [
         "Targum (OT / NT)",
     ),
     _bible("aram_pes", "bible_pes", "aram_pes.sqlite", "pes", "Peshitta New Testament"),
-    _bible("aram_peh", "bible_peh", "aram_peh.sqlite", "peh", "Peshitta NT Hebrew Letters"),
-    _bible("aram_phv", "bible_phv", "aram_phv.sqlite", "phv", "Peshitta NT Hebrew Letters with Vowels"),
-
+    _bible(
+        "aram_peh", "bible_peh", "aram_peh.sqlite", "peh", "Peshitta NT Hebrew Letters"
+    ),
+    _bible(
+        "aram_phv",
+        "bible_phv",
+        "aram_phv.sqlite",
+        "phv",
+        "Peshitta NT Hebrew Letters with Vowels",
+    ),
     # ── Greek Bibles ────────────────────────────────────────────────────────
     _bible(
         "grk_lxx_na28",
@@ -174,16 +190,29 @@ REGISTRY = [
         "lxx_na28",
         "LXX (OT) & NA28 (NT)",
     ),
-    _bible("grk_na27", "bible_grk_na27", "grk_na27.sqlite", "na27", "Nestle-Aland 27th Edition"),
+    _bible(
+        "grk_na27",
+        "bible_grk_na27",
+        "grk_na27.sqlite",
+        "na27",
+        "Nestle-Aland 27th Edition",
+    ),
     _bible("grk_ubs4", "bible_grk_ubs4", "grk_ubs4.sqlite", "ubs4", "UBS 4th Edition"),
     _bible("grk_ste", "bible_grk_ste", "grk_ste.sqlite", "ste", "Stephanus 1550 GNT"),
     _bible("grk_byz", "bible_grk_byz", "grk_byz.sqlite", "byz", "Byzantine Text Form"),
     _bible("grk_scr", "bible_grk_scr", "grk_scr.sqlite", "scr", "Scrivener's Edition"),
-    _bible("grk_wht", "bible_grk_wht", "grk_wht.sqlite", "wht", "Westcott / Hort Greek NT"),
+    _bible(
+        "grk_wht", "bible_grk_wht", "grk_wht.sqlite", "wht", "Westcott / Hort Greek NT"
+    ),
     _bible("grk_tis", "bible_grk_tis", "grk_tis.sqlite", "tis", "Tischendorf GNT"),
     _bible("grk_sbl", "bible_grk_sbl", "grk_sbl.sqlite", "sbl", "SBL Greek NT"),
-    _bible("grk_vamas", "bible_grk_vamas", "grk_vamas.sqlite", "vamas", "Νεόφυτου Βάμβα Greek Bible"),
-
+    _bible(
+        "grk_vamas",
+        "bible_grk_vamas",
+        "grk_vamas.sqlite",
+        "vamas",
+        "Νεόφυτου Βάμβα Greek Bible",
+    ),
     # ── Latin Bibles ────────────────────────────────────────────────────────
     _bible(
         "lat_vulgata",
@@ -315,7 +344,9 @@ def main():
         print("Available targets:")
         for e in REGISTRY:
             print(f"  {e['id']:<25} {e['label']}  [{e['type']}]  board={e['board_id']}")
-        print("\nGroup aliases: all, bibles, commentaries, ko, en, hebrew, aramaic, greek, latin")
+        print(
+            "\nGroup aliases: all, bibles, commentaries, ko, en, hebrew, aramaic, greek, latin"
+        )
         return
 
     targets = resolve_targets(args.target)
