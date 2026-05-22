@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../../app/app_preferences.dart';
 import '../data/reader_repository.dart';
 import '../../../data/storage/db_path_provider.dart';
 
@@ -21,7 +21,7 @@ class ReaderRefController extends AsyncNotifier<ReaderRef> {
   @override
   Future<ReaderRef> build() async {
     final dbPath = await ref.watch(activeDbPathProvider.future);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     var bookId = prefs.getInt(_prefsKeyBookId) ?? 1;
     var chapter = prefs.getInt(_prefsKeyChapter) ?? 1;
 
@@ -106,7 +106,7 @@ class ReaderRefController extends AsyncNotifier<ReaderRef> {
   }
 
   Future<void> _save(ReaderRef refVal) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setInt(_prefsKeyBookId, refVal.bookId);
     await prefs.setInt(_prefsKeyChapter, refVal.chapter);
   }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../../app/app_preferences.dart';
 
 import '../domain/manifest_repository.dart';
 import '../domain/bible_pack.dart';
@@ -39,7 +39,7 @@ class ActiveBibleSelectionController
 
   @override
   Future<ActiveBibleSelection?> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     final savedId = prefs.getString(_prefsKeyId);
     final savedFile = prefs.getString(_prefsKeyFile);
     final savedName = prefs.getString(_prefsKeyName);
@@ -110,7 +110,7 @@ class ActiveBibleSelectionController
   }
 
   Future<void> _save(ActiveBibleSelection picked) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setString(_prefsKeyId, picked.id);
     await prefs.setString(_prefsKeyFile, picked.file);
     await prefs.setString(_prefsKeyName, picked.name);
@@ -143,7 +143,7 @@ class ActiveCommentarySelectionController
 
   @override
   Future<ActiveCommentarySelection?> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     final savedId = prefs.getString(_prefsKeyId);
     final savedFile = prefs.getString(_prefsKeyFile);
     final savedName = prefs.getString(_prefsKeyName);
@@ -186,7 +186,7 @@ class ActiveCommentarySelectionController
 
   Future<void> clear() async {
     state = const AsyncData(null);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.remove(_prefsKeyId);
     await prefs.remove(_prefsKeyFile);
     await prefs.remove(_prefsKeyName);
@@ -210,7 +210,7 @@ class ActiveCommentarySelectionController
   }
 
   Future<void> _save(ActiveCommentarySelection picked) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setString(_prefsKeyId, picked.id);
     await prefs.setString(_prefsKeyFile, picked.file);
     await prefs.setString(_prefsKeyName, picked.name);

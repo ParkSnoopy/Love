@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'app_preferences.dart';
 
 class ReaderSettingsState {
   const ReaderSettingsState({
@@ -20,7 +20,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
 
   @override
   Future<ReaderSettingsState> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     final fontSize = prefs.getDouble(_keyFontSize) ?? 16.0;
     final lineSpacing = prefs.getDouble(_keyLineSpacing) ?? 1.5;
     final uiScale = prefs.getDouble(_keyUiScale) ?? 1.0;
@@ -32,7 +32,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
   }
 
   Future<void> setFontSize(double val) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setDouble(_keyFontSize, val);
     state = AsyncData(
       ReaderSettingsState(
@@ -44,7 +44,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
   }
 
   Future<void> setLineSpacing(double val) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setDouble(_keyLineSpacing, val);
     state = AsyncData(
       ReaderSettingsState(
@@ -56,7 +56,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
   }
 
   Future<void> setUiScale(double val) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setDouble(_keyUiScale, val);
     state = AsyncData(
       ReaderSettingsState(

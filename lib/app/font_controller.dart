@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'app_preferences.dart';
 
 enum FontType { sans, serif, mono }
 
@@ -20,7 +20,7 @@ class FontTypeController extends AsyncNotifier<FontType> {
 
   @override
   Future<FontType> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     final index = prefs.getInt(_key) ?? FontType.serif.index;
     if (index >= 0 && index < FontType.values.length) {
       return FontType.values[index];
@@ -35,7 +35,7 @@ class FontTypeController extends AsyncNotifier<FontType> {
       FontType.serif => FontType.mono,
       FontType.mono => FontType.sans,
     };
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setInt(_key, next.index);
     state = AsyncData(next);
   }

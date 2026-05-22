@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'app_preferences.dart';
 
 final themeModeProvider = AsyncNotifierProvider<ThemeModeController, ThemeMode>(
   ThemeModeController.new,
@@ -11,7 +11,7 @@ class ThemeModeController extends AsyncNotifier<ThemeMode> {
 
   @override
   Future<ThemeMode> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     final index = prefs.getInt(_key) ?? ThemeMode.light.index;
     if (index >= 0 && index < ThemeMode.values.length) {
       return ThemeMode.values[index];
@@ -26,7 +26,7 @@ class ThemeModeController extends AsyncNotifier<ThemeMode> {
       ThemeMode.light => ThemeMode.dark,
       ThemeMode.dark => ThemeMode.system,
     };
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await AppPreferences.getInstance();
     await prefs.setInt(_key, next.index);
     state = AsyncData(next);
   }

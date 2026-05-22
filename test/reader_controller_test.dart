@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 
+import 'package:Love/app/app_preferences.dart';
 import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/data/storage/db_path_provider.dart';
 import 'package:Love/features/reader/providers/reader_controller.dart';
@@ -37,11 +37,15 @@ void main() {
     });
 
     setUp(() {
-      SharedPreferences.setMockInitialValues({});
+      AppPreferences.useMemoryStoreForTesting();
+    });
+
+    tearDown(() {
+      AppPreferences.clearMemoryStoreForTesting();
     });
 
     test(
-      'initializes with default values if no SharedPreferences exist',
+      'initializes with default values if no saved preferences exist',
       () async {
         final container = ProviderContainer(
           overrides: [
@@ -58,8 +62,8 @@ void main() {
       },
     );
 
-    test('loads saved reader position from SharedPreferences', () async {
-      SharedPreferences.setMockInitialValues({
+    test('loads saved reader position from app preferences', () async {
+      AppPreferences.useMemoryStoreForTesting({
         'reader_book_id': 40, // Matthew
         'reader_chapter': 5,
       });
@@ -76,7 +80,7 @@ void main() {
       expect(state.chapter, equals(5));
     });
 
-    test('saves reader position to SharedPreferences on jumpTo', () async {
+    test('saves reader position to app preferences on jumpTo', () async {
       final container = ProviderContainer(
         overrides: [
           activeDbPathProvider.overrideWith((ref) => Future.value(bibleDbPath)),
@@ -94,14 +98,14 @@ void main() {
       expect(state.bookId, equals(19));
       expect(state.chapter, equals(23));
 
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await AppPreferences.getInstance();
       expect(prefs.getInt('reader_book_id'), equals(19));
       expect(prefs.getInt('reader_chapter'), equals(23));
     });
 
     test('clamps invalid out-of-bound book and chapter to limits', () async {
       // 99 is invalid book id for Bible (max is 66)
-      SharedPreferences.setMockInitialValues({
+      AppPreferences.useMemoryStoreForTesting({
         'reader_book_id': 99,
         'reader_chapter': 1,
       });
@@ -123,7 +127,7 @@ void main() {
       'clamps invalid out-of-bound chapter of valid book to max chapter',
       () async {
         // Genesis has 50 chapters. Let's save chapter 99.
-        SharedPreferences.setMockInitialValues({
+        AppPreferences.useMemoryStoreForTesting({
           'reader_book_id': 1,
           'reader_chapter': 99,
         });
