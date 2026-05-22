@@ -32,7 +32,7 @@ class VerseActionPane extends ConsumerWidget {
     final bookmarksAsync = ref.watch(bookmarksProvider);
     final highlightsAsync = ref.watch(highlightsProvider);
     final userDataRepo = ref.watch(userDataRepositoryProvider);
-    final userDataDbPath = ref.watch(userDataDbPathProvider);
+    final userDataDbPath = ref.watch(userDataDbPathProvider).value ?? '';
     final selection = ref.watch(verseSelectionProvider);
 
     final bookmarks = bookmarksAsync.value ?? [];

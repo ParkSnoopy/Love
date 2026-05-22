@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sqlite3/sqlite3.dart';
 
 class HistoryEntry {
@@ -71,6 +73,11 @@ class UserDataRepository {
 
   void init(String dbPath) {
     if (_initializedPaths.contains(dbPath)) return;
+    final dbFile = File(dbPath);
+    final parent = dbFile.parent;
+    if (!parent.existsSync()) {
+      parent.createSync(recursive: true);
+    }
     final db = sqlite3.open(dbPath);
     try {
       db.execute('PRAGMA busy_timeout = 3000;');

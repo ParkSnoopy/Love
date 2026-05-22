@@ -142,7 +142,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
 
         final selection = ref.watch(verseSelectionProvider);
         final userDataRepo = ref.watch(userDataRepositoryProvider);
-        final userDataDbPath = ref.watch(userDataDbPathProvider);
+        final userDataDbPath = ref.watch(userDataDbPathProvider).value ?? '';
         final activeCommentaryDbPath = ref
             .watch(activeCommentaryDbPathProvider)
             .asData

@@ -117,7 +117,7 @@ class _BookmarksTab extends ConsumerWidget {
 
         const readerRepo = ReaderRepository();
         final userDataRepo = ref.read(userDataRepositoryProvider);
-        final userDataDbPath = ref.read(userDataDbPathProvider);
+        final userDataDbPath = ref.read(userDataDbPathProvider).value ?? '';
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -247,7 +247,7 @@ class _HighlightsTab extends ConsumerWidget {
 
         const readerRepo = ReaderRepository();
         final userDataRepo = ref.read(userDataRepositoryProvider);
-        final userDataDbPath = ref.read(userDataDbPathProvider);
+        final userDataDbPath = ref.read(userDataDbPathProvider).value ?? '';
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -385,7 +385,7 @@ class _NotesTab extends ConsumerWidget {
 
         const readerRepo = ReaderRepository();
         final userDataRepo = ref.read(userDataRepositoryProvider);
-        final userDataDbPath = ref.read(userDataDbPathProvider);
+        final userDataDbPath = ref.read(userDataDbPathProvider).value ?? '';
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
