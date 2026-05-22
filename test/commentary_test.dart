@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/features/reader/data/reader_repository.dart';
 
 void main() {
@@ -14,23 +15,22 @@ void main() {
       }
       tempExtractDir.createSync(recursive: true);
 
-      // Copy the crawled Korean commentary databases
-      final hochmaSrc = File('assets/data/comment/com_kor_hochma.sqlite');
-      if (hochmaSrc.existsSync()) {
-        hochmaSrc.copySync(
-          p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
-        );
-      }
-
-      final mhwSrc = File('assets/data/comment/com_kor_mhw.sqlite');
-      if (mhwSrc.existsSync()) {
-        mhwSrc.copySync(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
-      }
-
-      final pysSrc = File('assets/data/comment/com_kor_pys.sqlite');
-      if (pysSrc.existsSync()) {
-        pysSrc.copySync(p.join(tempExtractDir.path, 'com_kor_pys.sqlite'));
-      }
+      const extractor = ZipExtractor();
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_kor_hochma.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_kor_mhw.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+      await extractor.extractFile(
+        targetZipPath: 'comment/com_kor_pys.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'com_kor_pys.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
     });
 
     tearDownAll(() {
