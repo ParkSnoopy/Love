@@ -82,15 +82,15 @@ flutter:
 
   # To add custom fonts to your application, add a fonts section here,
   fonts:
-    - family: NotoSansKR
+    - family: NotoSansCJK
       fonts:
-        - asset: assets/fonts/NotoSansKR.ttf
-    - family: NotoSerifKR
+        - asset: assets/fonts/NotoSansCJK-VF.ttf.ttc
+    - family: NotoSerifCJK
       fonts:
-        - asset: assets/fonts/NotoSerifKR.ttf
-    - family: NanumGothicCoding
+        - asset: assets/fonts/NotoSerifCJK.ttc
+    - family: NotoSansMonoCJK
       fonts:
-        - asset: assets/fonts/NanumGothicCoding.ttf
+        - asset: assets/fonts/NotoSansMonoCJK-VF.ttf.ttc
 
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

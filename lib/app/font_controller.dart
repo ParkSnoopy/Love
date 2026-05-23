@@ -5,9 +5,9 @@ enum FontType { sans, serif, mono }
 
 String fontFamilyForType(FontType fontType) {
   return switch (fontType) {
-    FontType.sans => 'NotoSansKR',
-    FontType.serif => 'NotoSerifKR',
-    FontType.mono => 'NanumGothicCoding',
+    FontType.sans => 'NotoSansCJK',
+    FontType.serif => 'NotoSerifCJK',
+    FontType.mono => 'NotoSansMonoCJK',
   };
 }
 
