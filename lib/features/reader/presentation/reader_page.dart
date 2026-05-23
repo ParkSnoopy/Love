@@ -443,6 +443,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                     dbPath: activeCommentaryDbPath,
                     bookId: rr.bookId,
                     chapter: rr.chapter,
+                    hasCurrentChapterCommentary: hasCurrentChapterCommentary,
                   ),
                 ),
             ],
@@ -800,18 +801,54 @@ class CommentaryPane extends ConsumerStatefulWidget {
     required this.dbPath,
     required this.bookId,
     required this.chapter,
+    required this.hasCurrentChapterCommentary,
   });
 
   final String dbPath;
   final int bookId;
   final int chapter;
+  final bool hasCurrentChapterCommentary;
 
   @override
   ConsumerState<CommentaryPane> createState() => _CommentaryPaneState();
 }
 
+class _CommentarySwitchOption {
+  const _CommentarySwitchOption({required this.pack});
+
+  final BiblePack pack;
+}
+
 class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   final _scrollController = ScrollController();
+  Future<List<_CommentarySwitchOption>>? _alternativeCommentariesFuture;
+
+  Future<List<_CommentarySwitchOption>>
+  _findCommentariesForCurrentChapter() async {
+    const manifestRepo = ManifestRepository();
+    const readerRepo = ReaderRepository();
+    final packs = await manifestRepo.loadBiblePacksFromAsset();
+    final matches = <_CommentarySwitchOption>[];
+
+    for (final pack in packs.where((p) => p.type == 'commentary')) {
+      final dbPath = await readerRepo.resolveDbPath(pack.file);
+      if (dbPath == null) continue;
+      try {
+        final hasCommentary = readerRepo.hasCommentaryForChapter(
+          dbPath: dbPath,
+          bookId: widget.bookId,
+          chapter: widget.chapter,
+        );
+        if (hasCommentary) {
+          matches.add(_CommentarySwitchOption(pack: pack));
+        }
+      } on SqliteException {
+        continue;
+      }
+    }
+
+    return matches;
+  }
 
   @override
   void dispose() {
@@ -823,7 +860,11 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   void didUpdateWidget(covariant CommentaryPane oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.bookId != widget.bookId ||
-        oldWidget.chapter != widget.chapter) {
+        oldWidget.chapter != widget.chapter ||
+        oldWidget.dbPath != widget.dbPath ||
+        oldWidget.hasCurrentChapterCommentary !=
+            widget.hasCurrentChapterCommentary) {
+      _alternativeCommentariesFuture = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
@@ -867,6 +908,126 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
       spans.add(TextSpan(text: text, style: baseStyle));
     }
     return spans;
+  }
+
+  Widget _buildAlternativeCommentarySearch(BuildContext context) {
+    if (widget.hasCurrentChapterCommentary) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final future = _alternativeCommentariesFuture;
+
+    return Card(
+      margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+      elevation: 0,
+      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.45),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.t('noCommentaryForChapter'),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.tonalIcon(
+                icon: const Icon(Icons.manage_search),
+                label: Text(l10n.t('checkAnotherCommentaryDatabase')),
+                onPressed: () {
+                  setState(() {
+                    _alternativeCommentariesFuture =
+                        _findCommentariesForCurrentChapter();
+                  });
+                },
+              ),
+            ),
+            if (future != null) ...[
+              const SizedBox(height: 8),
+              FutureBuilder<List<_CommentarySwitchOption>>(
+                future: future,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return Row(
+                      children: [
+                        const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(l10n.t('searchingCommentaryDatabases')),
+                      ],
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Text(
+                      '${l10n.t('commentaryError')}: ${snapshot.error}',
+                      style: TextStyle(color: theme.colorScheme.error),
+                    );
+                  }
+
+                  final matches =
+                      snapshot.data ?? const <_CommentarySwitchOption>[];
+                  if (matches.isEmpty) {
+                    return Text(l10n.t('noOtherCommentaryForChapter'));
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n
+                            .t('otherCommentariesFound')
+                            .replaceAll('{count}', matches.length.toString()),
+                        style: theme.textTheme.labelLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      for (final option in matches)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.swap_horiz),
+                            label: Text(
+                              '${l10n.t('switchToCommentary')}: ${option.pack.shortName}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onPressed: () async {
+                              await ref
+                                  .read(
+                                    activeCommentarySelectionProvider.notifier,
+                                  )
+                                  .select(
+                                    id: option.pack.id,
+                                    file: option.pack.file,
+                                    name: option.pack.name,
+                                  );
+                              ref
+                                  .read(commentaryVisibilityProvider.notifier)
+                                  .show();
+                              if (mounted) {
+                                setState(() {
+                                  _alternativeCommentariesFuture = null;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -1111,6 +1272,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
               ],
             ),
           ),
+          _buildAlternativeCommentarySearch(context),
           Expanded(child: contentWidget),
         ],
       ),
