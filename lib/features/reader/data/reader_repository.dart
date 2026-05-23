@@ -164,6 +164,30 @@ class ReaderRepository {
     }
   }
 
+  bool hasCommentaryForChapter({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+  }) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT text FROM verses WHERE book_id = ? AND chapter = ?',
+        [bookId, chapter],
+      );
+      return rows.any(
+        (row) => _hasCommentaryText((row['text'] as String?) ?? ''),
+      );
+    } finally {
+      db.close();
+    }
+  }
+
+  bool _hasCommentaryText(String text) {
+    final trimmed = text.trim();
+    return trimmed.isNotEmpty && trimmed != '없음' && trimmed != '없음.';
+  }
+
   List<CommentaryVerse> loadCommentaryVerses({
     required String dbPath,
     required int bookId,
@@ -186,11 +210,9 @@ class ReaderRepository {
             )
             .toList();
 
-        // Filter out empty text, "없음", and "없음."
-        final filtered = list.where((v) {
-          final t = v.text.trim();
-          return t.isNotEmpty && t != '없음' && t != '없음.';
-        }).toList();
+        final filtered = list
+            .where((v) => _hasCommentaryText(v.text))
+            .toList(growable: false);
 
         if (filtered.isNotEmpty) {
           return filtered;

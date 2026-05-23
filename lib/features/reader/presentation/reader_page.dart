@@ -199,6 +199,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         const repo = ReaderRepository();
         var verses = const <VerseLine>[];
         var bookName = l10n.t('bible');
+        var hasCurrentChapterCommentary = true;
         String? loadError;
         try {
           verses = repo.loadChapter(
@@ -210,6 +211,17 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             dbPath: widget.dbPath,
             bookId: rr.bookId,
           );
+          if (activeCommentaryDbPath != null) {
+            try {
+              hasCurrentChapterCommentary = repo.hasCommentaryForChapter(
+                dbPath: activeCommentaryDbPath,
+                bookId: rr.bookId,
+                chapter: rr.chapter,
+              );
+            } on SqliteException {
+              hasCurrentChapterCommentary = true;
+            }
+          }
         } on SqliteException catch (e) {
           loadError = l10n.dbError(e.message, widget.dbPath);
         }
@@ -259,11 +271,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             actions: [
               IconButton(
                 tooltip: l10n.t('toggleCommentary'),
-                icon: Icon(
-                  isCommentaryActive ? Icons.comment : Icons.comment_outlined,
-                  color: isCommentaryActive
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
+                icon: _CommentaryActionIcon(
+                  isVisible: isCommentaryActive,
+                  hasActiveCommentary: activeCommentaryDbPath != null,
+                  hasCurrentChapterCommentary: hasCurrentChapterCommentary,
                 ),
                 onPressed: () {
                   final activeCommentary = ref
@@ -446,6 +457,51 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
               : null,
         );
       },
+    );
+  }
+}
+
+class _CommentaryActionIcon extends StatelessWidget {
+  const _CommentaryActionIcon({
+    required this.isVisible,
+    required this.hasActiveCommentary,
+    required this.hasCurrentChapterCommentary,
+  });
+
+  final bool isVisible;
+  final bool hasActiveCommentary;
+  final bool hasCurrentChapterCommentary;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isVisible ? Theme.of(context).colorScheme.primary : null;
+    if (hasActiveCommentary && !hasCurrentChapterCommentary) {
+      final slashColor = color ?? IconTheme.of(context).color;
+      return SizedBox.square(
+        dimension: 24,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(Icons.comment_outlined, color: color),
+            Transform.rotate(
+              angle: -0.7,
+              child: Container(
+                width: 24,
+                height: 2,
+                decoration: BoxDecoration(
+                  color: slashColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Icon(
+      isVisible ? Icons.comment : Icons.comment_outlined,
+      color: color,
     );
   }
 }

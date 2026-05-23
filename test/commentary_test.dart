@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/features/reader/data/reader_repository.dart';
 
@@ -114,6 +115,59 @@ void main() {
       expect(verses, isNotEmpty);
       // Matthew Henry Gen 8:1 has text
       expect(verses.any((v) => v.verse == 1 && v.text.contains('노아')), isTrue);
+    });
+
+    test('Detects exact chapter commentary without fallback', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'exact_chapter.sqlite'));
+      final db = sqlite3.open(dbFile.path);
+      try {
+        db.execute(
+          'CREATE TABLE verses (book_id INTEGER, chapter INTEGER, verse INTEGER, text TEXT)',
+        );
+        db.execute(
+          'INSERT INTO verses (book_id, chapter, verse, text) VALUES (1, 1, 1, ?)',
+          ['present'],
+        );
+        db.execute(
+          'INSERT INTO verses (book_id, chapter, verse, text) VALUES (1, 2, 1, ?)',
+          ['없음'],
+        );
+      } finally {
+        db.close();
+      }
+
+      expect(
+        repository.hasCommentaryForChapter(
+          dbPath: dbFile.path,
+          bookId: 1,
+          chapter: 1,
+        ),
+        isTrue,
+      );
+      expect(
+        repository.hasCommentaryForChapter(
+          dbPath: dbFile.path,
+          bookId: 1,
+          chapter: 2,
+        ),
+        isFalse,
+      );
+      expect(
+        repository.hasCommentaryForChapter(
+          dbPath: dbFile.path,
+          bookId: 1,
+          chapter: 3,
+        ),
+        isFalse,
+      );
+      expect(
+        repository.loadCommentaryVerses(
+          dbPath: dbFile.path,
+          bookId: 1,
+          chapter: 3,
+        ),
+        isNotEmpty,
+      );
     });
 
     test('Introductions are empty for crawled Korean databases', () {
