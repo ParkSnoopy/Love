@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../reader/data/reader_repository.dart';
 import '../../reader/providers/reader_controller.dart';
 import '../../reader/providers/verse_selection_controller.dart';
+import '../data/user_data_repository.dart';
 import '../providers/user_data_controller.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../../app/app_localizations.dart';
@@ -80,7 +81,6 @@ String _getBookName(String dbPath, int bookId) {
   return bookName;
 }
 
-
 String _formatRange(int start, int end) {
   return start == end ? '$start' : '$start-$end';
 }
@@ -149,16 +149,19 @@ List<_BookmarkGroup> _groupBookmarks(List<BookmarkEntry> bookmarks) {
     var run = <BookmarkEntry>[];
     void flush() {
       if (run.isEmpty) return;
-      groups.add(_BookmarkGroup(
-        bookId: run.first.bookId,
-        chapter: run.first.chapter,
-        verseStart: run.first.verse,
-        verseEnd: run.last.verse,
-        createdAt: run.first.createdAt,
-        entries: List.unmodifiable(run),
-      ));
+      groups.add(
+        _BookmarkGroup(
+          bookId: run.first.bookId,
+          chapter: run.first.chapter,
+          verseStart: run.first.verse,
+          verseEnd: run.last.verse,
+          createdAt: run.first.createdAt,
+          entries: List.unmodifiable(run),
+        ),
+      );
       run = <BookmarkEntry>[];
     }
+
     for (final entry in entries) {
       if (run.isNotEmpty && entry.verse != run.last.verse + 1) flush();
       run.add(entry);
@@ -172,7 +175,8 @@ List<_BookmarkGroup> _groupBookmarks(List<BookmarkEntry> bookmarks) {
 List<_NoteGroup> _groupNotes(List<NoteEntry> notes) {
   final buckets = <String, List<NoteEntry>>{};
   for (final entry in notes) {
-    final key = '${entry.bookId}|${entry.chapter}|${entry.updatedAt}|${entry.content}';
+    final key =
+        '${entry.bookId}|${entry.chapter}|${entry.updatedAt}|${entry.content}';
     buckets.putIfAbsent(key, () => []).add(entry);
   }
   final groups = <_NoteGroup>[];
@@ -181,17 +185,20 @@ List<_NoteGroup> _groupNotes(List<NoteEntry> notes) {
     var run = <NoteEntry>[];
     void flush() {
       if (run.isEmpty) return;
-      groups.add(_NoteGroup(
-        bookId: run.first.bookId,
-        chapter: run.first.chapter,
-        verseStart: run.first.verse,
-        verseEnd: run.last.verse,
-        content: run.first.content,
-        updatedAt: run.first.updatedAt,
-        entries: List.unmodifiable(run),
-      ));
+      groups.add(
+        _NoteGroup(
+          bookId: run.first.bookId,
+          chapter: run.first.chapter,
+          verseStart: run.first.verse,
+          verseEnd: run.last.verse,
+          content: run.first.content,
+          updatedAt: run.first.updatedAt,
+          entries: List.unmodifiable(run),
+        ),
+      );
       run = <NoteEntry>[];
     }
+
     for (final entry in entries) {
       if (run.isNotEmpty && entry.verse != run.last.verse + 1) flush();
       run.add(entry);
@@ -240,19 +247,22 @@ class _BookmarksTab extends ConsumerWidget {
         const readerRepo = ReaderRepository();
         final userDataRepo = ref.read(userDataRepositoryProvider);
         final userDataDbPath = ref.read(userDataDbPathProvider).value ?? '';
+        final groups = _groupBookmarks(bookmarks);
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemCount: bookmarks.length,
+          itemCount: groups.length,
           itemBuilder: (context, index) {
-            final entry = bookmarks[index];
-            final bookName = _getBookName(dbPath, entry.bookId);
-            final verseText = readerRepo.loadVerseText(
+            final group = groups[index];
+            final bookName = _getBookName(dbPath, group.bookId);
+            final verseText = readerRepo.loadVersesTextRange(
               dbPath: dbPath,
-              bookId: entry.bookId,
-              chapter: entry.chapter,
-              verse: entry.verse,
+              bookId: group.bookId,
+              chapter: group.chapter,
+              verseStart: group.verseStart,
+              verseEnd: group.verseEnd,
             );
+            final rangeStr = _formatRange(group.verseStart, group.verseEnd);
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
@@ -268,14 +278,14 @@ class _BookmarksTab extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '$bookName ${entry.chapter}:${entry.verse}',
+                      '$bookName ${group.chapter}:$rangeStr',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
                       ),
                     ),
                     Text(
-                      _formatTimestamp(entry.createdAt),
+                      _formatTimestamp(group.createdAt),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.outline,
                       ),
@@ -285,9 +295,7 @@ class _BookmarksTab extends ConsumerWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    verseText.isNotEmpty
-                        ? verseText
-                        : l10n.t('verseTextNotFound'),
+                    verseText.isNotEmpty ? verseText : l10n.t('versesNotFound'),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -296,33 +304,27 @@ class _BookmarksTab extends ConsumerWidget {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: () {
-                    userDataRepo.deleteBookmark(
-                      dbPath: userDataDbPath,
-                      bookId: entry.bookId,
-                      chapter: entry.chapter,
-                      verse: entry.verse,
-                    );
+                    for (final entry in group.entries) {
+                      userDataRepo.deleteBookmark(
+                        dbPath: userDataDbPath,
+                        bookId: entry.bookId,
+                        chapter: entry.chapter,
+                        verse: entry.verse,
+                      );
+                    }
                     ref.invalidate(bookmarksProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(l10n.t('bookmarkRemoved'))),
                     );
                   },
                 ),
-                onTap: () {
-                  final targetKey = VerseKey(
-                    bookId: entry.bookId,
-                    chapter: entry.chapter,
-                    verse: entry.verse,
-                  );
-                  ref
-                      .read(readerRefProvider.notifier)
-                      .jumpTo(bookId: entry.bookId, chapter: entry.chapter);
-                  ref.read(verseSelectionProvider.notifier).clear();
-                  ref.read(verseSelectionProvider.notifier).tap(targetKey);
-                  ref.read(targetScrollVerseProvider.notifier).state =
-                      targetKey;
-                  context.go('/reader');
-                },
+                onTap: () => _openReaderAt(
+                  context: context,
+                  ref: ref,
+                  bookId: group.bookId,
+                  chapter: group.chapter,
+                  verse: group.verseStart,
+                ),
               ),
             );
           },
@@ -439,31 +441,13 @@ class _HighlightsTab extends ConsumerWidget {
                     );
                   },
                 ),
-                onTap: () {
-                  final targetKey = VerseKey(
-                    bookId: entry.bookId,
-                    chapter: entry.chapter,
-                    verse: entry.verseStart,
-                  );
-                  ref
-                      .read(readerRefProvider.notifier)
-                      .jumpTo(bookId: entry.bookId, chapter: entry.chapter);
-                  ref.read(verseSelectionProvider.notifier).clear();
-                  for (int v = entry.verseStart; v <= entry.verseEnd; v++) {
-                    ref
-                        .read(verseSelectionProvider.notifier)
-                        .tap(
-                          VerseKey(
-                            bookId: entry.bookId,
-                            chapter: entry.chapter,
-                            verse: v,
-                          ),
-                        );
-                  }
-                  ref.read(targetScrollVerseProvider.notifier).state =
-                      targetKey;
-                  context.go('/reader');
-                },
+                onTap: () => _openReaderAt(
+                  context: context,
+                  ref: ref,
+                  bookId: entry.bookId,
+                  chapter: entry.chapter,
+                  verse: entry.verseStart,
+                ),
               ),
             );
           },
@@ -508,18 +492,21 @@ class _NotesTab extends ConsumerWidget {
         const readerRepo = ReaderRepository();
         final userDataRepo = ref.read(userDataRepositoryProvider);
         final userDataDbPath = ref.read(userDataDbPathProvider).value ?? '';
+        final groups = _groupNotes(notes);
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemCount: notes.length,
+          itemCount: groups.length,
           itemBuilder: (context, index) {
-            final entry = notes[index];
+            final entry = groups[index];
             final bookName = _getBookName(dbPath, entry.bookId);
-            final verseText = readerRepo.loadVerseText(
+            final rangeStr = _formatRange(entry.verseStart, entry.verseEnd);
+            final verseText = readerRepo.loadVersesTextRange(
               dbPath: dbPath,
               bookId: entry.bookId,
               chapter: entry.chapter,
-              verse: entry.verse,
+              verseStart: entry.verseStart,
+              verseEnd: entry.verseEnd,
             );
 
             return Card(
@@ -536,7 +523,7 @@ class _NotesTab extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '$bookName ${entry.chapter}:${entry.verse}',
+                          '$bookName ${entry.chapter}:$rangeStr',
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.tertiary,
@@ -556,12 +543,14 @@ class _NotesTab extends ConsumerWidget {
                               padding: EdgeInsets.zero,
                               icon: const Icon(Icons.delete_outline, size: 20),
                               onPressed: () {
-                                userDataRepo.deleteNote(
-                                  dbPath: userDataDbPath,
-                                  bookId: entry.bookId,
-                                  chapter: entry.chapter,
-                                  verse: entry.verse,
-                                );
+                                for (final note in entry.entries) {
+                                  userDataRepo.deleteNote(
+                                    dbPath: userDataDbPath,
+                                    bookId: note.bookId,
+                                    chapter: note.chapter,
+                                    verse: note.verse,
+                                  );
+                                }
                                 ref.invalidate(notesProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -583,7 +572,7 @@ class _NotesTab extends ConsumerWidget {
                           builder: (ctx) => AlertDialog(
                             title: Text(
                               l10n.editNoteTitle(
-                                '$bookName ${entry.chapter}:${entry.verse}',
+                                '$bookName ${entry.chapter}:$rangeStr',
                               ),
                             ),
                             content: TextField(
@@ -609,26 +598,31 @@ class _NotesTab extends ConsumerWidget {
 
                         if (text != null) {
                           if (text.trim().isEmpty) {
-                            userDataRepo.deleteNote(
-                              dbPath: userDataDbPath,
-                              bookId: entry.bookId,
-                              chapter: entry.chapter,
-                              verse: entry.verse,
-                            );
+                            for (final note in entry.entries) {
+                              userDataRepo.deleteNote(
+                                dbPath: userDataDbPath,
+                                bookId: note.bookId,
+                                chapter: note.chapter,
+                                verse: note.verse,
+                              );
+                            }
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(l10n.t('noteDeleted'))),
                               );
                             }
                           } else {
-                            userDataRepo.upsertNote(
-                              dbPath: userDataDbPath,
-                              bookId: entry.bookId,
-                              chapter: entry.chapter,
-                              verse: entry.verse,
-                              content: text,
-                              now: DateTime.now().millisecondsSinceEpoch,
-                            );
+                            final now = DateTime.now().millisecondsSinceEpoch;
+                            for (final note in entry.entries) {
+                              userDataRepo.upsertNote(
+                                dbPath: userDataDbPath,
+                                bookId: note.bookId,
+                                chapter: note.chapter,
+                                verse: note.verse,
+                                content: text,
+                                now: now,
+                              );
+                            }
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(l10n.t('noteUpdated'))),
@@ -659,26 +653,13 @@ class _NotesTab extends ConsumerWidget {
                     ),
                     const SizedBox(height: 10),
                     InkWell(
-                      onTap: () {
-                        final targetKey = VerseKey(
-                          bookId: entry.bookId,
-                          chapter: entry.chapter,
-                          verse: entry.verse,
-                        );
-                        ref
-                            .read(readerRefProvider.notifier)
-                            .jumpTo(
-                              bookId: entry.bookId,
-                              chapter: entry.chapter,
-                            );
-                        ref.read(verseSelectionProvider.notifier).clear();
-                        ref
-                            .read(verseSelectionProvider.notifier)
-                            .tap(targetKey);
-                        ref.read(targetScrollVerseProvider.notifier).state =
-                            targetKey;
-                        context.go('/reader');
-                      },
+                      onTap: () => _openReaderAt(
+                        context: context,
+                        ref: ref,
+                        bookId: entry.bookId,
+                        chapter: entry.chapter,
+                        verse: entry.verseStart,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

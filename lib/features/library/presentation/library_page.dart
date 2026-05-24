@@ -472,33 +472,75 @@ class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
                       return Center(child: Text(l10n.t('noTranslationsFound')));
                     }
 
+                    final grouped = <String, List<BiblePack>>{};
+                    for (final pack in bibles) {
+                      grouped.putIfAbsent(pack.language, () => []).add(pack);
+                    }
+                    final languages = grouped.keys.toList()
+                      ..sort((a, b) {
+                        if (a == 'Korean') return -1;
+                        if (b == 'Korean') return 1;
+                        return a.compareTo(b);
+                      });
+
                     return ListView.builder(
                       controller: scrollController,
-                      itemCount: bibles.length,
+                      itemCount: languages.length,
                       itemBuilder: (context, index) {
-                        final p = bibles[index];
-                        final isSelected = activeBible?.id == p.id;
-                        return ListTile(
-                          selected: isSelected,
+                        final language = languages[index];
+                        final packs = grouped[language]!;
+                        final hasSelected = packs.any(
+                          (p) => activeBible?.id == p.id,
+                        );
+                        return ExpansionTile(
+                          initiallyExpanded:
+                              hasSelected || _searchQuery.isNotEmpty,
                           title: Text(
-                            p.shortName,
+                            language,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('${p.language} • ${p.name}'),
-                          trailing: isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Theme.of(context).colorScheme.primary,
-                                )
-                              : null,
-                          onTap: () async {
-                            await ref
-                                .read(activeBibleSelectionProvider.notifier)
-                                .select(id: p.id, file: p.file, name: p.name);
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
+                          subtitle: Text(
+                            '${packs.length} ${l10n.t('versions')}',
+                          ),
+                          children: [
+                            for (final p in packs)
+                              ListTile(
+                                selected: activeBible?.id == p.id,
+                                contentPadding: const EdgeInsets.only(
+                                  left: 32,
+                                  right: 16,
+                                ),
+                                title: Text(
+                                  p.shortName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(p.name),
+                                trailing: activeBible?.id == p.id
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      )
+                                    : null,
+                                onTap: () async {
+                                  await ref
+                                      .read(
+                                        activeBibleSelectionProvider.notifier,
+                                      )
+                                      .select(
+                                        id: p.id,
+                                        file: p.file,
+                                        name: p.name,
+                                      );
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
+                          ],
                         );
                       },
                     );

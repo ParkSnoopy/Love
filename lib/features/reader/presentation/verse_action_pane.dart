@@ -255,6 +255,78 @@ class VerseActionPane extends ConsumerWidget {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.note_alt, size: 20),
+              title: Text(l10n.t('writeEditNote')),
+              onTap: () async {
+                if (sortedVersesList.isEmpty) return;
+                final existing = selection.mode == SelectionMode.single
+                    ? userDataRepo.loadNote(
+                        dbPath: userDataDbPath,
+                        bookId: bookId,
+                        chapter: chapter,
+                        verse: selection.single!.verse,
+                      )
+                    : null;
+                final c = TextEditingController(text: existing?.content ?? '');
+                final container = ProviderScope.containerOf(context);
+                final range = VerseExportFormatter.formatVerseNumbers(
+                  sortedVersesList.map((v) => v.verse).toList(),
+                );
+
+                final text = await showDialog<String>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(l10n.noteTitle('$chapter:$range')),
+                    content: TextField(
+                      controller: c,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: l10n.t('noteHint'),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text(l10n.t('cancel')),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(c.text),
+                        child: Text(l10n.t('save')),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (text != null) {
+                  if (text.trim().isEmpty) {
+                    for (final v in sortedVersesList) {
+                      userDataRepo.deleteNote(
+                        dbPath: userDataDbPath,
+                        bookId: bookId,
+                        chapter: chapter,
+                        verse: v.verse,
+                      );
+                    }
+                  } else {
+                    final now = DateTime.now().millisecondsSinceEpoch;
+                    for (final v in sortedVersesList) {
+                      userDataRepo.upsertNote(
+                        dbPath: userDataDbPath,
+                        bookId: bookId,
+                        chapter: chapter,
+                        verse: v.verse,
+                        content: text,
+                        now: now,
+                      );
+                    }
+                  }
+                  container.invalidate(notesProvider);
+                }
+                container.read(verseSelectionProvider.notifier).clear();
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.comment, size: 20),
               title: Text(l10n.t('viewCommentary')),
               onTap: () {
@@ -283,74 +355,6 @@ class VerseActionPane extends ConsumerWidget {
                 }
               },
             ),
-
-            if (selection.mode == SelectionMode.single)
-              ListTile(
-                leading: const Icon(Icons.note_alt, size: 20),
-                title: Text(l10n.t('writeEditNote')),
-                onTap: () async {
-                  final single = selection.single!;
-                  final existing = userDataRepo.loadNote(
-                    dbPath: userDataDbPath,
-                    bookId: single.bookId,
-                    chapter: single.chapter,
-                    verse: single.verse,
-                  );
-                  final c = TextEditingController(
-                    text: existing?.content ?? '',
-                  );
-                  final container = ProviderScope.containerOf(context);
-
-                  final text = await showDialog<String>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(
-                        l10n.noteTitle('${single.chapter}:${single.verse}'),
-                      ),
-                      content: TextField(
-                        controller: c,
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: l10n.t('noteHint'),
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: Text(l10n.t('cancel')),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(c.text),
-                          child: Text(l10n.t('save')),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (text != null) {
-                    if (text.trim().isEmpty) {
-                      userDataRepo.deleteNote(
-                        dbPath: userDataDbPath,
-                        bookId: single.bookId,
-                        chapter: single.chapter,
-                        verse: single.verse,
-                      );
-                    } else {
-                      userDataRepo.upsertNote(
-                        dbPath: userDataDbPath,
-                        bookId: single.bookId,
-                        chapter: single.chapter,
-                        verse: single.verse,
-                        content: text,
-                        now: DateTime.now().millisecondsSinceEpoch,
-                      );
-                    }
-                    container.invalidate(notesProvider);
-                  }
-                  container.read(verseSelectionProvider.notifier).clear();
-                },
-              ),
           ],
         ),
       ),

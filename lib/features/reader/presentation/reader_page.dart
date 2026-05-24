@@ -322,6 +322,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                           ),
                         )
                       : SingleChildScrollView(
+                          key: const PageStorageKey<String>('reader-scroll'),
                           controller: _readerScrollController,
                           child: Column(
                             children: verses.map((v) {
@@ -376,6 +377,18 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                               return ListTile(
                                 key: _getKeyForVerse(key),
                                 selected: selected,
+                                selectedTileColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: selected
+                                      ? BorderSide(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                          width: 1.5,
+                                        )
+                                      : BorderSide.none,
+                                ),
                                 onTap: () {
                                   ref
                                       .read(verseSelectionProvider.notifier)
@@ -1145,6 +1158,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         controller: _scrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
+          key: const PageStorageKey<String>('commentary-scroll'),
           controller: _scrollController,
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
@@ -1203,6 +1217,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         controller: _scrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
+          key: const PageStorageKey<String>('commentary-scroll'),
           controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Text.rich(
