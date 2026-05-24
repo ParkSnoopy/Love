@@ -21,7 +21,7 @@ void main() {
       bibleDbPath = p.join(tempExtractDir.path, 'eng_engniv.sqlite');
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: 'nocr/eng_engniv.sqlite',
+        targetZipPath: 'data/bible/nocr/eng_engniv.sqlite',
         destinationPath: bibleDbPath,
         zipFilePath: 'assets/data.zip',
       );

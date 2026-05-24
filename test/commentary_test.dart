@@ -18,17 +18,17 @@ void main() {
 
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: 'comment/com_kor_hochma.sqlite',
+        targetZipPath: 'data/commentary/nocr/com_kor_hochma.sqlite',
         destinationPath: p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
         zipFilePath: 'assets/data.zip',
       );
       await extractor.extractFile(
-        targetZipPath: 'comment/com_kor_mhw.sqlite',
+        targetZipPath: 'data/commentary/nocr/com_kor_mhw.sqlite',
         destinationPath: p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'),
         zipFilePath: 'assets/data.zip',
       );
       await extractor.extractFile(
-        targetZipPath: 'comment/com_kor_pys.sqlite',
+        targetZipPath: 'data/commentary/nocr/com_kor_pys.sqlite',
         destinationPath: p.join(tempExtractDir.path, 'com_kor_pys.sqlite'),
         zipFilePath: 'assets/data.zip',
       );

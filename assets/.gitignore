@@ -1,6 +1,6 @@
 # Databases
 data/
-data.zip
+*.zip
 
 # Fonts
 fonts/

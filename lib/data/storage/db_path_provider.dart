@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../../features/library/providers/library_controller.dart';
 import '../import/zip_extractor.dart';
+import 'db_asset_paths.dart';
 
 bool _isDatabaseValid(String path) {
   try {
@@ -22,24 +22,25 @@ bool _isDatabaseValid(String path) {
   }
 }
 
-final activeDbPathProvider = FutureProvider<String?>((ref) async {
-  final selection = ref.watch(activeBibleSelectionProvider).asData?.value;
-  if (selection == null) return null;
-
-  final manifestFile = selection.file;
-
+Future<String?> _resolveDbPath({
+  required String manifestFile,
+  required String type,
+}) async {
   // 1. Try local file (for development/desktop)
-  final localCandidates = [
-    'assets/data/$manifestFile',
-    p.join(Directory.current.path, 'assets/data', manifestFile),
-  ];
-  for (final path in localCandidates) {
+  for (final path in localDbCandidates(
+    manifestFile: manifestFile,
+    type: type,
+  )) {
     if (File(path).existsSync()) return path;
   }
 
   // 2. Try app documents directory (for mobile)
   final docsDir = await getApplicationDocumentsDirectory();
-  final targetPath = p.join(docsDir.path, 'bible_data', manifestFile);
+  final targetPath = appDbPath(
+    appDocumentsPath: docsDir.path,
+    manifestFile: manifestFile,
+    type: type,
+  );
   final targetFile = File(targetPath);
 
   if (targetFile.existsSync()) {
@@ -56,54 +57,25 @@ final activeDbPathProvider = FutureProvider<String?>((ref) async {
   try {
     const extractor = ZipExtractor();
     await extractor.extractFile(
-      targetZipPath: manifestFile,
+      targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
       destinationPath: targetPath,
     );
     return targetPath;
-  } catch (e) {
+  } catch (_) {
     return null;
   }
+}
+
+final activeDbPathProvider = FutureProvider<String?>((ref) async {
+  final selection = ref.watch(activeBibleSelectionProvider).asData?.value;
+  if (selection == null) return null;
+
+  return _resolveDbPath(manifestFile: selection.file, type: 'bible');
 });
 
 final activeCommentaryDbPathProvider = FutureProvider<String?>((ref) async {
   final selection = ref.watch(activeCommentarySelectionProvider).asData?.value;
   if (selection == null) return null;
 
-  final manifestFile = selection.file;
-
-  // 1. Try local file (for development/desktop)
-  final localCandidates = [
-    'assets/data/$manifestFile',
-    p.join(Directory.current.path, 'assets/data', manifestFile),
-  ];
-  for (final path in localCandidates) {
-    if (File(path).existsSync()) return path;
-  }
-
-  // 2. Try app documents directory (for mobile)
-  final docsDir = await getApplicationDocumentsDirectory();
-  final targetPath = p.join(docsDir.path, 'bible_data', manifestFile);
-  final targetFile = File(targetPath);
-
-  if (targetFile.existsSync()) {
-    if (_isDatabaseValid(targetPath)) {
-      return targetPath;
-    } else {
-      try {
-        targetFile.deleteSync();
-      } catch (_) {}
-    }
-  }
-
-  // 3. Extract from assets/data.zip to documents directory
-  try {
-    const extractor = ZipExtractor();
-    await extractor.extractFile(
-      targetZipPath: manifestFile,
-      destinationPath: targetPath,
-    );
-    return targetPath;
-  } catch (e) {
-    return null;
-  }
+  return _resolveDbPath(manifestFile: selection.file, type: 'commentary');
 });

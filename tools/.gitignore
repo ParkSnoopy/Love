@@ -1,3 +1,7 @@
 .venv/
-data/
+dist/
 *.zip
+*.xml
+*.json
+*.xlsx
+*.sqlite

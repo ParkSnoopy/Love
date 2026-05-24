@@ -11,6 +11,7 @@ import '../../reader/providers/reader_controller.dart';
 import '../../reader/providers/verse_selection_controller.dart';
 import '../../reader/providers/commentary_visibility_provider.dart';
 import '../../../data/storage/db_path_provider.dart';
+import '../../../data/storage/db_asset_paths.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../../data/import/zip_extractor.dart';
@@ -139,17 +140,21 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
 
   Future<String?> _getOrExtractDbPath(BiblePack pack) async {
     final manifestFile = pack.file;
-    final localCandidates = [
-      'assets/data/$manifestFile',
-      p.join(Directory.current.path, 'assets/data', manifestFile),
-    ];
+    final localCandidates = localDbCandidates(
+      manifestFile: manifestFile,
+      type: pack.type,
+    );
     for (final path in localCandidates) {
       if (File(path).existsSync()) return path;
     }
 
     try {
       final docsDir = await getApplicationDocumentsDirectory();
-      final targetPath = p.join(docsDir.path, 'bible_data', manifestFile);
+      final targetPath = appDbPath(
+        appDocumentsPath: docsDir.path,
+        manifestFile: manifestFile,
+        type: pack.type,
+      );
       final targetFile = File(targetPath);
       if (targetFile.existsSync()) {
         return targetPath;
@@ -157,7 +162,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
 
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: manifestFile,
+        targetZipPath: dbZipPath(manifestFile: manifestFile, type: pack.type),
         destinationPath: targetPath,
       );
       return targetPath;
@@ -166,6 +171,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
         final targetPath = p.join(
           Directory.current.path,
           'assets/data',
+          dbAssetCategory(pack.type),
           manifestFile,
         );
         if (File(targetPath).existsSync()) return targetPath;

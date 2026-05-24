@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../../../app/app_preferences.dart';
+import '../../../data/import/zip_extractor.dart';
+import '../../../data/storage/db_asset_paths.dart';
 
 import '../domain/manifest_repository.dart';
 import '../domain/bible_pack.dart';
@@ -50,7 +51,7 @@ class ActiveBibleSelectionController
       final existsInManifest = packs.any(
         (p) => p.id == savedId || p.file == savedFile,
       );
-      if (existsInManifest || await _looksInstalled(savedFile)) {
+      if (existsInManifest || await _looksInstalled(savedFile, type: 'bible')) {
         String name = savedName ?? savedId;
         if (savedName == null) {
           final match = packs.where(
@@ -67,7 +68,7 @@ class ActiveBibleSelectionController
     const repo = ManifestRepository();
     final packs = await repo.loadBiblePacksFromAsset();
     for (final p in packs) {
-      if (p.type == 'bible' && await _looksInstalled(p.file)) {
+      if (p.type == 'bible' && await _looksInstalled(p.file, type: p.type)) {
         final picked = ActiveBibleSelection(
           id: p.id,
           file: p.file,
@@ -91,21 +92,30 @@ class ActiveBibleSelectionController
     await _save(picked);
   }
 
-  Future<bool> _looksInstalled(String manifestFile) async {
+  Future<bool> _looksInstalled(
+    String manifestFile, {
+    required String type,
+  }) async {
     try {
       final docsDir = await getApplicationDocumentsDirectory();
       final candidates = <String>[
-        'assets/data/$manifestFile',
-        p.join(Directory.current.path, 'assets/data', manifestFile),
-        p.join(docsDir.path, 'bible_data', manifestFile),
+        ...localDbCandidates(manifestFile: manifestFile, type: type),
+        appDbPath(
+          appDocumentsPath: docsDir.path,
+          manifestFile: manifestFile,
+          type: type,
+        ),
       ];
-      return candidates.any((path) => File(path).existsSync());
+      if (candidates.any((path) => File(path).existsSync())) return true;
+      return const ZipExtractor().containsFile(
+        targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
+      );
     } catch (_) {
       // In tests, getApplicationDocumentsDirectory might fail
-      return [
-        'assets/data/$manifestFile',
-        p.join(Directory.current.path, 'assets/data', manifestFile),
-      ].any((path) => File(path).existsSync());
+      return localDbCandidates(
+        manifestFile: manifestFile,
+        type: type,
+      ).any((path) => File(path).existsSync());
     }
   }
 
@@ -154,7 +164,8 @@ class ActiveCommentarySelectionController
       final existsInManifest = packs.any(
         (p) => p.id == savedId || p.file == savedFile,
       );
-      if (existsInManifest || await _looksInstalled(savedFile)) {
+      if (existsInManifest ||
+          await _looksInstalled(savedFile, type: 'commentary')) {
         String name = savedName ?? savedId;
         if (savedName == null) {
           final match = packs.where(
@@ -192,20 +203,29 @@ class ActiveCommentarySelectionController
     await prefs.remove(_prefsKeyName);
   }
 
-  Future<bool> _looksInstalled(String manifestFile) async {
+  Future<bool> _looksInstalled(
+    String manifestFile, {
+    required String type,
+  }) async {
     try {
       final docsDir = await getApplicationDocumentsDirectory();
       final candidates = <String>[
-        'assets/data/$manifestFile',
-        p.join(Directory.current.path, 'assets/data', manifestFile),
-        p.join(docsDir.path, 'bible_data', manifestFile),
+        ...localDbCandidates(manifestFile: manifestFile, type: type),
+        appDbPath(
+          appDocumentsPath: docsDir.path,
+          manifestFile: manifestFile,
+          type: type,
+        ),
       ];
-      return candidates.any((path) => File(path).existsSync());
+      if (candidates.any((path) => File(path).existsSync())) return true;
+      return const ZipExtractor().containsFile(
+        targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
+      );
     } catch (_) {
-      return [
-        'assets/data/$manifestFile',
-        p.join(Directory.current.path, 'assets/data', manifestFile),
-      ].any((path) => File(path).existsSync());
+      return localDbCandidates(
+        manifestFile: manifestFile,
+        type: type,
+      ).any((path) => File(path).existsSync());
     }
   }
 

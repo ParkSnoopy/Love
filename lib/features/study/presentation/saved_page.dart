@@ -80,6 +80,128 @@ String _getBookName(String dbPath, int bookId) {
   return bookName;
 }
 
+
+String _formatRange(int start, int end) {
+  return start == end ? '$start' : '$start-$end';
+}
+
+void _openReaderAt({
+  required BuildContext context,
+  required WidgetRef ref,
+  required int bookId,
+  required int chapter,
+  required int verse,
+}) {
+  final targetKey = VerseKey(bookId: bookId, chapter: chapter, verse: verse);
+  ref.read(readerRefProvider.notifier).jumpTo(bookId: bookId, chapter: chapter);
+  ref.read(verseSelectionProvider.notifier).clear();
+  ref.read(targetScrollVerseProvider.notifier).state = targetKey;
+  context.go('/reader');
+}
+
+class _BookmarkGroup {
+  const _BookmarkGroup({
+    required this.bookId,
+    required this.chapter,
+    required this.verseStart,
+    required this.verseEnd,
+    required this.createdAt,
+    required this.entries,
+  });
+
+  final int bookId;
+  final int chapter;
+  final int verseStart;
+  final int verseEnd;
+  final int createdAt;
+  final List<BookmarkEntry> entries;
+}
+
+class _NoteGroup {
+  const _NoteGroup({
+    required this.bookId,
+    required this.chapter,
+    required this.verseStart,
+    required this.verseEnd,
+    required this.content,
+    required this.updatedAt,
+    required this.entries,
+  });
+
+  final int bookId;
+  final int chapter;
+  final int verseStart;
+  final int verseEnd;
+  final String content;
+  final int updatedAt;
+  final List<NoteEntry> entries;
+}
+
+List<_BookmarkGroup> _groupBookmarks(List<BookmarkEntry> bookmarks) {
+  final buckets = <String, List<BookmarkEntry>>{};
+  for (final entry in bookmarks) {
+    final key = '${entry.bookId}|${entry.chapter}|${entry.createdAt}';
+    buckets.putIfAbsent(key, () => []).add(entry);
+  }
+  final groups = <_BookmarkGroup>[];
+  for (final entries in buckets.values) {
+    entries.sort((a, b) => a.verse.compareTo(b.verse));
+    var run = <BookmarkEntry>[];
+    void flush() {
+      if (run.isEmpty) return;
+      groups.add(_BookmarkGroup(
+        bookId: run.first.bookId,
+        chapter: run.first.chapter,
+        verseStart: run.first.verse,
+        verseEnd: run.last.verse,
+        createdAt: run.first.createdAt,
+        entries: List.unmodifiable(run),
+      ));
+      run = <BookmarkEntry>[];
+    }
+    for (final entry in entries) {
+      if (run.isNotEmpty && entry.verse != run.last.verse + 1) flush();
+      run.add(entry);
+    }
+    flush();
+  }
+  groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return groups;
+}
+
+List<_NoteGroup> _groupNotes(List<NoteEntry> notes) {
+  final buckets = <String, List<NoteEntry>>{};
+  for (final entry in notes) {
+    final key = '${entry.bookId}|${entry.chapter}|${entry.updatedAt}|${entry.content}';
+    buckets.putIfAbsent(key, () => []).add(entry);
+  }
+  final groups = <_NoteGroup>[];
+  for (final entries in buckets.values) {
+    entries.sort((a, b) => a.verse.compareTo(b.verse));
+    var run = <NoteEntry>[];
+    void flush() {
+      if (run.isEmpty) return;
+      groups.add(_NoteGroup(
+        bookId: run.first.bookId,
+        chapter: run.first.chapter,
+        verseStart: run.first.verse,
+        verseEnd: run.last.verse,
+        content: run.first.content,
+        updatedAt: run.first.updatedAt,
+        entries: List.unmodifiable(run),
+      ));
+      run = <NoteEntry>[];
+    }
+    for (final entry in entries) {
+      if (run.isNotEmpty && entry.verse != run.last.verse + 1) flush();
+      run.add(entry);
+    }
+    flush();
+  }
+  groups.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  return groups;
+}
+
 class _BookmarksTab extends ConsumerWidget {
   const _BookmarksTab({required this.dbPath});
 

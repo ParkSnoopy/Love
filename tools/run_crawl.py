@@ -63,13 +63,16 @@ def _localized_books_meta(target_id: str) -> list[dict]:
     """
     if target_id.startswith("kor"):
         return BOOK_META_LIST
-    
+
     mapping = get_localized_book_names(target_id)
     if mapping is None:
         # Default/English
         return [{**book, "name": book["eng_name"]} for book in BOOK_META_LIST]
-    
-    return [{**book, "name": mapping.get(book["book_id"], book["eng_name"])} for book in BOOK_META_LIST]
+
+    return [
+        {**book, "name": mapping.get(book["book_id"], book["eng_name"])}
+        for book in BOOK_META_LIST
+    ]
 
 
 def _bible(target_id: str, board_id: str, out_file: str, slug: str, label: str):

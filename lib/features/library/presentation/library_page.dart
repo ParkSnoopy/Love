@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/bible_pack.dart';
 import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
+import '../../reader/presentation/commentary_intro_sheet.dart';
 import '../../../app/theme_controller.dart';
 import '../../../app/font_controller.dart';
 import '../../../app/locale_controller.dart';
@@ -281,6 +282,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              IconButton(
+                                icon: const Icon(Icons.info_outline, size: 20),
+                                tooltip: l10n.t('viewIntro'),
+                                onPressed: () => showCommentaryIntros(
+                                  context,
+                                  activeCommentary.file,
+                                  activeCommentary.name,
+                                ),
+                              ),
                               IconButton(
                                 icon: const Icon(Icons.clear, size: 20),
                                 tooltip: l10n.t('turnOffCommentary'),
@@ -628,12 +638,25 @@ class _CommentarySelectionSheetState
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text('${p.language} • ${p.name}'),
-                          trailing: isSelected
-                              ? Icon(
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.info_outline),
+                                tooltip: l10n.t('viewIntro'),
+                                onPressed: () => showCommentaryIntros(
+                                  context,
+                                  p.file,
+                                  p.name,
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
                                   Icons.check_circle,
                                   color: Theme.of(context).colorScheme.primary,
-                                )
-                              : null,
+                                ),
+                            ],
+                          ),
                           onTap: () async {
                             await ref
                                 .read(

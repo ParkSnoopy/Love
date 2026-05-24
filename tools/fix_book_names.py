@@ -17,7 +17,9 @@ from book_names_localization import get_localized_book_names
 
 def fix_database(db_path: Path, dry_run: bool = False) -> bool:
     filename = db_path.name
-    print(f"\nProcessing database: {db_path.resolve().relative_to(Path.cwd().resolve())}")
+    print(
+        f"\nProcessing database: {db_path.resolve().relative_to(Path.cwd().resolve())}"
+    )
 
     # Check if Korean
     if "kor_" in filename or filename.startswith("kor"):
@@ -32,7 +34,9 @@ def fix_database(db_path: Path, dry_run: bool = False) -> bool:
         cursor = conn.cursor()
 
         # Check if books table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='books';")
+        cursor.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='books';"
+        )
         if not cursor.fetchone():
             print("  [SKIP] No 'books' table found in this database.")
             conn.close()
@@ -78,8 +82,7 @@ def fix_database(db_path: Path, dry_run: bool = False) -> bool:
         # Perform update
         for new_name, book_id, _ in updates:
             cursor.execute(
-                "UPDATE books SET name = ? WHERE book_id = ?;",
-                (new_name, book_id)
+                "UPDATE books SET name = ? WHERE book_id = ?;", (new_name, book_id)
             )
 
         conn.commit()
@@ -97,17 +100,19 @@ def fix_database(db_path: Path, dry_run: bool = False) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fix and localize Bible book names in SQLite files")
+    parser = argparse.ArgumentParser(
+        description="Fix and localize Bible book names in SQLite files"
+    )
     parser.add_argument(
         "--dir",
         "-d",
         default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"),
-        help="Directory containing SQLite files to process (default: tools/data/)"
+        help="Directory containing SQLite files to process (default: tools/data/)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Display updates without writing them to disk"
+        help="Display updates without writing them to disk",
     )
     args = parser.parse_args()
 

@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:Love/data/import/zip_extractor.dart';
+import '../../../data/import/zip_extractor.dart';
+import '../../../data/storage/db_asset_paths.dart';
 
 class VerseLine {
   const VerseLine({
@@ -352,12 +352,15 @@ class ReaderRepository {
     }
   }
 
-  Future<String?> resolveDbPath(String manifestFile) async {
+  Future<String?> resolveDbPath(
+    String manifestFile, {
+    String type = 'bible',
+  }) async {
     // 1. Try local file (for development/desktop)
-    final localCandidates = [
-      'assets/data/$manifestFile',
-      p.join(Directory.current.path, 'assets/data', manifestFile),
-    ];
+    final localCandidates = localDbCandidates(
+      manifestFile: manifestFile,
+      type: type,
+    );
     for (final path in localCandidates) {
       if (File(path).existsSync()) return path;
     }
@@ -365,7 +368,11 @@ class ReaderRepository {
     // 2. Try app documents directory (for mobile)
     try {
       final docsDir = await getApplicationDocumentsDirectory();
-      final targetPath = p.join(docsDir.path, 'bible_data', manifestFile);
+      final targetPath = appDbPath(
+        appDocumentsPath: docsDir.path,
+        manifestFile: manifestFile,
+        type: type,
+      );
       final targetFile = File(targetPath);
 
       if (targetFile.existsSync()) {
@@ -381,7 +388,7 @@ class ReaderRepository {
       // 3. Extract from assets/data.zip to documents directory
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: manifestFile,
+        targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
         destinationPath: targetPath,
       );
       return targetPath;

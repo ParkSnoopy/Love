@@ -27,19 +27,7 @@ class ZipExtractor {
     }
 
     final archive = ZipDecoder().decodeBytes(bytes);
-    final targetLower = targetZipPath.toLowerCase().replaceAll('\\', '/');
-    ArchiveFile? matchedFile;
-
-    for (final file in archive) {
-      if (file.isFile) {
-        final entryNameLower = file.name.toLowerCase().replaceAll('\\', '/');
-        if (entryNameLower == targetLower ||
-            entryNameLower.endsWith('/$targetLower')) {
-          matchedFile = file;
-          break;
-        }
-      }
-    }
+    final matchedFile = _findFile(archive, targetZipPath);
 
     if (matchedFile == null) {
       throw Exception('File "$targetZipPath" not found inside zip archive.');
@@ -49,5 +37,42 @@ class ZipExtractor {
     await destFile.parent.create(recursive: true);
     final content = matchedFile.content as List<int>;
     await destFile.writeAsBytes(content);
+  }
+
+  Future<bool> containsFile({
+    required String targetZipPath,
+    List<int>? zipBytes,
+    String? zipFilePath,
+  }) async {
+    List<int> bytes;
+    if (zipBytes != null) {
+      bytes = zipBytes;
+    } else if (zipFilePath != null) {
+      bytes = await File(zipFilePath).readAsBytes();
+    } else {
+      final byteData = await rootBundle.load('assets/data.zip');
+      bytes = byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
+      );
+    }
+
+    final archive = ZipDecoder().decodeBytes(bytes);
+    return _findFile(archive, targetZipPath) != null;
+  }
+
+  ArchiveFile? _findFile(Archive archive, String targetZipPath) {
+    final targetLower = targetZipPath.toLowerCase().replaceAll('\\', '/');
+
+    for (final file in archive) {
+      if (file.isFile) {
+        final entryNameLower = file.name.toLowerCase().replaceAll('\\', '/');
+        if (entryNameLower == targetLower ||
+            entryNameLower.endsWith('/$targetLower')) {
+          return file;
+        }
+      }
+    }
+    return null;
   }
 }

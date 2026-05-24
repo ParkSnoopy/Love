@@ -1,338 +1,5 @@
 [
   {
-    "id": "aram_peh",
-    "shortname": "Peshitta NT Hebrew Letters",
-    "name": "Peshitta NT Hebrew Letters",
-    "language": "Aramaic",
-    "type": "bible",
-    "file": "nocr/aram_peh.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "aram_phv",
-    "shortname": "Peshitta NT Hebrew Letters with Vowels",
-    "name": "Peshitta NT Hebrew Letters with Vowels",
-    "language": "Aramaic",
-    "type": "bible",
-    "file": "nocr/aram_phv.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "aram_pes",
-    "shortname": "Peshitta New Testament",
-    "name": "Peshitta New Testament",
-    "language": "Aramaic",
-    "type": "bible",
-    "file": "nocr/aram_pes.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "aram_targum",
-    "shortname": "Targum (OT / NT)",
-    "name": "Targum (OT / NT)",
-    "language": "Aramaic",
-    "type": "bible",
-    "file": "nocr/aram_targum.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "my_burmese",
-    "shortname": "ဂျပ်ဆင်ဘာသာပြန်ကျမ်း",
-    "name": "ဂျပ်ဆင်ဘာသာပြန်ကျမ်း",
-    "language": "Burmese",
-    "type": "bible",
-    "file": "getbible/my_burmese.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "hr_croatia",
-    "shortname": "Hrvatska Biblija",
-    "name": "Hrvatska Biblija",
-    "language": "Croatian",
-    "type": "bible",
-    "file": "getbible/hr_croatia.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "da_danish",
-    "shortname": "Dansk Bibel",
-    "name": "Dansk Bibel",
-    "language": "Danish",
-    "type": "bible",
-    "file": "getbible/da_danish.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "da_danish1871",
-    "shortname": "Dansk Bibel 1871",
-    "name": "Dansk Bibel 1871",
-    "language": "Danish",
-    "type": "bible",
-    "file": "getbible/da_danish1871.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "nl_statenvertaling",
-    "shortname": "Statenvertaling",
-    "name": "Statenvertaling",
-    "language": "Dutch",
-    "type": "bible",
-    "file": "getbible/nl_statenvertaling.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "eng_nasb2020",
-    "shortname": "NASB 2020",
-    "name": "NASB 2020",
-    "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_nasb2020.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "eng_engniv",
-    "shortname": "NIV 1984",
-    "name": "NIV 1984",
-    "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_engniv.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "eng_niv2011",
-    "shortname": "NIV 2011",
-    "name": "NIV 2011",
-    "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_niv2011.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "eng_wbs_rwbs",
-    "shortname": "Webster / Revised Webster",
-    "name": "Webster / Revised Webster",
-    "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_wbs_rwbs.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "eo_esperanto",
-    "shortname": "Esperanto Biblio",
-    "name": "Esperanto Biblio",
-    "language": "Esperanto",
-    "type": "bible",
-    "file": "getbible/eo_esperanto.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "fi_finnish1776",
-    "shortname": "Raamattu 1776",
-    "name": "Raamattu 1776",
-    "language": "Finnish",
-    "type": "bible",
-    "file": "getbible/fi_finnish1776.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "fr_martin",
-    "shortname": "Bible de Martin",
-    "name": "Bible de Martin",
-    "language": "French",
-    "type": "bible",
-    "file": "getbible/fr_martin.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "fr_ls1910",
-    "shortname": "Louis Segond 1910",
-    "name": "Louis Segond 1910",
-    "language": "French",
-    "type": "bible",
-    "file": "getbible/fr_ls1910.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "de_elberfelder",
-    "shortname": "Elberfelder Bibel 1871",
-    "name": "Elberfelder Bibel 1871",
-    "language": "German",
-    "type": "bible",
-    "file": "getbible/de_elberfelder.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "de_elberfelder1905",
-    "shortname": "Elberfelder Bibel 1905",
-    "name": "Elberfelder Bibel 1905",
-    "language": "German",
-    "type": "bible",
-    "file": "getbible/de_elberfelder1905.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "de_luther1545",
-    "shortname": "Luther Bibel 1545",
-    "name": "Luther Bibel 1545",
-    "language": "German",
-    "type": "bible",
-    "file": "getbible/de_luther1545.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "de_schlachter",
-    "shortname": "Schlachter Bibel",
-    "name": "Schlachter Bibel",
-    "language": "German",
-    "type": "bible",
-    "file": "getbible/de_schlachter.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "grk_byz",
-    "shortname": "Byzantine Text Form",
-    "name": "Byzantine Text Form",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_byz.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_lxx_na28",
-    "shortname": "LXX (OT) & NA28 (NT)",
-    "name": "LXX (OT) & NA28 (NT)",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_lxx_na28.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_na27",
-    "shortname": "Nestle-Aland 27th Edition",
-    "name": "Nestle-Aland 27th Edition",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_na27.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_sbl",
-    "shortname": "SBL Greek NT",
-    "name": "SBL Greek NT",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_sbl.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_scr",
-    "shortname": "Scrivener's Edition",
-    "name": "Scrivener's Edition",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_scr.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_ste",
-    "shortname": "Stephanus 1550 GNT",
-    "name": "Stephanus 1550 GNT",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_ste.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_tis",
-    "shortname": "Tischendorf GNT",
-    "name": "Tischendorf GNT",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_tis.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_wht",
-    "shortname": "Westcott / Hort Greek NT",
-    "name": "Westcott / Hort Greek NT",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_wht.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "grk_vamas",
-    "shortname": "Νεόφυτου Βάμβα Greek Bible",
-    "name": "Νεόφυτου Βάμβα Greek Bible",
-    "language": "Greek",
-    "type": "bible",
-    "file": "nocr/grk_vamas.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "heb_allepo_mht",
-    "shortname": "Allepo (OT) & Modern Hebrew (NT)",
-    "name": "Allepo (OT) & Modern Hebrew (NT)",
-    "language": "Hebrew",
-    "type": "bible",
-    "file": "nocr/heb_allepo_mht.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "heb_bhs_del",
-    "shortname": "BHS (OT) & Delitzsche (NT)",
-    "name": "BHS (OT) & Delitzsche (NT)",
-    "language": "Hebrew",
-    "type": "bible",
-    "file": "nocr/heb_bhs_del.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "heb_wlc_sge",
-    "shortname": "WLC (OT) & Salkinson (NT)",
-    "name": "WLC (OT) & Salkinson (NT)",
-    "language": "Hebrew",
-    "type": "bible",
-    "file": "nocr/heb_wlc_sge.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "he_modernhebrew",
-    "shortname": "תנ\"ך מודרני",
-    "name": "תנ\"ך מודרני",
-    "language": "Hebrew",
-    "type": "bible",
-    "file": "getbible/he_modernhebrew.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "hu_hungarian",
-    "shortname": "Károli Gáspár",
-    "name": "Károli Gáspár",
-    "language": "Hungarian",
-    "type": "bible",
-    "file": "getbible/hu_hungarian.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "it_giovanni",
-    "shortname": "Giovanni Diodati",
-    "name": "Giovanni Diodati",
-    "language": "Italian",
-    "type": "bible",
-    "file": "getbible/it_giovanni.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "it_riveduta",
-    "shortname": "Riveduta Bibbia",
-    "name": "Riveduta Bibbia",
-    "language": "Italian",
-    "type": "bible",
-    "file": "getbible/it_riveduta.sqlite",
-    "source": "getbible"
-  },
-  {
     "id": "kor_korkr4",
     "shortname": "개역개정 4판",
     "name": "개역개정 4판",
@@ -468,129 +135,156 @@
     "source": "nocr"
   },
   {
-    "id": "la_vulgate",
-    "shortname": "Biblia Vulgata",
-    "name": "Biblia Vulgata",
-    "language": "Latin",
+    "id": "cmn_cbs",
+    "shortname": "Biblica® 圣经当代译本开放资源",
+    "name": "Biblica® 圣经当代译本开放资源",
+    "language": "Chinese",
     "type": "bible",
-    "file": "getbible/la_vulgate.sqlite",
-    "source": "getbible"
+    "file": "helloao/cmn_cbs.sqlite",
+    "source": "helloao"
   },
   {
-    "id": "lat_vulgata",
-    "shortname": "Latin Vulgata Version",
-    "name": "Latin Vulgata Version",
-    "language": "Latin",
+    "id": "cmn_cbt",
+    "shortname": "Biblica® 聖經，當代譯本開放資源",
+    "name": "Biblica® 聖經，當代譯本開放資源",
+    "language": "Chinese",
     "type": "bible",
-    "file": "nocr/lat_vulgata.sqlite",
+    "file": "helloao/cmn_cbt.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "cmn_cu1",
+    "shortname": "新标点和合本",
+    "name": "新标点和合本",
+    "language": "Chinese",
+    "type": "bible",
+    "file": "helloao/cmn_cu1.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "cmn_cuv",
+    "shortname": "新標點和合本",
+    "name": "新標點和合本",
+    "language": "Chinese",
+    "type": "bible",
+    "file": "helloao/cmn_cuv.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "eng_nasb2020",
+    "shortname": "NASB 2020",
+    "name": "NASB 2020",
+    "language": "English",
+    "type": "bible",
+    "file": "nocr/eng_nasb2020.sqlite",
     "source": "nocr"
   },
   {
-    "id": "lt_lithuanian",
-    "shortname": "Lietuviška Biblija",
-    "name": "Lietuviška Biblija",
-    "language": "Lithuanian",
+    "id": "eng_engniv",
+    "shortname": "NIV 1984",
+    "name": "NIV 1984",
+    "language": "English",
     "type": "bible",
-    "file": "getbible/lt_lithuanian.sqlite",
+    "file": "nocr/eng_engniv.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "eng_niv2011",
+    "shortname": "NIV 2011",
+    "name": "NIV 2011",
+    "language": "English",
+    "type": "bible",
+    "file": "nocr/eng_niv2011.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "eng_wbs_rwbs",
+    "shortname": "Webster / Revised Webster",
+    "name": "Webster / Revised Webster",
+    "language": "English",
+    "type": "bible",
+    "file": "nocr/eng_wbs_rwbs.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "deu_elo",
+    "shortname": "Darby Unrevidierte Elberfelder",
+    "name": "Darby Unrevidierte Elberfelder",
+    "language": "German",
+    "type": "bible",
+    "file": "helloao/deu_elo.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "deu_sch",
+    "shortname": "Die Schlachter-Bibel 1951",
+    "name": "Die Schlachter-Bibel 1951",
+    "language": "German",
+    "type": "bible",
+    "file": "helloao/deu_sch.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "deu_elbbk",
+    "shortname": "Elberfelder Übersetzung (Version von bibelkommentare.de)",
+    "name": "Elberfelder Übersetzung (Version von bibelkommentare.de)",
+    "language": "German",
+    "type": "bible",
+    "file": "helloao/deu_elbbk.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "deu_l12",
+    "shortname": "Lutherbibel 1912",
+    "name": "Lutherbibel 1912",
+    "language": "German",
+    "type": "bible",
+    "file": "helloao/deu_l12.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "deu_tkw",
+    "shortname": "Textbibel von Kautzsch und Weizsäcker",
+    "name": "Textbibel von Kautzsch und Weizsäcker",
+    "language": "German",
+    "type": "bible",
+    "file": "helloao/deu_tkw.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "heb_mod",
+    "shortname": "תנ ך עברי מודרני",
+    "name": "תנ ך עברי מודרני",
+    "language": "Hebrew",
+    "type": "bible",
+    "file": "helloao/heb_mod.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "jpn_japkougo",
+    "shortname": "口語訳「聖書」(1954/1955年版)",
+    "name": "口語訳「聖書」(1954/1955年版)",
+    "language": "Japanese",
+    "type": "bible",
+    "file": "getbible/jpn_japkougo.sqlite",
     "source": "getbible"
   },
   {
-    "id": "mi_maori",
-    "shortname": "Maori Bible",
-    "name": "Maori Bible",
-    "language": "Maori",
+    "id": "jpn_japbungo",
+    "shortname": "明治元訳「舊約聖書」大正改訳「新約聖書」",
+    "name": "明治元訳「舊約聖書」大正改訳「新約聖書」",
+    "language": "Japanese",
     "type": "bible",
-    "file": "getbible/mi_maori.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "no_norwegian",
-    "shortname": "Norsk Bibel",
-    "name": "Norsk Bibel",
-    "language": "Norwegian",
-    "type": "bible",
-    "file": "getbible/no_norwegian.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "pt_almeida",
-    "shortname": "Almeida Revista e Atualizada",
-    "name": "Almeida Revista e Atualizada",
-    "language": "Portuguese",
-    "type": "bible",
-    "file": "getbible/pt_almeida.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "ro_cornilescu",
-    "shortname": "Cornilescu",
-    "name": "Cornilescu",
-    "language": "Romanian",
-    "type": "bible",
-    "file": "getbible/ro_cornilescu.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "es_valera",
-    "shortname": "Reina-Valera 1909",
-    "name": "Reina-Valera 1909",
-    "language": "Spanish",
-    "type": "bible",
-    "file": "getbible/es_valera.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "sv_swedish",
-    "shortname": "Svenska Bibeln",
-    "name": "Svenska Bibeln",
-    "language": "Swedish",
-    "type": "bible",
-    "file": "getbible/sv_swedish.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "tl_tagalog",
-    "shortname": "Ang Biblia",
-    "name": "Ang Biblia",
-    "language": "Tagalog",
-    "type": "bible",
-    "file": "getbible/tl_tagalog.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "th_thai",
-    "shortname": "พระคัมภีร์ไทย",
-    "name": "พระคัมภีร์ไทย",
-    "language": "Thai",
-    "type": "bible",
-    "file": "getbible/th_thai.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "tr_turkish",
-    "shortname": "Kutsal Kitap",
-    "name": "Kutsal Kitap",
-    "language": "Turkish",
-    "type": "bible",
-    "file": "getbible/tr_turkish.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "vi_vietnamese",
-    "shortname": "Kinh Thánh Việt Nam",
-    "name": "Kinh Thánh Việt Nam",
-    "language": "Vietnamese",
-    "type": "bible",
-    "file": "getbible/vi_vietnamese.sqlite",
+    "file": "getbible/jpn_japbungo.sqlite",
     "source": "getbible"
   },
   {
     "id": "com_kor_mhw",
-    "shortname": "메튜 헨리 주석",
-    "name": "메튜 헨리 주석",
+    "shortname": "메튜 헨리 주석 전체",
+    "name": "메튜 헨리 주석 전체",
     "language": "Korean",
     "type": "commentary",
-    "file": "comment/com_kor_mhw.sqlite",
+    "file": "nocr/com_kor_mhw.sqlite",
     "source": "nocr"
   },
   {
@@ -599,7 +293,7 @@
     "name": "박윤선 주석",
     "language": "Korean",
     "type": "commentary",
-    "file": "comment/com_kor_pys.sqlite",
+    "file": "nocr/com_kor_pys.sqlite",
     "source": "nocr"
   },
   {
@@ -608,7 +302,61 @@
     "name": "호크마 주석",
     "language": "Korean",
     "type": "commentary",
-    "file": "comment/com_kor_hochma.sqlite",
+    "file": "nocr/com_kor_hochma.sqlite",
     "source": "nocr"
+  },
+  {
+    "id": "adam-clarke",
+    "shortname": "Adam Clarke",
+    "name": "Adam Clarke",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/adam-clarke.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "jamieson-fausset-brown",
+    "shortname": "Jamieson Fausset Brown",
+    "name": "Jamieson Fausset Brown",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/jamieson-fausset-brown.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "john-gill",
+    "shortname": "John Gill",
+    "name": "John Gill",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/john-gill.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "keil-delitzsch",
+    "shortname": "Keil Delitzsch",
+    "name": "Keil Delitzsch",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/keil-delitzsch.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "matthew-henry",
+    "shortname": "Matthew Henry",
+    "name": "Matthew Henry",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/matthew-henry.sqlite",
+    "source": "helloao"
+  },
+  {
+    "id": "tyndale",
+    "shortname": "Tyndale",
+    "name": "Tyndale",
+    "language": "English",
+    "type": "commentary",
+    "file": "helloao/tyndale.sqlite",
+    "source": "helloao"
   }
 ]
