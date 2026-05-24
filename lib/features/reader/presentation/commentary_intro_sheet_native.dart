@@ -10,6 +10,7 @@ void showCommentaryIntros(
   BuildContext context,
   String manifestFile,
   String commentaryName,
+  String? bibleDbPath,
 ) {
   showModalBottomSheet(
     context: context,
@@ -28,6 +29,7 @@ void showCommentaryIntros(
           return _CommentaryIntroListSheet(
             manifestFile: manifestFile,
             commentaryName: commentaryName,
+            bibleDbPath: bibleDbPath,
             scrollController: scrollController,
           );
         },
@@ -40,11 +42,13 @@ class _CommentaryIntroListSheet extends StatefulWidget {
   const _CommentaryIntroListSheet({
     required this.manifestFile,
     required this.commentaryName,
+    required this.bibleDbPath,
     required this.scrollController,
   });
 
   final String manifestFile;
   final String commentaryName;
+  final String? bibleDbPath;
   final ScrollController scrollController;
 
   @override
@@ -53,7 +57,7 @@ class _CommentaryIntroListSheet extends StatefulWidget {
 }
 
 class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
-  late Future<List<CommentaryIntroduction>?> _introsFuture;
+  late Future<_CommentaryIntroData?> _introsFuture;
 
   @override
   void initState() {
@@ -61,20 +65,38 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
     _introsFuture = _loadIntros();
   }
 
-  Future<List<CommentaryIntroduction>?> _loadIntros() async {
+  Future<_CommentaryIntroData?> _loadIntros() async {
     const repo = ReaderRepository();
     final dbPath = await repo.resolveDbPath(
       widget.manifestFile,
       type: 'commentary',
     );
     if (dbPath == null) return null;
-    return repo.loadCommentaryIntroductions(dbPath: dbPath);
+    final intros = repo.loadCommentaryIntroductions(dbPath: dbPath);
+    final bibleBookNames = <int, String>{};
+    final bibleDbPath = widget.bibleDbPath;
+    if (bibleDbPath != null) {
+      for (final intro in intros) {
+        if (intro.bookId <= 0 || bibleBookNames.containsKey(intro.bookId)) {
+          continue;
+        }
+        try {
+          bibleBookNames[intro.bookId] = repo.loadBookName(
+            dbPath: bibleDbPath,
+            bookId: intro.bookId,
+          );
+        } catch (_) {
+          // Keep commentary DB title if active Bible DB cannot resolve this book.
+        }
+      }
+    }
+    return _CommentaryIntroData(intros: intros, bibleBookNames: bibleBookNames);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return FutureBuilder<List<CommentaryIntroduction>?>(
+    return FutureBuilder<_CommentaryIntroData?>(
       future: _introsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
@@ -85,8 +107,9 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
             ),
           );
         }
-        final intros = snapshot.data;
-        if (intros == null || intros.isEmpty) {
+        final data = snapshot.data;
+        final intros = data?.intros;
+        if (data == null || intros == null || intros.isEmpty) {
           return SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -157,6 +180,11 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                 itemCount: intros.length,
                 itemBuilder: (context, idx) {
                   final intro = intros[idx];
+                  final title = _introDisplayTitle(
+                    intro,
+                    data.bibleBookNames,
+                    context.l10n,
+                  );
                   return ListTile(
                     leading: Icon(
                       intro.bookId == 0
@@ -165,7 +193,7 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                       color: theme.colorScheme.primary,
                     ),
                     title: Text(
-                      intro.title,
+                      title,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -176,6 +204,7 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
                         MaterialPageRoute(
                           builder: (context) => _CommentaryIntroViewerPage(
                             intro: intro,
+                            title: title,
                             commentaryName: widget.commentaryName,
                           ),
                         ),
@@ -192,13 +221,38 @@ class _CommentaryIntroListSheetState extends State<_CommentaryIntroListSheet> {
   }
 }
 
+class _CommentaryIntroData {
+  const _CommentaryIntroData({
+    required this.intros,
+    required this.bibleBookNames,
+  });
+
+  final List<CommentaryIntroduction> intros;
+  final Map<int, String> bibleBookNames;
+}
+
+String _introDisplayTitle(
+  CommentaryIntroduction intro,
+  Map<int, String> localizedBookNames,
+  AppLocalizations l10n,
+) {
+  if (intro.bookId <= 0) return intro.title;
+  final localizedBookName = localizedBookNames[intro.bookId]?.trim();
+  if (localizedBookName == null || localizedBookName.isEmpty) {
+    return intro.title;
+  }
+  return l10n.bookIntroductionTitle(localizedBookName);
+}
+
 class _CommentaryIntroViewerPage extends ConsumerWidget {
   const _CommentaryIntroViewerPage({
     required this.intro,
+    required this.title,
     required this.commentaryName,
   });
 
   final CommentaryIntroduction intro;
+  final String title;
   final String commentaryName;
 
   @override
@@ -227,7 +281,7 @@ class _CommentaryIntroViewerPage extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              intro.title,
+              title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text(

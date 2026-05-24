@@ -6,6 +6,7 @@ void showCommentaryIntros(
   BuildContext context,
   String manifestFile,
   String commentaryName,
+  String? bibleDbPath,
 ) {
   showModalBottomSheet(
     context: context,

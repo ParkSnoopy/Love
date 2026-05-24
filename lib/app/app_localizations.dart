@@ -54,6 +54,8 @@ class AppLocalizations {
       : t('allTranslationsForLanguage').replaceAll('{language}', language);
   String unavailableLanguage(String language) =>
       t('unavailableInCurrentRange').replaceAll('{language}', language);
+  String bookIntroductionTitle(String bookName) =>
+      t('bookIntroductionTitle').replaceAll('{book}', bookName);
 }
 
 class _AppLocalizationsDelegate
@@ -145,6 +147,7 @@ const _localizedValues = <String, Map<String, String>>{
     'noIntroInfo':
         'This commentary has no introduction or background information.',
     'introAndInfo': 'Introduction & Info',
+    'bookIntroductionTitle': 'About {book}',
     'bookmarks': 'Bookmarks',
     'highlights': 'Highlights',
     'notes': 'Notes',
@@ -261,6 +264,7 @@ const _localizedValues = <String, Map<String, String>>{
     'selectCommentaryToActivate': '활성화할 주석 선택',
     'noIntroInfo': '이 주석에는 서론 및 배경 설명 정보가 없습니다.',
     'introAndInfo': '서론 및 소개',
+    'bookIntroductionTitle': '{book} 소개',
     'bookmarks': '북마크',
     'highlights': '하이라이트',
     'notes': '노트',
@@ -376,6 +380,7 @@ const _localizedValues = <String, Map<String, String>>{
     'selectCommentaryToActivate': '选择要启用的注释',
     'noIntroInfo': '此注释没有导言或背景信息。',
     'introAndInfo': '导言与信息',
+    'bookIntroductionTitle': '关于{book}',
     'bookmarks': '书签',
     'highlights': '高亮',
     'notes': '笔记',
@@ -491,6 +496,7 @@ const _localizedValues = <String, Map<String, String>>{
     'selectCommentaryToActivate': '有効にする注解を選択',
     'noIntroInfo': 'この注解には序論や背景情報がありません。',
     'introAndInfo': '序論と情報',
+    'bookIntroductionTitle': '{book}について',
     'bookmarks': 'ブックマーク',
     'highlights': 'ハイライト',
     'notes': 'ノート',

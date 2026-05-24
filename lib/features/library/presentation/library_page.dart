@@ -5,6 +5,7 @@ import '../domain/bible_pack.dart';
 import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../reader/presentation/commentary_intro_sheet.dart';
+import '../../../data/storage/db_path_provider.dart';
 import '../../../app/theme_controller.dart';
 import '../../../app/font_controller.dart';
 import '../../../app/locale_controller.dart';
@@ -60,6 +61,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
     final activeCommentaryAsync = ref.watch(activeCommentarySelectionProvider);
+    final activeBibleDbPath = ref.watch(activeDbPathProvider).asData?.value;
     final readerSettingsAsync = ref.watch(readerSettingsProvider);
     final readerSettings =
         readerSettingsAsync.value ??
@@ -285,11 +287,21 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               IconButton(
                                 icon: const Icon(Icons.info_outline, size: 20),
                                 tooltip: l10n.t('viewIntro'),
-                                onPressed: () => showCommentaryIntros(
-                                  context,
-                                  activeCommentary.file,
-                                  activeCommentary.name,
-                                ),
+                                onPressed: () async {
+                                  final activeBibleDbPathFuture = ref.read(
+                                    activeDbPathProvider.future,
+                                  );
+                                  final bibleDbPath =
+                                      activeBibleDbPath ??
+                                      await activeBibleDbPathFuture;
+                                  if (!context.mounted) return;
+                                  showCommentaryIntros(
+                                    context,
+                                    activeCommentary.file,
+                                    activeCommentary.name,
+                                    bibleDbPath,
+                                  );
+                                },
                               ),
                               IconButton(
                                 icon: const Icon(Icons.clear, size: 20),
@@ -581,6 +593,7 @@ class _CommentarySelectionSheetState
         .watch(activeCommentarySelectionProvider)
         .asData
         ?.value;
+    final activeBibleDbPath = ref.watch(activeDbPathProvider).asData?.value;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
@@ -686,11 +699,21 @@ class _CommentarySelectionSheetState
                               IconButton(
                                 icon: const Icon(Icons.info_outline),
                                 tooltip: l10n.t('viewIntro'),
-                                onPressed: () => showCommentaryIntros(
-                                  context,
-                                  p.file,
-                                  p.name,
-                                ),
+                                onPressed: () async {
+                                  final activeBibleDbPathFuture = ref.read(
+                                    activeDbPathProvider.future,
+                                  );
+                                  final bibleDbPath =
+                                      activeBibleDbPath ??
+                                      await activeBibleDbPathFuture;
+                                  if (!context.mounted) return;
+                                  showCommentaryIntros(
+                                    context,
+                                    p.file,
+                                    p.name,
+                                    bibleDbPath,
+                                  );
+                                },
                               ),
                               if (isSelected)
                                 Icon(
