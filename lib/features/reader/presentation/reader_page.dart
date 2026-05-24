@@ -177,7 +177,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         final readerSettingsAsync = ref.watch(readerSettingsProvider);
         final readerSettings =
             readerSettingsAsync.value ??
-            const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+            const ReaderSettingsState(fontSize: 18.0, lineSpacing: 1.5);
 
         // Check if we need to scroll to a verse
         final targetScroll = ref.watch(targetScrollVerseProvider);
@@ -1120,7 +1120,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
     final theme = Theme.of(context);
     final readerSettings =
         ref.watch(readerSettingsProvider).value ??
-        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+        const ReaderSettingsState(fontSize: 18.0, lineSpacing: 1.5);
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final baseTextStyle =
         theme.textTheme.bodyMedium?.copyWith(

@@ -29,7 +29,6 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   String _fontLabel(AppLocalizations l10n, FontType type) => switch (type) {
     FontType.sans => l10n.t('sansSerif'),
     FontType.serif => l10n.t('serif'),
-    FontType.mono => l10n.t('monospace'),
   };
 
   String _languageLabel(AppLocalizations l10n, Locale? locale) =>
@@ -50,13 +49,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   IconData _fontIcon(FontType type) => switch (type) {
     FontType.sans => Icons.font_download_outlined,
     FontType.serif => Icons.font_download,
-    FontType.mono => Icons.integration_instructions_outlined,
   };
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.light;
+    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
@@ -65,7 +63,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     final readerSettingsAsync = ref.watch(readerSettingsProvider);
     final readerSettings =
         readerSettingsAsync.value ??
-        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+        const ReaderSettingsState(fontSize: 18.0, lineSpacing: 1.5);
 
     return Scaffold(
       appBar: AppBar(

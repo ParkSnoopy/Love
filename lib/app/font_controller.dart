@@ -1,13 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_preferences.dart';
 
-enum FontType { sans, serif, mono }
+enum FontType { sans, serif }
 
 String fontFamilyForType(FontType fontType) {
   return switch (fontType) {
     FontType.sans => 'NotoSansCJK',
     FontType.serif => 'NotoSerifCJK',
-    FontType.mono => 'NotoSansMonoCJK',
   };
 }
 
@@ -32,8 +31,7 @@ class FontTypeController extends AsyncNotifier<FontType> {
     final current = state.value ?? FontType.serif;
     final next = switch (current) {
       FontType.sans => FontType.serif,
-      FontType.serif => FontType.mono,
-      FontType.mono => FontType.sans,
+      FontType.serif => FontType.sans,
     };
     final prefs = await AppPreferences.getInstance();
     await prefs.setInt(_key, next.index);

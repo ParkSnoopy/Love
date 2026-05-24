@@ -88,9 +88,6 @@ flutter:
     - family: NotoSerifCJK
       fonts:
         - asset: assets/fonts/NotoSerifCJK.ttc
-    - family: NotoSansMonoCJK
-      fonts:
-        - asset: assets/fonts/NotoSansMonoCJK-VF.ttf.ttc
 
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

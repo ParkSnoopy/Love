@@ -21,7 +21,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
   @override
   Future<ReaderSettingsState> build() async {
     final prefs = await AppPreferences.getInstance();
-    final fontSize = prefs.getDouble(_keyFontSize) ?? 16.0;
+    final fontSize = prefs.getDouble(_keyFontSize) ?? 18.0;
     final lineSpacing = prefs.getDouble(_keyLineSpacing) ?? 1.5;
     final uiScale = prefs.getDouble(_keyUiScale) ?? 1.0;
     return ReaderSettingsState(
@@ -48,7 +48,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     await prefs.setDouble(_keyLineSpacing, val);
     state = AsyncData(
       ReaderSettingsState(
-        fontSize: state.value?.fontSize ?? 16.0,
+        fontSize: state.value?.fontSize ?? 18.0,
         lineSpacing: val,
         uiScale: state.value?.uiScale ?? 1.0,
       ),
@@ -60,7 +60,7 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     await prefs.setDouble(_keyUiScale, val);
     state = AsyncData(
       ReaderSettingsState(
-        fontSize: state.value?.fontSize ?? 16.0,
+        fontSize: state.value?.fontSize ?? 18.0,
         lineSpacing: state.value?.lineSpacing ?? 1.5,
         uiScale: val,
       ),

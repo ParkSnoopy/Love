@@ -12,15 +12,15 @@ class ThemeModeController extends AsyncNotifier<ThemeMode> {
   @override
   Future<ThemeMode> build() async {
     final prefs = await AppPreferences.getInstance();
-    final index = prefs.getInt(_key) ?? ThemeMode.light.index;
+    final index = prefs.getInt(_key) ?? ThemeMode.system.index;
     if (index >= 0 && index < ThemeMode.values.length) {
       return ThemeMode.values[index];
     }
-    return ThemeMode.light;
+    return ThemeMode.system;
   }
 
   Future<void> cycle() async {
-    final current = state.value ?? ThemeMode.light;
+    final current = state.value ?? ThemeMode.system;
     final next = switch (current) {
       ThemeMode.system => ThemeMode.light,
       ThemeMode.light => ThemeMode.dark,

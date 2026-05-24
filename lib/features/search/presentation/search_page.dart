@@ -296,7 +296,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
     final packsAsync = ref.watch(biblePacksProvider);
     final readerSettings =
         ref.watch(readerSettingsProvider).value ??
-        const ReaderSettingsState(fontSize: 16.0, lineSpacing: 1.5);
+        const ReaderSettingsState(fontSize: 18.0, lineSpacing: 1.5);
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final resultTextStyle =
         Theme.of(context).textTheme.bodyMedium?.copyWith(

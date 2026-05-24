@@ -95,7 +95,7 @@ const _localizedValues = <String, Map<String, String>>{
     'readerFont': 'Reader Font',
     'sansSerif': 'Sans-Serif',
     'serif': 'Serif',
-    'monospace': 'Monospace',
+
     'readerTypography': 'Reader Typography',
     'fontSize': 'Font Size',
     'lineSpacing': 'Line Spacing',
@@ -217,7 +217,7 @@ const _localizedValues = <String, Map<String, String>>{
     'readerFont': '리더 글꼴',
     'sansSerif': '고딕',
     'serif': '명조',
-    'monospace': '고정폭',
+
     'readerTypography': '리더 글자 설정',
     'fontSize': '글자 크기',
     'lineSpacing': '줄 간격',
@@ -333,7 +333,7 @@ const _localizedValues = <String, Map<String, String>>{
     'readerFont': '阅读字体',
     'sansSerif': '无衬线',
     'serif': '衬线',
-    'monospace': '等宽',
+
     'readerTypography': '阅读排版',
     'fontSize': '字体大小',
     'lineSpacing': '行距',
@@ -449,7 +449,7 @@ const _localizedValues = <String, Map<String, String>>{
     'readerFont': 'リーダーフォント',
     'sansSerif': 'ゴシック',
     'serif': '明朝',
-    'monospace': '等幅',
+
     'readerTypography': 'リーダー文字設定',
     'fontSize': '文字サイズ',
     'lineSpacing': '行間',
