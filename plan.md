@@ -9,10 +9,10 @@ This document details the architecture, design choices, data contracts, and impl
 1. **Platform**: Flutter-first (cross-platform native and web support).
 2. **Scope**: Reader-first user experience combined with essential study tools.
 3. **Data Packaging**: Bundled `assets/data.zip` containing pre-processed databases. Assets are extracted to client storage on demand.
-4. **Commentary Integration**: User selects a commentary database corresponding to the active Bible translation.
+4. **Commentary Integration**: User selects a commentary database corresponding to the active Bible version.
 5. **Commentary Data Strategy (Pre-processed Sparse Schema)**: Commentaries are pre-migrated offline to use the exact same schema as Bibles. This eliminates runtime regex reference parsing, isolate mapping overhead, and database parsing errors on client devices.
-6. **Reader Navigation**: Persistent book/chapter picker, swipe gestures for chapter transitions, and tap/long-press actions on verses.
-7. **Position Persistence**: Active book and chapter are stored in persistent local storage. When switching Bibles, the position is clamped to the new database boundaries (max book/chapter).
+6. **Reader Navigation**: Persistent book/chapter picker, language-grouped Bible version picker, swipe gestures for chapter transitions, and tap/long-press actions on verses.
+7. **Position Persistence**: Active book and chapter are stored in persistent local storage. Reader and commentary scroll offsets remain stable when toggling commentary fullscreen. When switching Bible versions, the position is clamped to the new database boundaries (max book/chapter).
 8. **Commentary Toggle**: A dedicated visibility toggle allows users to show or hide the commentary pane without losing their active selection or having to re-select the database.
 9. **Introduction & Preface Viewer**: General prefaces and book introductions are fully preserved in the database. A dedicated picker and styled viewer allow readers to inspect these materials directly from the selection screen or active pane.
 10. **Study Tools**: Three-color highlights, bookmarks, editable verse notes, and a recent history list capped at 50 entries.
@@ -28,8 +28,8 @@ This document details the architecture, design choices, data contracts, and impl
 
 The application manages data across three distinct zones:
 - **Bundled Assets (Read-Only)**: `assets/data.zip` containing the compressed databases, alongside local font files.
-- **Imported Sandbox (Read-Only client-side)**: Extracted SQLite files for active Bible translations and commentary packs.
-- **User Database (Writeable)**: A standalone `user_data.db` file containing user state, history, bookmarks, notes, and application preferences.
+- **Imported Sandbox (Read-Only client-side)**: Extracted SQLite files for active Bible versions and commentary packs.
+- **User Database (Writeable)**: A standalone `user_data.db` file containing user state, history, bookmarks, and notes.
 
 ### 1.2 Database Schema & Data Contracts
 
@@ -37,7 +37,7 @@ To maintain schema uniformity and enable direct SQLite index lookups, both Bible
 
 #### Tables
 - **`version`**: Metadata containing the slug identifier and the display label.
-- **`books`**: Registry of books within the translation. Contains book ID, OSIS identifier, English name, native language name, testament category, and total chapter count.
+- **`books`**: Registry of books within the version. Contains book ID, OSIS identifier, English name, native language name, testament category, and total chapter count.
 - **`verses`**: The text content indexed by book ID, chapter, and verse.
 
 #### Index
@@ -79,16 +79,18 @@ To avoid heavy text processing on client devices, a preprocessing script convert
 - Navigation uses a centralized controller that tracks the user's active location.
 - **Persistence**: Book ID and chapter indices are updated in local preferences upon page changes.
 - **Database Boundary Clamping**: When the active Bible version is swapped, the controller validates the current position against the new database limits. If the book ID exceeds the maximum books, it resets to the first book; if the chapter exceeds the maximum chapters of the current book, it clamps to the maximum chapter limit.
+- **Bible Version Selection**: The version picker groups installed Bible versions by language in expandable sections. The currently active language group opens by default, and search results expand matching language groups.
 
 ### 3.2 Commentary Pane and Toggle Logic
 - The reader layout features a split viewport showing the scripture text on top and commentary on the bottom.
 - A boolean visibility controller governs the commentary pane's display.
-- Users can close the pane or toggle it off via the toolbar. Toggling it back on immediately restores the last viewed commentary article for the active chapter.
+- Users can close the pane, toggle it off via the toolbar, or switch commentary fullscreen on and off. Toggling back restores both scripture and commentary scroll offsets for the current chapter.
 
 ### 3.3 Introduction Viewer Modal
 - **Trigger Points**:
   - Tapping the Book icon in the active Commentary Pane header.
   - Tapping the Information icon on a commentary package entry inside the selection sheet.
+  - Tapping the Information icon on the active commentary row in Settings.
 - **List Presentation**: Displays a sheet showing available general prefaces (using info icons) and book-specific introductions (using book icons).
 - **Styled Viewport**: A dedicated page parses and renders the introduction content. It interprets markdown-style headers (translating header symbols to scaled, bold primary-colored titles) and inline formatting tags (such as bold and italics tags) using appropriate text styling.
 
@@ -97,11 +99,11 @@ To avoid heavy text processing on client devices, a preprocessing script convert
 ## 4) User Data Schema (`user_data.db`)
 
 ### 4.1 Tables
-- **`bookmarks`**: Logs marked verses with references and creation timestamps.
-- **`highlights`**: Stores verse keys paired with a color code.
-- **`notes`**: Saves user-written notes associated with specific verses, with creation and update timestamps.
+- **`bookmarks`**: Logs marked verses with references and creation timestamps. Consecutive bookmarks created in one action are displayed as a grouped range in Saved.
+- **`highlights`**: Stores verse ranges paired with a color code. Highlight ranges are displayed as grouped ranges in Saved.
+- **`notes`**: Saves user-written notes associated with specific verses, with creation and update timestamps. Consecutive notes saved in one multi-verse action with identical content are displayed as a grouped range in Saved.
 - **`history`**: Tracks recently opened locations. A clean-up routine runs during inserts to delete older entries and cap the total row count at 50.
-- **`settings`**: Key-value table storing active translations, font preferences, line heights, and theme settings.
+- **`settings/preferences`**: Key-value preference storage for active Bible version, active commentary, reader position, font preferences, line heights, and theme settings.
 
 ---
 
@@ -109,8 +111,9 @@ To avoid heavy text processing on client devices, a preprocessing script convert
 
 ### 5.1 Selection State Machine
 - **None**: Neutral reading state. Tapping a verse selects it.
-- **Single Selection**: One verse is active. Shows the action bar with functions for Copy, Share, Jump to Commentary, Bookmark, Highlight, and Add Note.
-- **Multi-Selection**: Activated via long-press. Multiple verses can be selected. The action bar hides the "Jump to Commentary" button. Tapping selected verses toggles their state.
+- **Single Selection**: One verse is active. Shows an outlined selected verse and an action bar ordered as Clipboard, Share, Bookmark, Highlight, Note, and View Commentary.
+- **Multi-Selection**: Activated via long-press. Multiple verses can be selected with outline markers. The same action order remains available; notes and bookmarks created for multiple consecutive verses are displayed as grouped ranges in Saved.
+- **Saved Navigation**: Tapping a Saved bookmark, highlight, or note opens Reader and scrolls to the target verse without selecting verse text.
 
 ### 5.2 Export Formatting Contract
 - Exported text must follow this layout:
@@ -144,9 +147,9 @@ To avoid heavy text processing on client devices, a preprocessing script convert
 ## 8) Replication and QA Protocol
 
 ### 8.1 Automated Unit Tests
-- **Database Copying**: Unit tests should copy pre-processed SQLite databases directly from the assets directory into a temporary test directory rather than trying to extract them from raw zip archives.
+- **Database Fixture Setup**: Unit tests should stage pre-processed SQLite databases from `assets/data.zip` into temporary test directories using the existing zip extractor helper, matching production asset layout.
 - **Commentary Extraction**: Tests must verify both normal chapter commentary retrieval and introduction/preface loading.
-- **Persistence Testing**: Verify that position values are stored and clamped correctly when Mock SharedPreferences are updated with boundary-breaking indices.
+- **Persistence Testing**: Verify that position values are stored and clamped correctly when app preferences are updated with boundary-breaking indices.
 
 ### 8.2 Build & Compilation Checks
 - Run static analysis to verify that the project builds without warnings, unused imports, or deprecated library references.
