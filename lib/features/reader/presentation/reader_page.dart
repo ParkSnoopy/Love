@@ -906,10 +906,18 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   _findCommentariesForCurrentChapter() async {
     const manifestRepo = ManifestRepository();
     const readerRepo = ReaderRepository();
+    final activeCommentary = ref
+        .read(activeCommentarySelectionProvider)
+        .asData
+        ?.value;
     final packs = await manifestRepo.loadBiblePacksFromAsset();
     final matches = <_CommentarySwitchOption>[];
 
     for (final pack in packs.where((p) => p.type == 'commentary')) {
+      if (pack.id == activeCommentary?.id ||
+          pack.file == activeCommentary?.file) {
+        continue;
+      }
       final dbPath = await readerRepo.resolveDbPath(pack.file, type: pack.type);
       if (dbPath == null) continue;
       try {
@@ -989,14 +997,20 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
     return spans;
   }
 
+  void _startAlternativeCommentarySearch() {
+    setState(() {
+      _alternativeCommentariesFuture = _findCommentariesForCurrentChapter();
+    });
+  }
+
   Widget _buildAlternativeCommentarySearch(BuildContext context) {
-    if (widget.hasCurrentChapterCommentary) {
+    final future = _alternativeCommentariesFuture;
+    if (widget.hasCurrentChapterCommentary && future == null) {
       return const SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    final future = _alternativeCommentariesFuture;
 
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
@@ -1007,26 +1021,23 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l10n.t('noCommentaryForChapter'),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
+            if (!widget.hasCurrentChapterCommentary) ...[
+              Text(
+                l10n.t('noCommentaryForChapter'),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSecondaryContainer,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: FilledButton.tonalIcon(
-                icon: const Icon(Icons.manage_search),
-                label: Text(l10n.t('checkAnotherCommentaryDatabase')),
-                onPressed: () {
-                  setState(() {
-                    _alternativeCommentariesFuture =
-                        _findCommentariesForCurrentChapter();
-                  });
-                },
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton.tonalIcon(
+                  icon: const Icon(Icons.manage_search),
+                  label: Text(l10n.t('checkAnotherCommentaryDatabase')),
+                  onPressed: _startAlternativeCommentarySearch,
+                ),
               ),
-            ),
+            ],
             if (future != null) ...[
               const SizedBox(height: 8),
               FutureBuilder<List<_CommentarySwitchOption>>(
@@ -1319,6 +1330,11 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.manage_search, size: 18),
+                  tooltip: l10n.t('checkAnotherCommentaryDatabase'),
+                  onPressed: _startAlternativeCommentarySearch,
                 ),
                 if (activeCommentary != null)
                   IconButton(
