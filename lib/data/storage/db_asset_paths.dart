@@ -24,14 +24,9 @@ List<String> localDbCandidates({
 }
 
 String appDbPath({
-  required String appDocumentsPath,
+  required String appDataPath,
   required String manifestFile,
   required String type,
 }) {
-  return p.join(
-    appDocumentsPath,
-    'bible_data',
-    dbAssetCategory(type),
-    manifestFile,
-  );
+  return p.join(appDataPath, 'bible_data', dbAssetCategory(type), manifestFile);
 }

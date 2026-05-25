@@ -1,27 +1,19 @@
-import 'dart:io';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
+import '../../../data/storage/app_storage.dart';
 import '../data/user_data_repository.dart';
 
-String _desktopFallbackUserDataPath() {
-  final home = Platform.environment['HOME'];
-  if (home != null && home.isNotEmpty) {
-    return p.join(home, '.local', 'share', 'love', 'user_data.db');
-  }
-  return p.join(Directory.current.path, '.love', 'user_data.db');
+String _fallbackUserDataPath() {
+  return p.join(fallbackAppDataPath(), 'user_data.db');
 }
 
 final userDataDbPathProvider = FutureProvider<String>((ref) async {
   try {
-    final dir = Platform.isAndroid || Platform.isIOS
-        ? await getApplicationDocumentsDirectory()
-        : await getApplicationSupportDirectory();
+    final dir = await getAppDataDirectory();
     return p.join(dir.path, 'user_data.db');
   } catch (_) {
-    return _desktopFallbackUserDataPath();
+    return _fallbackUserDataPath();
   }
 });
 

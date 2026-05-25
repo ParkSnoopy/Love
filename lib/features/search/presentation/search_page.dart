@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import '../data/search_repository.dart';
 import '../../reader/data/reader_repository.dart';
 import '../../reader/providers/reader_controller.dart';
@@ -12,6 +11,7 @@ import '../../reader/providers/verse_selection_controller.dart';
 import '../../reader/providers/commentary_visibility_provider.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../../data/storage/db_asset_paths.dart';
+import '../../../data/storage/app_storage.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../../data/import/zip_extractor.dart';
@@ -149,9 +149,9 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
     }
 
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
+      final appDataDir = await getAppDataDirectory();
       final targetPath = appDbPath(
-        appDocumentsPath: docsDir.path,
+        appDataPath: appDataDir.path,
         manifestFile: manifestFile,
         type: pack.type,
       );

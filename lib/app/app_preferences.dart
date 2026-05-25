@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+import '../data/storage/app_storage.dart';
 
 class AppPreferences {
   AppPreferences._(this._file, Map<String, Object?> values) : _values = values;
@@ -40,18 +41,7 @@ class AppPreferences {
   }
 
   static Future<String> _settingsDirPath() async {
-    try {
-      final dir = Platform.isAndroid || Platform.isIOS
-          ? await getApplicationDocumentsDirectory()
-          : await getApplicationSupportDirectory();
-      return dir.path;
-    } catch (_) {
-      final home = Platform.environment['HOME'];
-      if (home != null && home.isNotEmpty) {
-        return p.join(home, '.local', 'share', 'love');
-      }
-      return p.join(Directory.current.path, '.love');
-    }
+    return (await getAppDataDirectory()).path;
   }
 
   static Future<Map<String, Object?>> _readValues(File file) async {

@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../../../data/import/zip_extractor.dart';
+import '../../../data/storage/app_storage.dart';
 import '../../../data/storage/db_asset_paths.dart';
 
 class VerseLine {
@@ -365,11 +365,11 @@ class ReaderRepository {
       if (File(path).existsSync()) return path;
     }
 
-    // 2. Try app documents directory (for mobile)
+    // 2. Try app data directory
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
+      final appDataDir = await getAppDataDirectory();
       final targetPath = appDbPath(
-        appDocumentsPath: docsDir.path,
+        appDataPath: appDataDir.path,
         manifestFile: manifestFile,
         type: type,
       );
@@ -385,7 +385,7 @@ class ReaderRepository {
         }
       }
 
-      // 3. Extract from assets/data.zip to documents directory
+      // 3. Extract from assets/data.zip to app data directory
       const extractor = ZipExtractor();
       await extractor.extractFile(
         targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),

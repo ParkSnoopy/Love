@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../../features/library/providers/library_controller.dart';
 import '../import/zip_extractor.dart';
+import 'app_storage.dart';
 import 'db_asset_paths.dart';
 
 bool _isDatabaseValid(String path) {
@@ -34,10 +34,10 @@ Future<String?> _resolveDbPath({
     if (File(path).existsSync()) return path;
   }
 
-  // 2. Try app documents directory (for mobile)
-  final docsDir = await getApplicationDocumentsDirectory();
+  // 2. Try app data directory
+  final appDataDir = await getAppDataDirectory();
   final targetPath = appDbPath(
-    appDocumentsPath: docsDir.path,
+    appDataPath: appDataDir.path,
     manifestFile: manifestFile,
     type: type,
   );
@@ -53,7 +53,7 @@ Future<String?> _resolveDbPath({
     }
   }
 
-  // 3. Extract from assets/data.zip to documents directory
+  // 3. Extract from assets/data.zip to app data directory
   try {
     const extractor = ZipExtractor();
     await extractor.extractFile(

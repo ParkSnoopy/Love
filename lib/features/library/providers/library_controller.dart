@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../../app/app_preferences.dart';
 import '../../../data/import/zip_extractor.dart';
+import '../../../data/storage/app_storage.dart';
 import '../../../data/storage/db_asset_paths.dart';
 
 import '../domain/manifest_repository.dart';
@@ -97,11 +97,11 @@ class ActiveBibleSelectionController
     required String type,
   }) async {
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
+      final appDataDir = await getAppDataDirectory();
       final candidates = <String>[
         ...localDbCandidates(manifestFile: manifestFile, type: type),
         appDbPath(
-          appDocumentsPath: docsDir.path,
+          appDataPath: appDataDir.path,
           manifestFile: manifestFile,
           type: type,
         ),
@@ -111,7 +111,7 @@ class ActiveBibleSelectionController
         targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
       );
     } catch (_) {
-      // In tests, getApplicationDocumentsDirectory might fail
+      // In tests, getApplicationSupportDirectory might fail
       return localDbCandidates(
         manifestFile: manifestFile,
         type: type,
@@ -208,11 +208,11 @@ class ActiveCommentarySelectionController
     required String type,
   }) async {
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
+      final appDataDir = await getAppDataDirectory();
       final candidates = <String>[
         ...localDbCandidates(manifestFile: manifestFile, type: type),
         appDbPath(
-          appDocumentsPath: docsDir.path,
+          appDataPath: appDataDir.path,
           manifestFile: manifestFile,
           type: type,
         ),
