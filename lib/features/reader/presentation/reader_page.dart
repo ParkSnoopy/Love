@@ -245,8 +245,18 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         return Scaffold(
           appBar: AppBar(
             title: InkWell(
-              onTap: () =>
-                  _showPicker(context, ref, rr, widget.dbPath, activeBibleName),
+              onTap: () => _showPicker(
+                context,
+                rr,
+                widget.dbPath,
+                activeBibleName,
+                onSelected: (bookId, chapter) => _changeChapterAndScrollToTop(
+                  rr,
+                  () => ref
+                      .read(readerRefProvider.notifier)
+                      .jumpTo(bookId: bookId, chapter: chapter),
+                ),
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -578,11 +588,11 @@ class _CommentaryActionIcon extends StatelessWidget {
 
 void _showPicker(
   BuildContext context,
-  WidgetRef ref,
   ReaderRef rr,
   String dbPath,
-  String bibleName,
-) {
+  String bibleName, {
+  required Future<void> Function(int bookId, int chapter) onSelected,
+}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -591,11 +601,9 @@ void _showPicker(
       bibleName: bibleName,
       initialBookId: rr.bookId,
       initialChapter: rr.chapter,
-      onSelected: (bookId, chapter) {
-        ref
-            .read(readerRefProvider.notifier)
-            .jumpTo(bookId: bookId, chapter: chapter);
+      onSelected: (bookId, chapter) async {
         Navigator.of(ctx).pop();
+        await onSelected(bookId, chapter);
       },
     ),
   );
