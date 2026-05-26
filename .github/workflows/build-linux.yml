@@ -1,0 +1,64 @@
+name: Build Linux
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rolling-linux
+  cancel-in-progress: true
+
+jobs:
+  build-linux:
+    name: Linux release bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Linux build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsqlite3-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Linux
+        run: flutter build linux --release
+
+      - name: Package Linux artifact
+        run: |
+          tar -C build/linux/x64/release/bundle -czf love-linux-x64.tar.gz .
+          sha256sum love-linux-x64.tar.gz > love-linux-x64.tar.gz.sha256
+
+      - name: Move rolling tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git tag -f rolling "${GITHUB_SHA}"
+          git push -f origin rolling
+
+      - name: Upload to rolling release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rolling
+          name: Rolling Release
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: |
+            love-linux-x64.tar.gz
+            love-linux-x64.tar.gz.sha256

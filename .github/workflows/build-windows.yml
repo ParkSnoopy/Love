@@ -1,0 +1,61 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rolling-windows
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    name: Windows release bundle
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Package Windows artifact
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath love-windows-x64.zip -Force
+          (Get-FileHash love-windows-x64.zip -Algorithm SHA256).Hash.ToLower() + "  love-windows-x64.zip" | Out-File -Encoding ascii love-windows-x64.zip.sha256
+
+      - name: Move rolling tag
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          git tag -f rolling "${GITHUB_SHA}"
+          git push -f origin rolling
+
+      - name: Upload to rolling release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rolling
+          name: Rolling Release
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: |
+            love-windows-x64.zip
+            love-windows-x64.zip.sha256
