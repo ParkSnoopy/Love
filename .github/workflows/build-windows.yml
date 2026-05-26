@@ -28,6 +28,19 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Restore assets archive
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          $assetArchiveUrl = (Get-Content .assets-uri | Select-Object -First 1).Trim()
+          $archivePath = Join-Path $env:RUNNER_TEMP 'love-assets.zip'
+          Invoke-WebRequest -Uri $assetArchiveUrl -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN" } -OutFile $archivePath
+          Expand-Archive -Path $archivePath -DestinationPath . -Force
+          if (!(Test-Path 'assets/data.zip')) { throw 'Missing assets/data.zip' }
+          if (!(Test-Path 'assets/fonts/NotoSansCJK-VF.ttf.ttc')) { throw 'Missing assets/fonts/NotoSansCJK-VF.ttf.ttc' }
+          if (!(Test-Path 'assets/fonts/NotoSerifCJK.ttc')) { throw 'Missing assets/fonts/NotoSerifCJK.ttc' }
+
       - name: Flutter pub get
         run: flutter pub get
 
