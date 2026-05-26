@@ -2,7 +2,7 @@ name: Build Linux
 
 on:
   push:
-    branches: [main]
+    branches: [ai-dev]
   workflow_dispatch:
 
 permissions:
@@ -44,18 +44,22 @@ jobs:
           tar -C build/linux/x64/release/bundle -czf love-linux-x64.tar.gz .
           sha256sum love-linux-x64.tar.gz > love-linux-x64.tar.gz.sha256
 
+      - name: Set rolling tag
+        if: github.ref == 'refs/heads/ai-dev'
+        run: echo "ROLLING_TAG=rolling-$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
+
       - name: Move rolling tag
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/ai-dev'
         run: |
-          git tag -f rolling "${GITHUB_SHA}"
-          git push -f origin rolling
+          git tag -f "${ROLLING_TAG}" "${GITHUB_SHA}"
+          git push -f origin "${ROLLING_TAG}"
 
       - name: Upload to rolling release
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/ai-dev'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: rolling
-          name: Rolling Release
+          tag_name: ${{ env.ROLLING_TAG }}
+          name: Rolling Release ${{ env.ROLLING_TAG }}
           prerelease: true
           make_latest: false
           overwrite_files: true
