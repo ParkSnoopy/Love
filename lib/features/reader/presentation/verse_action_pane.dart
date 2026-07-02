@@ -33,8 +33,6 @@ class VerseActionPane extends ConsumerWidget {
     final highlightsAsync = ref.watch(highlightsProvider);
     final userDataRepo = ref.watch(userDataRepositoryProvider);
     final userDataDbPath = ref.watch(userDataDbPathProvider).value ?? '';
-    final selection = ref.watch(verseSelectionProvider);
-
     final bookmarks = bookmarksAsync.value ?? [];
     final highlights = highlightsAsync.value ?? [];
 
@@ -259,14 +257,17 @@ class VerseActionPane extends ConsumerWidget {
               title: Text(l10n.t('writeEditNote')),
               onTap: () async {
                 if (sortedVersesList.isEmpty) return;
-                final existing = selection.mode == SelectionMode.single
-                    ? userDataRepo.loadNote(
+                final selectedSingleVerse = sortedVersesList.length == 1
+                    ? sortedVersesList.single.verse
+                    : null;
+                final existing = selectedSingleVerse == null
+                    ? null
+                    : userDataRepo.loadNote(
                         dbPath: userDataDbPath,
                         bookId: bookId,
                         chapter: chapter,
-                        verse: selection.single!.verse,
-                      )
-                    : null;
+                        verse: selectedSingleVerse,
+                      );
                 final c = TextEditingController(text: existing?.content ?? '');
                 final container = ProviderScope.containerOf(context);
                 final range = VerseExportFormatter.formatVerseNumbers(
@@ -276,7 +277,11 @@ class VerseActionPane extends ConsumerWidget {
                 final text = await showDialog<String>(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: Text(l10n.noteTitle('$chapter:$range')),
+                    title: Text(
+                      existing == null
+                          ? l10n.noteTitle('$chapter:$range')
+                          : l10n.editNoteTitle('$chapter:$range'),
+                    ),
                     content: TextField(
                       controller: c,
                       maxLines: 5,
