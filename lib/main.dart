@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app_localizations.dart';
+import 'app/bug_reporter.dart';
 import 'app/font_controller.dart';
 import 'app/locale_controller.dart';
 import 'app/reader_settings_controller.dart';
@@ -13,11 +17,23 @@ import 'features/study/providers/user_data_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final originalFlutterError = FlutterError.onError;
+  FlutterError.onError = (details) {
+    BugReportLog.recordFlutterError(details);
+    originalFlutterError?.call(details);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    BugReportLog.record(error, stack);
+    return false;
+  };
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const ProviderScope(child: MyApp()));
+  runZonedGuarded(
+    () => runApp(const ProviderScope(child: MyApp())),
+    BugReportLog.record,
+  );
 }
 
 class MyApp extends ConsumerWidget {

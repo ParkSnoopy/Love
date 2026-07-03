@@ -6,6 +6,7 @@ import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../reader/presentation/commentary_intro_sheet.dart';
 import '../../../data/storage/db_path_provider.dart';
+import '../../../app/bug_reporter.dart';
 import '../../../app/theme_controller.dart';
 import '../../../app/font_controller.dart';
 import '../../../app/locale_controller.dart';
@@ -335,6 +336,25 @@ class _SettingPageState extends ConsumerState<SettingPage> {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          _buildSectionHeader(l10n.t('support')),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ListTile(
+              leading: Icon(
+                Icons.bug_report_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(l10n.t('reportBug')),
+              subtitle: Text(l10n.t('reportBugSubtitle')),
+              trailing: const Icon(Icons.open_in_new, size: 20),
+              onTap: () => _openBugReport(context),
+            ),
+          ),
         ],
       ),
     );
@@ -370,6 +390,20 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const _CommentarySelectionSheet(),
+    );
+  }
+
+  Future<void> _openBugReport(BuildContext context) async {
+    final l10n = context.l10n;
+    final opened = await BugReporter.openIssue();
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          opened ? l10n.t('bugReportCopied') : l10n.t('bugReportOpenFailed'),
+        ),
+      ),
     );
   }
 }
