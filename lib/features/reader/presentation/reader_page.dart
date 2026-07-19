@@ -76,6 +76,7 @@ class _ReaderContentView extends ConsumerStatefulWidget {
 class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
   final Map<VerseKey, GlobalKey> _verseKeys = {};
   final ScrollController _readerScrollController = ScrollController();
+  bool _showMemos = false;
   int? _lastBookId;
   int? _lastChapter;
 
@@ -173,6 +174,13 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                 ?.where((h) => h.bookId == rr.bookId && h.chapter == rr.chapter)
                 .toList() ??
             const <HighlightEntry>[];
+
+        final notes = ref.watch(notesProvider).value ?? const <NoteEntry>[];
+        final chapterNotes = <int, NoteEntry>{
+          for (final note in notes)
+            if (note.bookId == rr.bookId && note.chapter == rr.chapter)
+              note.verse: note,
+        };
 
         final readerSettingsAsync = ref.watch(readerSettingsProvider);
         final readerSettings =
@@ -281,28 +289,14 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             ),
             actions: [
               IconButton(
-                tooltip: l10n.t('toggleCommentary'),
-                icon: _CommentaryActionIcon(
-                  isVisible: isCommentaryActive,
-                  hasActiveCommentary: activeCommentaryDbPath != null,
-                  hasCurrentChapterCommentary: hasCurrentChapterCommentary,
+                tooltip: l10n.t('toggleMemos'),
+                icon: Icon(
+                  _showMemos ? Icons.chat_bubble : Icons.chat_bubble_outline,
+                  color: _showMemos
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
-                onPressed: () {
-                  final activeCommentary = ref
-                      .read(activeCommentarySelectionProvider)
-                      .asData
-                      ?.value;
-                  if (activeCommentary == null) {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      builder: (ctx) => CommentarySelectionSheet(
-                        onSelected: () => Navigator.of(ctx).pop(),
-                      ),
-                    );
-                  } else {
-                    ref.read(commentaryVisibilityProvider.notifier).toggle();
-                  }
-                },
+                onPressed: () => setState(() => _showMemos = !_showMemos),
               ),
               IconButton(
                 onPressed: () => _changeChapterAndScrollToTop(
@@ -408,71 +402,108 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                         nextSelected: nextSelected,
                                       )
                                     : const BoxDecoration(),
-                                child: ListTile(
-                                  selected: selected,
-                                  selectedTileColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: _selectedVerseBorderRadius(
-                                      previousSelected: previousSelected,
-                                      nextSelected: nextSelected,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    ref
-                                        .read(verseSelectionProvider.notifier)
-                                        .tap(key);
-                                    userDataRepo.addHistory(
-                                      dbPath: userDataDbPath,
-                                      bookId: v.bookId,
-                                      chapter: v.chapter,
-                                      verse: v.verse,
-                                      visitedAt:
-                                          DateTime.now().millisecondsSinceEpoch,
-                                    );
-                                  },
-                                  onLongPress: () => ref
-                                      .read(verseSelectionProvider.notifier)
-                                      .longPress(key),
-                                  title: Text.rich(
-                                    TextSpan(
-                                      style: TextStyle(
-                                        fontSize: readerSettings.fontSize,
-                                        height: readerSettings.lineSpacing,
-                                        color: textColor,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    ListTile(
+                                      selected: selected,
+                                      selectedTileColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            _selectedVerseBorderRadius(
+                                              previousSelected:
+                                                  previousSelected,
+                                              nextSelected: nextSelected,
+                                            ),
                                       ),
-                                      children: [
-                                        if (isBookmarked)
-                                          const WidgetSpan(
-                                            alignment:
-                                                PlaceholderAlignment.middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                right: 4.0,
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                              verseSelectionProvider.notifier,
+                                            )
+                                            .tap(key);
+                                        userDataRepo.addHistory(
+                                          dbPath: userDataDbPath,
+                                          bookId: v.bookId,
+                                          chapter: v.chapter,
+                                          verse: v.verse,
+                                          visitedAt: DateTime.now()
+                                              .millisecondsSinceEpoch,
+                                        );
+                                      },
+                                      onLongPress: () => ref
+                                          .read(verseSelectionProvider.notifier)
+                                          .longPress(key),
+                                      title: Text.rich(
+                                        TextSpan(
+                                          style: TextStyle(
+                                            fontSize: readerSettings.fontSize,
+                                            height: readerSettings.lineSpacing,
+                                            color: textColor,
+                                          ),
+                                          children: [
+                                            if (isBookmarked)
+                                              const WidgetSpan(
+                                                alignment:
+                                                    PlaceholderAlignment.middle,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    right: 4.0,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.bookmark,
+                                                    color: Colors.amber,
+                                                    size: 14,
+                                                  ),
+                                                ),
                                               ),
-                                              child: Icon(
-                                                Icons.bookmark,
-                                                color: Colors.amber,
-                                                size: 14,
+                                            TextSpan(
+                                              text: '${v.verse} ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    textColor ??
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                fontSize:
+                                                    readerSettings.fontSize *
+                                                    0.75,
                                               ),
                                             ),
-                                          ),
-                                        TextSpan(
-                                          text: '${v.verse} ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                textColor ??
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                            fontSize:
-                                                readerSettings.fontSize * 0.75,
+                                            TextSpan(text: v.text),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (_showMemos &&
+                                        chapterNotes.containsKey(v.verse))
+                                      Container(
+                                        margin: const EdgeInsets.fromLTRB(
+                                          16,
+                                          0,
+                                          16,
+                                          10,
+                                        ),
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.secondaryContainer,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
                                         ),
-                                        TextSpan(text: v.text),
-                                      ],
-                                    ),
-                                  ),
+                                        child: Text(
+                                          chapterNotes[v.verse]!.content,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               );
                             }).toList(),
@@ -539,51 +570,6 @@ BorderRadius _selectedVerseBorderRadius({
     top: previousSelected ? Radius.zero : radius,
     bottom: nextSelected ? Radius.zero : radius,
   );
-}
-
-class _CommentaryActionIcon extends StatelessWidget {
-  const _CommentaryActionIcon({
-    required this.isVisible,
-    required this.hasActiveCommentary,
-    required this.hasCurrentChapterCommentary,
-  });
-
-  final bool isVisible;
-  final bool hasActiveCommentary;
-  final bool hasCurrentChapterCommentary;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isVisible ? Theme.of(context).colorScheme.primary : null;
-    if (hasActiveCommentary && !hasCurrentChapterCommentary) {
-      final slashColor = color ?? IconTheme.of(context).color;
-      return SizedBox.square(
-        dimension: 24,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(Icons.comment_outlined, color: color),
-            Transform.rotate(
-              angle: -0.7,
-              child: Container(
-                width: 24,
-                height: 2,
-                decoration: BoxDecoration(
-                  color: slashColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Icon(
-      isVisible ? Icons.comment : Icons.comment_outlined,
-      color: color,
-    );
-  }
 }
 
 void _showPicker(

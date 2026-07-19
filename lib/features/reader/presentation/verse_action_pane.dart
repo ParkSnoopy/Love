@@ -119,19 +119,6 @@ class VerseActionPane extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.share, size: 20),
-              title: Text(l10n.t('share')),
-              onTap: () async {
-                final text = VerseExportFormatter.format(sortedVersesList);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(l10n.shareText(text))));
-                }
-                ref.read(verseSelectionProvider.notifier).clear();
-              },
-            ),
-            ListTile(
               leading: Icon(
                 allBookmarked ? Icons.bookmark_remove : Icons.bookmark_add,
                 size: 20,

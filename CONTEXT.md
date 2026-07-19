@@ -12,12 +12,16 @@
 - `github issue`: public release feedback target at `https://github.com/ParkSnoopy/Love.pub/issues/new`, not the source repository issue tracker.
 - `error log`: in-app captured Flutter/platform/zone exception summaries and stack traces for the current session; safe report body material that users can review/remove before submitting.
 - `automatically attach`: prefill the GitHub issue body with captured logs and copy the same body to clipboard; GitHub new-issue URLs cannot attach files directly.
+- `book and chapter search`: a search query ending in a chapter number, such as `창세기 26장`, `창 26`, `삿 21`, `삼상 26`, `삼하 24`, or `Genesis 26`; resolves canonical Korean abbreviations, exact names, or unambiguous name prefixes and returns every verse in that chapter. Bare `삼` searches both Samuel books, while `삼상` and `삼하` select one.
+- `reader chat bubble`: reader app-bar action that toggles saved verse memos inline beneath their corresponding verses; it no longer toggles commentary.
+- `memo under corresponding verse`: note content from `notesProvider`, keyed by book, chapter, and verse and rendered directly below that verse while memo display is enabled.
 
 ## Project Concepts
 
 - `UserDataRepository`: SQLite persistence boundary for bookmarks, highlights, notes, and history.
 - `notesProvider`: Riverpod async source for all saved notes used by the saved notes tab.
 - `VerseActionPane`: bottom reader action surface for selected verses; owns copy, bookmark, highlight, note, and commentary actions.
+- `SearchRepository`: resolves book/chapter references before falling back to verse-text `LIKE` search.
 - `BugReportLog`: in-memory session error buffer populated from `FlutterError`, `PlatformDispatcher`, and guarded-zone errors.
 - `BugReporter`: builds the public GitHub issue URL and report body for the settings bug-report action.
 - `SettingPage`: settings/support surface where users open the bug-report flow.

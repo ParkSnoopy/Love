@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-07-19
+
+### Add
+
+- Add full-chapter search using book names or Korean canonical abbreviations, including `창세기 26장`, `창 26`, `삿 21`, `삼상 26`, and `삼하 24`; bare `삼` searches both Samuel books.
+
+### Change
+
+- Change the reader chat-bubble action to show saved memos beneath their verses.
+
+### Remove
+
+- Remove the inactive share action from the verse action pane.
+
 ## 2026-07-03
 
 ### Add
