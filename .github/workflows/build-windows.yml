@@ -30,12 +30,10 @@ jobs:
 
       - name: Restore assets archive
         shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           $assetArchiveUrl = (Get-Content .assets-uri | Select-Object -First 1).Trim()
           $archivePath = Join-Path $env:RUNNER_TEMP 'love-assets.zip'
-          Invoke-WebRequest -Uri $assetArchiveUrl -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN" } -OutFile $archivePath
+          Invoke-WebRequest -Uri $assetArchiveUrl -OutFile $archivePath
           Expand-Archive -Path $archivePath -DestinationPath . -Force
           if (!(Test-Path 'assets/data.zip')) { throw 'Missing assets/data.zip' }
           if (!(Test-Path 'assets/fonts/NotoSansCJK-VF.ttf.ttc')) { throw 'Missing assets/fonts/NotoSansCJK-VF.ttf.ttc' }

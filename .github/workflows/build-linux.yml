@@ -35,11 +35,9 @@ jobs:
 
       - name: Restore assets archive
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           ASSET_ARCHIVE_URL="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
-          curl -fL -H "Authorization: Bearer ${GITHUB_TOKEN}" "${ASSET_ARCHIVE_URL}" -o "${RUNNER_TEMP}/love-assets.zip"
+          curl -fL "${ASSET_ARCHIVE_URL}" -o "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
           test -f assets/fonts/NotoSansCJK-VF.ttf.ttc

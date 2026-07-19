@@ -9,6 +9,11 @@
 ### Change
 
 - Change the reader chat-bubble action to show saved memos beneath their verses.
+- Change Android, macOS, and Windows app icons to the watercolor rose artwork from Love.pub.
+
+### Fix
+
+- Fix all release workflows restoring the public asset archive with an unnecessary authorization header.
 
 ### Remove
 
