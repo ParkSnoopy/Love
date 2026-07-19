@@ -15,7 +15,7 @@
 - `book and chapter search`: a search query ending in a chapter number, such as `창세기 26장`, `창 26`, `삿 21`, `삼상 26`, `삼하 24`, or `Genesis 26`; resolves canonical Korean abbreviations, exact names, or unambiguous name prefixes and returns every verse in that chapter. Bare `삼` searches both Samuel books, while `삼상` and `삼하` select one.
 - `reader chat bubble`: reader app-bar action that toggles saved verse memos inline beneath their corresponding verses; it no longer toggles commentary.
 - `memo under corresponding verse`: note content from `notesProvider`, keyed by book, chapter, and verse and rendered directly below that verse while memo display is enabled.
-- `same icon from Love.pub`: exact watercolor rose launcher/application assets copied from the archived `ParkSnoopy/Love.pub` Android, macOS, and Windows platform files.
+- `app icon`: `image.png` is the canonical 1024×1024 source; ImageMagick generates opaque platform sizes for Android, iOS, macOS, web, and Windows, plus safe-margin web maskable icons.
 - `workflow builds are failing`: release jobs failing at `Restore assets archive` because the public GitHub release download was sent an authorization header; restore without credentials.
 
 ## Project Concepts

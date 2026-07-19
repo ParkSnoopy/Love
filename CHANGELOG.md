@@ -9,7 +9,7 @@
 ### Change
 
 - Change the reader chat-bubble action to show saved memos beneath their verses.
-- Change Android, macOS, and Windows app icons to the watercolor rose artwork from Love.pub.
+- Change Android, iOS, macOS, web, and Windows app icons to ImageMagick conversions generated from `image.png`.
 
 ### Fix
 
