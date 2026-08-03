@@ -10,6 +10,7 @@
 
 - Move previous- and next-chapter actions from the reader top bar to floating controls above the bottom router bar.
 - Change the light theme colors to the warm cream, coral, and ink palette from `Design_Claude_General.md` without changing layout or component design.
+- Upgrade `archive` from major version 3 to 4 and refresh compatible locked Flutter package versions.
 
 ### Fix
 

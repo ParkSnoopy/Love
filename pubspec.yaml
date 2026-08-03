@@ -43,7 +43,7 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   collection: ^1.19.1
-  archive: ^3.6.1
+  archive: ^4.0.9
 
 dev_dependencies:
   flutter_test:

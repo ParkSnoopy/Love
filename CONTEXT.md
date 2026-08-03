@@ -20,6 +20,7 @@
 - `chapter navigation controls`: separate circular previous/next buttons at the reader's bottom-left and bottom-right, immediately above the shared router bar.
 - `book information action`: reader top-bar information button enabled only when the active commentary contains a non-empty introduction at `book_id = current book`, `chapter = 0`, `verse = 0`; opens that book description directly.
 - `light theme`: color-only warm editorial palette based on `Design_Claude_General.md`, using cream surfaces, coral primary actions, and warm ink text while preserving existing component design.
+- `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.
 
 ## Project Concepts
 
