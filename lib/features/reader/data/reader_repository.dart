@@ -271,6 +271,42 @@ class ReaderRepository {
     return defaultTitle;
   }
 
+  CommentaryIntroduction? loadCommentaryBookIntroduction({
+    required String dbPath,
+    required int bookId,
+  }) {
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id = ? AND chapter = 0 AND verse = 0 LIMIT 1',
+        [bookId],
+      );
+      if (rows.isEmpty) return null;
+
+      final text = (rows.first['text'] as String?) ?? '';
+      if (!_hasCommentaryText(text)) return null;
+
+      var bookName = loadBookName(dbPath: dbPath, bookId: bookId);
+      if (dbPath.contains('com_kor_') &&
+          RegExp(r'^[a-zA-Z\s]+$').hasMatch(bookName)) {
+        final names = bibleBookNames[bookId];
+        if (names != null && names.isNotEmpty) {
+          bookName = names.last;
+        }
+      }
+
+      return CommentaryIntroduction(
+        bookId: bookId,
+        chapter: 0,
+        verse: 0,
+        title: _extractTitle(text, '$bookName 소개'),
+        text: text,
+      );
+    } finally {
+      db.close();
+    }
+  }
+
   List<CommentaryIntroduction> loadCommentaryIntroductions({
     required String dbPath,
   }) {

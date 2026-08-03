@@ -177,5 +177,43 @@ void main() {
       );
       expect(intros, isEmpty);
     });
+
+    test('Loads only non-empty description for requested book', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'book_intro.sqlite'));
+      final db = sqlite3.open(dbFile.path);
+      try {
+        db.execute(
+          'CREATE TABLE books (book_id INTEGER, name TEXT, eng_name TEXT)',
+        );
+        db.execute(
+          'CREATE TABLE verses (book_id INTEGER, chapter INTEGER, verse INTEGER, text TEXT)',
+        );
+        db.execute(
+          'INSERT INTO books (book_id, name, eng_name) VALUES (1, ?, ?), (2, ?, ?)',
+          ['Genesis', 'Genesis', 'Exodus', 'Exodus'],
+        );
+        db.execute(
+          'INSERT INTO verses (book_id, chapter, verse, text) VALUES (1, 0, 0, ?), (2, 0, 0, ?)',
+          ['# Genesis background\nDescription text', '없음'],
+        );
+      } finally {
+        db.close();
+      }
+
+      final intro = repository.loadCommentaryBookIntroduction(
+        dbPath: dbFile.path,
+        bookId: 1,
+      );
+      expect(intro, isNotNull);
+      expect(intro!.title, 'Genesis background');
+      expect(intro.text, contains('Description text'));
+      expect(
+        repository.loadCommentaryBookIntroduction(
+          dbPath: dbFile.path,
+          bookId: 2,
+        ),
+        isNull,
+      );
+    });
   });
 }

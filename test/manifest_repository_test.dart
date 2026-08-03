@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:Love/app/app_theme.dart';
 import 'package:Love/features/library/domain/manifest_repository.dart';
 
 void main() {
@@ -69,5 +71,15 @@ void main() {
         'Korean',
       );
     });
+  });
+
+  test('light theme uses warm editorial palette', () {
+    final theme = buildLightTheme('NotoSerifCJK');
+
+    expect(theme.brightness, Brightness.light);
+    expect(theme.scaffoldBackgroundColor, const Color(0xFFFAF9F5));
+    expect(theme.colorScheme.primary, const Color(0xFFCC785C));
+    expect(theme.colorScheme.surfaceContainer, const Color(0xFFEFE9DE));
+    expect(theme.colorScheme.onSurface, const Color(0xFF141413));
   });
 }

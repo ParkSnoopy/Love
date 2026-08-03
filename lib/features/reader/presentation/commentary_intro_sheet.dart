@@ -38,6 +38,23 @@ void showCommentaryIntros(
   );
 }
 
+void showCommentaryBookIntroduction(
+  BuildContext context, {
+  required CommentaryIntroduction intro,
+  required String bookName,
+  required String commentaryName,
+}) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => _CommentaryIntroViewerPage(
+        intro: intro,
+        title: context.l10n.bookIntroductionTitle(bookName),
+        commentaryName: commentaryName,
+      ),
+    ),
+  );
+}
+
 class _CommentaryIntroListSheet extends StatefulWidget {
   const _CommentaryIntroListSheet({
     required this.manifestFile,

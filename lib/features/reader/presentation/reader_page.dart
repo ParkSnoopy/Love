@@ -149,6 +149,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             .watch(activeCommentaryDbPathProvider)
             .asData
             ?.value;
+        final activeCommentary = ref
+            .watch(activeCommentarySelectionProvider)
+            .asData
+            ?.value;
         final isCommentaryVisible = ref.watch(commentaryVisibilityProvider);
         final isCommentaryActive =
             activeCommentaryDbPath != null && isCommentaryVisible;
@@ -209,6 +213,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         var verses = const <VerseLine>[];
         var bookName = l10n.t('bible');
         var hasCurrentChapterCommentary = true;
+        CommentaryIntroduction? bookIntroduction;
         String? loadError;
         try {
           verses = repo.loadChapter(
@@ -222,6 +227,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
           );
           if (activeCommentaryDbPath != null) {
             try {
+              bookIntroduction = repo.loadCommentaryBookIntroduction(
+                dbPath: activeCommentaryDbPath,
+                bookId: rr.bookId,
+              );
               hasCurrentChapterCommentary = repo.hasCommentaryForChapter(
                 dbPath: activeCommentaryDbPath,
                 bookId: rr.bookId,
@@ -299,18 +308,16 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                 onPressed: () => setState(() => _showMemos = !_showMemos),
               ),
               IconButton(
-                onPressed: () => _changeChapterAndScrollToTop(
-                  rr,
-                  () => ref.read(readerRefProvider.notifier).prevChapter(),
-                ),
-                icon: const Icon(Icons.chevron_left),
-              ),
-              IconButton(
-                onPressed: () => _changeChapterAndScrollToTop(
-                  rr,
-                  () => ref.read(readerRefProvider.notifier).nextChapter(),
-                ),
-                icon: const Icon(Icons.chevron_right),
+                tooltip: l10n.bookIntroductionTitle(bookName),
+                icon: const Icon(Icons.info_outline),
+                onPressed: bookIntroduction == null || activeCommentary == null
+                    ? null
+                    : () => showCommentaryBookIntroduction(
+                        context,
+                        intro: bookIntroduction!,
+                        bookName: bookName,
+                        commentaryName: activeCommentary.name,
+                      ),
               ),
             ],
           ),
@@ -530,9 +537,84 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                   chapter: rr.chapter,
                   bookId: rr.bookId,
                 )
-              : null,
+              : _ChapterNavigationControls(
+                  onPrevious: () => _changeChapterAndScrollToTop(
+                    rr,
+                    () => ref.read(readerRefProvider.notifier).prevChapter(),
+                  ),
+                  onNext: () => _changeChapterAndScrollToTop(
+                    rr,
+                    () => ref.read(readerRefProvider.notifier).nextChapter(),
+                  ),
+                ),
         );
       },
+    );
+  }
+}
+
+class _ChapterNavigationControls extends StatelessWidget {
+  const _ChapterNavigationControls({
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 60,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 16,
+            bottom: 8,
+            child: _FloatingChapterButton(
+              tooltip: MaterialLocalizations.of(context).previousPageTooltip,
+              icon: Icons.chevron_left,
+              onPressed: onPrevious,
+            ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 8,
+            child: _FloatingChapterButton(
+              tooltip: MaterialLocalizations.of(context).nextPageTooltip,
+              icon: Icons.chevron_right,
+              onPressed: onNext,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FloatingChapterButton extends StatelessWidget {
+  const _FloatingChapterButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surface,
+      elevation: 3,
+      shape: CircleBorder(side: BorderSide(color: colors.outlineVariant)),
+      child: IconButton(
+        tooltip: tooltip,
+        icon: Icon(icon),
+        onPressed: onPressed,
+      ),
     );
   }
 }

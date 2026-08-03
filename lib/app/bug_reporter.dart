@@ -43,7 +43,7 @@ class BugReporter {
   BugReporter._();
 
   static const String _issueUrl =
-      'https://github.com/ParkSnoopy/Love.pub/issues/new';
+      'https://github.com/ParkSnoopy/Love/issues/new';
 
   static Uri issueUri({String? body}) {
     return Uri.parse(_issueUrl).replace(

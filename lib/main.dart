@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app_localizations.dart';
+import 'app/app_theme.dart';
 import 'app/bug_reporter.dart';
 import 'app/font_controller.dart';
 import 'app/locale_controller.dart';
@@ -60,9 +61,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       themeMode: themeMode,
-      theme: ThemeData.light().copyWith(
-        textTheme: ThemeData.light().textTheme.apply(fontFamily: fontFamily),
-      ),
+      theme: buildLightTheme(fontFamily),
       darkTheme: ThemeData.dark().copyWith(
         textTheme: ThemeData.dark().textTheme.apply(fontFamily: fontFamily),
       ),

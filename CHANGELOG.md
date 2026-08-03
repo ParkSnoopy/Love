@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-08-03
+
+### Add
+
+- Add a reader information action that opens the current book description when the selected commentary provides one.
+
+### Change
+
+- Move previous- and next-chapter actions from the reader top bar to floating controls above the bottom router bar.
+- Change the light theme colors to the warm cream, coral, and ink palette from `Design_Claude_General.md` without changing layout or component design.
+
+### Fix
+
+- Fix settings bug reports opening the retired `Love.pub` issue tracker instead of the `Love` repository.
+
 ## 2026-07-19
 
 ### Add
