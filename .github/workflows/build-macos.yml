@@ -65,8 +65,8 @@ jobs:
         with:
           tag_name: ${{ env.ROLLING_TAG }}
           name: Rolling Release ${{ env.ROLLING_TAG }}
-          prerelease: true
-          make_latest: false
+          prerelease: false
+          make_latest: true
           overwrite_files: true
           files: |
             love-macos.zip

@@ -12,6 +12,7 @@
 - Make the chapter-navigation bar transparent while keeping both floating buttons opaque and reserving space above them for reader text.
 - Change the light theme colors to the warm cream, coral, and ink palette from `Design_Claude_General.md` without changing layout or component design.
 - Upgrade `archive` from major version 3 to 4 and refresh compatible locked Flutter package versions.
+- Publish rolling build uploads as the latest GitHub Release instead of a prerelease.
 
 ### Fix
 
