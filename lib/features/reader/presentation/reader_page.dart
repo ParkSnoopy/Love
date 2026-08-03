@@ -529,6 +529,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                     hasCurrentChapterCommentary: hasCurrentChapterCommentary,
                   ),
                 ),
+              if (selection.mode == SelectionMode.none)
+                const SizedBox(height: 60),
             ],
           ),
           bottomNavigationBar: selection.mode != SelectionMode.none
