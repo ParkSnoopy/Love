@@ -17,7 +17,7 @@
 - `memo under corresponding verse`: note content from `notesProvider`, keyed by book, chapter, and verse and rendered directly below that verse while memo display is enabled.
 - `app icon`: `image.png` is the canonical 1024×1024 source; ImageMagick generates opaque platform sizes for Android, iOS, macOS, web, and Windows, plus safe-margin web maskable icons.
 - `workflow builds are failing`: release jobs failing at `Restore assets archive` because the public GitHub release download was sent an authorization header; restore without credentials.
-- `chapter navigation controls`: separate circular previous/next buttons at the reader's bottom-left and bottom-right, immediately above the shared router bar.
+- `chapter navigation controls`: opaque circular previous/next buttons at the reader's bottom-left and bottom-right on a transparent overlay immediately above the shared router bar.
 - `book information action`: reader top-bar information button enabled only when the active commentary contains a non-empty introduction at `book_id = current book`, `chapter = 0`, `verse = 0`; opens that book description directly.
 - `light theme`: color-only warm editorial palette based on `Design_Claude_General.md`, using cream surfaces, coral primary actions, and warm ink text while preserving existing component design.
 - `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.

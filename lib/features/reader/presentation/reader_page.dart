@@ -260,6 +260,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             .toList(growable: false);
 
         return Scaffold(
+          extendBody: selection.mode == SelectionMode.none,
           appBar: AppBar(
             title: InkWell(
               onTap: () => _showPicker(
