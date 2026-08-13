@@ -380,7 +380,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const _BibleSelectionSheet(),
+      builder: (context) => const BibleSelectionSheet(),
     );
   }
 
@@ -408,15 +408,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   }
 }
 
-class _BibleSelectionSheet extends ConsumerStatefulWidget {
-  const _BibleSelectionSheet();
+class BibleSelectionSheet extends ConsumerStatefulWidget {
+  const BibleSelectionSheet({super.key});
 
   @override
-  ConsumerState<_BibleSelectionSheet> createState() =>
+  ConsumerState<BibleSelectionSheet> createState() =>
       _BibleSelectionSheetState();
 }
 
-class _BibleSelectionSheetState extends ConsumerState<_BibleSelectionSheet> {
+class _BibleSelectionSheetState extends ConsumerState<BibleSelectionSheet> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 

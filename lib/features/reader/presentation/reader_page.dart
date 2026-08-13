@@ -12,6 +12,7 @@ import '../../../data/storage/db_path_provider.dart';
 import '../../library/providers/library_controller.dart';
 import '../../library/domain/bible_pack.dart';
 import '../../library/domain/manifest_repository.dart';
+import '../../library/presentation/library_page.dart' show BibleSelectionSheet;
 import '../providers/commentary_visibility_provider.dart';
 import 'commentary_intro_sheet.dart';
 import 'verse_action_pane.dart';
@@ -263,34 +264,22 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
           extendBody: selection.mode == SelectionMode.none,
           appBar: AppBar(
             title: InkWell(
-              onTap: () => _showPicker(
-                context,
-                rr,
-                widget.dbPath,
-                activeBibleName,
-                onSelected: (bookId, chapter) => _changeChapterAndScrollToTop(
-                  rr,
-                  () => ref
-                      .read(readerRefProvider.notifier)
-                      .jumpTo(bookId: bookId, chapter: chapter),
-                ),
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
+              onTap: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const BibleSelectionSheet(),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('$bookName ${rr.chapter}'),
-                        Text(
-                          activeBibleName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
+                    child: Text(
+                      activeBibleName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const Icon(Icons.arrow_drop_down),
@@ -418,6 +407,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                     ListTile(
                                       selected: selected,
                                       selectedTileColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
+                                      hoverColor: Colors.transparent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             _selectedVerseBorderRadius(
@@ -445,6 +436,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                           .read(verseSelectionProvider.notifier)
                                           .longPress(key),
                                       title: Text.rich(
+                                        textAlign: TextAlign.justify,
                                         TextSpan(
                                           style: TextStyle(
                                             fontSize: readerSettings.fontSize,
@@ -541,6 +533,20 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                   bookId: rr.bookId,
                 )
               : _ChapterNavigationControls(
+                  chapterLabel: '$bookName ${rr.chapter}',
+                  onChapterTap: () => _showPicker(
+                    context,
+                    rr,
+                    widget.dbPath,
+                    activeBibleName,
+                    onSelected: (bookId, chapter) =>
+                        _changeChapterAndScrollToTop(
+                          rr,
+                          () => ref
+                              .read(readerRefProvider.notifier)
+                              .jumpTo(bookId: bookId, chapter: chapter),
+                        ),
+                  ),
                   onPrevious: () => _changeChapterAndScrollToTop(
                     rr,
                     () => ref.read(readerRefProvider.notifier).prevChapter(),
@@ -558,10 +564,14 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
 
 class _ChapterNavigationControls extends StatelessWidget {
   const _ChapterNavigationControls({
+    required this.chapterLabel,
+    required this.onChapterTap,
     required this.onPrevious,
     required this.onNext,
   });
 
+  final String chapterLabel;
+  final VoidCallback onChapterTap;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
@@ -571,6 +581,12 @@ class _ChapterNavigationControls extends StatelessWidget {
       height: 60,
       child: Stack(
         children: [
+          Center(
+            child: TextButton(
+              onPressed: onChapterTap,
+              child: Text(chapterLabel),
+            ),
+          ),
           Positioned(
             left: 16,
             bottom: 8,
@@ -608,11 +624,10 @@ class _FloatingChapterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Material(
-      color: colors.surface,
+      color: Theme.of(context).colorScheme.surface,
       elevation: 3,
-      shape: CircleBorder(side: BorderSide(color: colors.outlineVariant)),
+      shape: const CircleBorder(),
       child: IconButton(
         tooltip: tooltip,
         icon: Icon(icon),
@@ -972,6 +987,17 @@ class _CommentarySwitchOption {
 class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   final _scrollController = ScrollController();
   Future<List<_CommentarySwitchOption>>? _alternativeCommentariesFuture;
+  double _headerDragDistance = 0;
+
+  void _handleHeaderDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+    if (_headerDragDistance < -36 || velocity < -300) {
+      ref.read(commentaryFullScreenProvider.notifier).setFullScreen(true);
+    } else if (_headerDragDistance > 36 || velocity > 300) {
+      ref.read(commentaryVisibilityProvider.notifier).hide();
+    }
+    _headerDragDistance = 0;
+  }
 
   Future<List<_CommentarySwitchOption>>
   _findCommentariesForCurrentChapter() async {
@@ -1339,6 +1365,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                           ),
                           const SizedBox(height: 8),
                           Text.rich(
+                            textAlign: TextAlign.justify,
                             TextSpan(
                               style: baseTextStyle,
                               children: _parseHtmlToTextSpans(
@@ -1368,6 +1395,7 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
           controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Text.rich(
+            textAlign: TextAlign.justify,
             TextSpan(
               style: baseTextStyle,
               children: _parseHtmlToTextSpans(intro.text, baseTextStyle),
@@ -1387,58 +1415,67 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: theme.colorScheme.surfaceContainer,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    headerTitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onVerticalDragStart: (_) => _headerDragDistance = 0,
+            onVerticalDragUpdate: (details) {
+              _headerDragDistance += details.delta.dy;
+            },
+            onVerticalDragEnd: _handleHeaderDragEnd,
+            onVerticalDragCancel: () => _headerDragDistance = 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: theme.colorScheme.surfaceContainer,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      headerTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.manage_search, size: 18),
-                  tooltip: l10n.t('checkAnotherCommentaryDatabase'),
-                  onPressed: _startAlternativeCommentarySearch,
-                ),
-                if (activeCommentary != null)
                   IconButton(
-                    icon: const Icon(Icons.menu_book, size: 18),
-                    tooltip: context.l10n.t('viewIntro'),
+                    icon: const Icon(Icons.manage_search, size: 18),
+                    tooltip: l10n.t('checkAnotherCommentaryDatabase'),
+                    onPressed: _startAlternativeCommentarySearch,
+                  ),
+                  if (activeCommentary != null)
+                    IconButton(
+                      icon: const Icon(Icons.menu_book, size: 18),
+                      tooltip: context.l10n.t('viewIntro'),
+                      onPressed: () {
+                        showCommentaryIntros(
+                          context,
+                          activeCommentary.file,
+                          activeCommentary.name,
+                          widget.dbPath,
+                        );
+                      },
+                    ),
+                  IconButton(
+                    icon: Icon(
+                      isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                      size: 18,
+                    ),
+                    tooltip: isFullScreen
+                        ? l10n.t('exitFullscreen')
+                        : l10n.t('enterFullscreen'),
                     onPressed: () {
-                      showCommentaryIntros(
-                        context,
-                        activeCommentary.file,
-                        activeCommentary.name,
-                        widget.dbPath,
-                      );
+                      ref.read(commentaryFullScreenProvider.notifier).toggle();
                     },
                   ),
-                IconButton(
-                  icon: Icon(
-                    isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
-                    size: 18,
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: () {
+                      ref.read(commentaryVisibilityProvider.notifier).hide();
+                    },
                   ),
-                  tooltip: isFullScreen
-                      ? l10n.t('exitFullscreen')
-                      : l10n.t('enterFullscreen'),
-                  onPressed: () {
-                    ref.read(commentaryFullScreenProvider.notifier).toggle();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  onPressed: () {
-                    ref.read(commentaryVisibilityProvider.notifier).hide();
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           _buildAlternativeCommentarySearch(context),
