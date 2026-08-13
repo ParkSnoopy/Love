@@ -347,229 +347,240 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
           ),
           body: LayoutBuilder(
             builder: (context, constraints) => Column(
-            children: [
-              if (!isFullScreen)
-                Expanded(
-                  child: loadError != null
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(loadError, textAlign: TextAlign.center),
-                          ),
-                        )
-                      : SingleChildScrollView(
-                          key: const PageStorageKey<String>('reader-scroll'),
-                          controller: _readerScrollController,
-                          child: Column(
-                            children: verses.map((v) {
-                              final key = VerseKey(
-                                bookId: v.bookId,
-                                chapter: v.chapter,
-                                verse: v.verse,
-                              );
-                              final selected = selection.selected.contains(key);
-                              final previousSelected = selection.selected
-                                  .contains(
-                                    VerseKey(
-                                      bookId: v.bookId,
-                                      chapter: v.chapter,
-                                      verse: v.verse - 1,
-                                    ),
-                                  );
-                              final nextSelected = selection.selected.contains(
-                                VerseKey(
+              children: [
+                if (!isFullScreen)
+                  Expanded(
+                    child: loadError != null
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Text(
+                                loadError,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            key: const PageStorageKey<String>('reader-scroll'),
+                            controller: _readerScrollController,
+                            child: Column(
+                              children: verses.map((v) {
+                                final key = VerseKey(
                                   bookId: v.bookId,
                                   chapter: v.chapter,
-                                  verse: v.verse + 1,
-                                ),
-                              );
-                              final isBookmarked = bookmarkedVerses.contains(
-                                v.verse,
-                              );
-
-                              final matchingHighlight = highlights.firstWhere(
-                                (h) =>
-                                    v.verse >= h.verseStart &&
-                                    v.verse <= h.verseEnd,
-                                orElse: () => const HighlightEntry(
-                                  id: -1,
-                                  bookId: 0,
-                                  chapter: 0,
-                                  verseStart: 0,
-                                  verseEnd: 0,
-                                  color: '',
-                                  createdAt: 0,
-                                ),
-                              );
-
-                              Color? textColor;
-                              if (matchingHighlight.id != -1) {
-                                final isDark =
-                                    Theme.of(context).brightness ==
-                                    Brightness.dark;
-                                textColor = switch (matchingHighlight.color) {
-                                  'yellow' =>
-                                    isDark
-                                        ? Colors.yellow[300]
-                                        : const Color(0xFFB58900),
-                                  'green' =>
-                                    isDark
-                                        ? Colors.green[300]
-                                        : Colors.green[700],
-                                  'red' =>
-                                    isDark ? Colors.red[300] : Colors.red[700],
-                                  _ =>
-                                    isDark
-                                        ? Colors.yellow[300]
-                                        : const Color(0xFFB58900),
-                                };
-                              }
-
-                              return DecoratedBox(
-                                key: _getKeyForVerse(key),
-                                decoration: selected
-                                    ? _selectedVerseDecoration(
-                                        context,
-                                        previousSelected: previousSelected,
-                                        nextSelected: nextSelected,
-                                      )
-                                    : const BoxDecoration(),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    ListTile(
-                                      selected: selected,
-                                      selectedTileColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            _selectedVerseBorderRadius(
-                                              previousSelected:
-                                                  previousSelected,
-                                              nextSelected: nextSelected,
-                                            ),
+                                  verse: v.verse,
+                                );
+                                final selected = selection.selected.contains(
+                                  key,
+                                );
+                                final previousSelected = selection.selected
+                                    .contains(
+                                      VerseKey(
+                                        bookId: v.bookId,
+                                        chapter: v.chapter,
+                                        verse: v.verse - 1,
                                       ),
-                                      onTap: () {
-                                        ref
+                                    );
+                                final nextSelected = selection.selected
+                                    .contains(
+                                      VerseKey(
+                                        bookId: v.bookId,
+                                        chapter: v.chapter,
+                                        verse: v.verse + 1,
+                                      ),
+                                    );
+                                final isBookmarked = bookmarkedVerses.contains(
+                                  v.verse,
+                                );
+
+                                final matchingHighlight = highlights.firstWhere(
+                                  (h) =>
+                                      v.verse >= h.verseStart &&
+                                      v.verse <= h.verseEnd,
+                                  orElse: () => const HighlightEntry(
+                                    id: -1,
+                                    bookId: 0,
+                                    chapter: 0,
+                                    verseStart: 0,
+                                    verseEnd: 0,
+                                    color: '',
+                                    createdAt: 0,
+                                  ),
+                                );
+
+                                Color? textColor;
+                                if (matchingHighlight.id != -1) {
+                                  final isDark =
+                                      Theme.of(context).brightness ==
+                                      Brightness.dark;
+                                  textColor = switch (matchingHighlight.color) {
+                                    'yellow' =>
+                                      isDark
+                                          ? Colors.yellow[300]
+                                          : const Color(0xFFB58900),
+                                    'green' =>
+                                      isDark
+                                          ? Colors.green[300]
+                                          : Colors.green[700],
+                                    'red' =>
+                                      isDark
+                                          ? Colors.red[300]
+                                          : Colors.red[700],
+                                    _ =>
+                                      isDark
+                                          ? Colors.yellow[300]
+                                          : const Color(0xFFB58900),
+                                  };
+                                }
+
+                                return DecoratedBox(
+                                  key: _getKeyForVerse(key),
+                                  decoration: selected
+                                      ? _selectedVerseDecoration(
+                                          context,
+                                          previousSelected: previousSelected,
+                                          nextSelected: nextSelected,
+                                        )
+                                      : const BoxDecoration(),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      ListTile(
+                                        selected: selected,
+                                        selectedTileColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              _selectedVerseBorderRadius(
+                                                previousSelected:
+                                                    previousSelected,
+                                                nextSelected: nextSelected,
+                                              ),
+                                        ),
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                verseSelectionProvider.notifier,
+                                              )
+                                              .tap(key);
+                                          userDataRepo.addHistory(
+                                            dbPath: userDataDbPath,
+                                            bookId: v.bookId,
+                                            chapter: v.chapter,
+                                            verse: v.verse,
+                                            visitedAt: DateTime.now()
+                                                .millisecondsSinceEpoch,
+                                          );
+                                        },
+                                        onLongPress: () => ref
                                             .read(
                                               verseSelectionProvider.notifier,
                                             )
-                                            .tap(key);
-                                        userDataRepo.addHistory(
-                                          dbPath: userDataDbPath,
-                                          bookId: v.bookId,
-                                          chapter: v.chapter,
-                                          verse: v.verse,
-                                          visitedAt: DateTime.now()
-                                              .millisecondsSinceEpoch,
-                                        );
-                                      },
-                                      onLongPress: () => ref
-                                          .read(verseSelectionProvider.notifier)
-                                          .longPress(key),
-                                      title: Text.rich(
-                                        textAlign: TextAlign.justify,
-                                        TextSpan(
-                                          style: TextStyle(
-                                            fontSize: readerSettings.fontSize,
-                                            height: readerSettings.lineSpacing,
-                                            color: textColor,
-                                          ),
-                                          children: [
-                                            if (isBookmarked)
-                                              const WidgetSpan(
-                                                alignment:
-                                                    PlaceholderAlignment.middle,
-                                                child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                    right: 4.0,
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.bookmark,
-                                                    color: Colors.amber,
-                                                    size: 14,
+                                            .longPress(key),
+                                        title: Text.rich(
+                                          textAlign: TextAlign.justify,
+                                          TextSpan(
+                                            style: TextStyle(
+                                              fontSize: readerSettings.fontSize,
+                                              height:
+                                                  readerSettings.lineSpacing,
+                                              color: textColor,
+                                            ),
+                                            children: [
+                                              if (isBookmarked)
+                                                const WidgetSpan(
+                                                  alignment:
+                                                      PlaceholderAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                      right: 4.0,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.bookmark,
+                                                      color: Colors.amber,
+                                                      size: 14,
+                                                    ),
                                                   ),
                                                 ),
+                                              TextSpan(
+                                                text: '${v.verse} ',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      textColor ??
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.primary,
+                                                  fontSize:
+                                                      readerSettings.fontSize *
+                                                      0.75,
+                                                ),
                                               ),
-                                            TextSpan(
-                                              text: '${v.verse} ',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color:
-                                                    textColor ??
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.primary,
-                                                fontSize:
-                                                    readerSettings.fontSize *
-                                                    0.75,
-                                              ),
-                                            ),
-                                            TextSpan(text: v.text),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    if (_showMemos &&
-                                        chapterNotes.containsKey(v.verse))
-                                      Container(
-                                        margin: const EdgeInsets.fromLTRB(
-                                          16,
-                                          0,
-                                          16,
-                                          10,
-                                        ),
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.secondaryContainer,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                              TextSpan(text: v.text),
+                                            ],
                                           ),
                                         ),
-                                        child: Text(
-                                          chapterNotes[v.verse]!.content,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
-                                        ),
                                       ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
+                                      if (_showMemos &&
+                                          chapterNotes.containsKey(v.verse))
+                                        Container(
+                                          margin: const EdgeInsets.fromLTRB(
+                                            16,
+                                            0,
+                                            16,
+                                            10,
+                                          ),
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.secondaryContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            chapterNotes[v.verse]!.content,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                ),
-              if (isCommentaryActive)
-                SizedBox(
-                  height: isFullScreen
-                      ? constraints.maxHeight -
-                            (selection.mode == SelectionMode.none ? 60 : 0)
-                      : (_commentaryDragExtent ?? constraints.maxHeight * 2 / 3)
-                            .clamp(0.0, constraints.maxHeight),
-                  child: CommentaryPane(
-                    key: _commentaryPaneKey,
-                    dbPath: activeCommentaryDbPath,
-                    bibleDbPath: widget.dbPath,
-                    bookId: rr.bookId,
-                    chapter: rr.chapter,
-                    hasCurrentChapterCommentary: hasCurrentChapterCommentary,
-                    onDragStart: _startCommentaryDrag,
-                    onDragUpdate: (delta) => _updateCommentaryDrag(
-                      delta,
-                      constraints.maxHeight,
-                    ),
-                    onDragEnd: _endCommentaryDrag,
                   ),
-                ),
-              if (selection.mode == SelectionMode.none)
-                const SizedBox(height: 60),
-            ],
+                if (isCommentaryActive)
+                  SizedBox(
+                    height: isFullScreen
+                        ? constraints.maxHeight -
+                              (selection.mode == SelectionMode.none ? 60 : 0)
+                        : (_commentaryDragExtent ??
+                                  constraints.maxHeight * 2 / 3)
+                              .clamp(0.0, constraints.maxHeight),
+                    child: CommentaryPane(
+                      key: _commentaryPaneKey,
+                      dbPath: activeCommentaryDbPath,
+                      bibleDbPath: widget.dbPath,
+                      bookId: rr.bookId,
+                      chapter: rr.chapter,
+                      hasCurrentChapterCommentary: hasCurrentChapterCommentary,
+                      onDragStart: _startCommentaryDrag,
+                      onDragUpdate: (delta) =>
+                          _updateCommentaryDrag(delta, constraints.maxHeight),
+                      onDragEnd: _endCommentaryDrag,
+                    ),
+                  ),
+                if (selection.mode == SelectionMode.none)
+                  const SizedBox(height: 60),
+              ],
             ),
           ),
           bottomNavigationBar: selection.mode != SelectionMode.none
@@ -631,10 +642,7 @@ class _ChapterNavigationControls extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: onChapterTap,
-              child: Text(
-                chapterLabel,
-                style: const TextStyle(fontSize: 18),
-              ),
+              child: Text(chapterLabel, style: const TextStyle(fontSize: 18)),
             ),
           ),
           Positioned(
@@ -765,6 +773,28 @@ class _BookChapterPicker extends StatefulWidget {
 }
 
 class _BookChapterPickerState extends State<_BookChapterPicker> {
+  static const _koreanBibleGroupEndBookIds = {
+    3, // 창출레
+    6, // 민신수
+    10, // 삿룻삼
+    15, // 왕대스
+    18, // 느에욥
+    21, // 시잠전
+    24, // 아사렘
+    27, // 애겔단
+    30, // 호욜암
+    33, // 옵욘미
+    36, // 나합습
+    39, // 학슥말
+    42, // 마막눅
+    45, // 요행롬
+    49, // 고갈엡
+    53, // 빌골살
+    57, // 딤딛몬
+    61, // 히약벧
+    66, // 요유계
+  };
+
   late int _selectedBookId = widget.initialBookId;
   List<Map<String, dynamic>> _books = [];
   bool _loading = true;
@@ -951,7 +981,8 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                           itemCount: _books.length,
                           itemBuilder: (ctx, i) {
                             final b = _books[i];
-                            final endsGroup = (i + 1) % 3 == 0;
+                            final endsGroup = _koreanBibleGroupEndBookIds
+                                .contains(b['id']);
                             return Column(
                               children: [
                                 SizedBox(
