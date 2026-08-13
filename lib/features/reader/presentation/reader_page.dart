@@ -77,9 +77,12 @@ class _ReaderContentView extends ConsumerStatefulWidget {
 class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
   final Map<VerseKey, GlobalKey> _verseKeys = {};
   final ScrollController _readerScrollController = ScrollController();
+  final GlobalKey _commentaryPaneKey = GlobalKey();
   bool _showMemos = false;
   int? _lastBookId;
   int? _lastChapter;
+  double? _commentaryDragExtent;
+  double _commentaryDragDistance = 0;
 
   GlobalKey _getKeyForVerse(VerseKey key) {
     return _verseKeys.putIfAbsent(key, () => GlobalKey());
@@ -105,6 +108,36 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
       );
+    });
+  }
+
+  void _startCommentaryDrag() {
+    final renderBox = _commentaryPaneKey.currentContext?.findRenderObject();
+    if (renderBox is RenderBox) {
+      _commentaryDragExtent = renderBox.size.height;
+    }
+    _commentaryDragDistance = 0;
+  }
+
+  void _updateCommentaryDrag(double delta, double maxExtent) {
+    setState(() {
+      _commentaryDragDistance += delta;
+      _commentaryDragExtent = ((_commentaryDragExtent ?? 0) - delta).clamp(
+        0.0,
+        maxExtent,
+      );
+    });
+  }
+
+  void _endCommentaryDrag(double velocity) {
+    if (_commentaryDragDistance < -36 || velocity < -300) {
+      ref.read(commentaryFullScreenProvider.notifier).setFullScreen(true);
+    } else if (_commentaryDragDistance > 36 || velocity > 300) {
+      ref.read(commentaryVisibilityProvider.notifier).hide();
+    }
+    setState(() {
+      _commentaryDragExtent = null;
+      _commentaryDragDistance = 0;
     });
   }
 
@@ -280,6 +313,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                       activeBibleName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                   const Icon(Icons.arrow_drop_down),
@@ -311,7 +345,8 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
               ),
             ],
           ),
-          body: Column(
+          body: LayoutBuilder(
+            builder: (context, constraints) => Column(
             children: [
               if (!isFullScreen)
                 Expanded(
@@ -511,19 +546,31 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                         ),
                 ),
               if (isCommentaryActive)
-                Expanded(
-                  flex: isFullScreen ? 1 : 2,
+                SizedBox(
+                  height: isFullScreen
+                      ? constraints.maxHeight -
+                            (selection.mode == SelectionMode.none ? 60 : 0)
+                      : (_commentaryDragExtent ?? constraints.maxHeight * 2 / 3)
+                            .clamp(0.0, constraints.maxHeight),
                   child: CommentaryPane(
+                    key: _commentaryPaneKey,
                     dbPath: activeCommentaryDbPath,
                     bibleDbPath: widget.dbPath,
                     bookId: rr.bookId,
                     chapter: rr.chapter,
                     hasCurrentChapterCommentary: hasCurrentChapterCommentary,
+                    onDragStart: _startCommentaryDrag,
+                    onDragUpdate: (delta) => _updateCommentaryDrag(
+                      delta,
+                      constraints.maxHeight,
+                    ),
+                    onDragEnd: _endCommentaryDrag,
                   ),
                 ),
               if (selection.mode == SelectionMode.none)
                 const SizedBox(height: 60),
             ],
+            ),
           ),
           bottomNavigationBar: selection.mode != SelectionMode.none
               ? VerseActionPane(
@@ -584,7 +631,10 @@ class _ChapterNavigationControls extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: onChapterTap,
-              child: Text(chapterLabel),
+              child: Text(
+                chapterLabel,
+                style: const TextStyle(fontSize: 18),
+              ),
             ),
           ),
           Positioned(
@@ -727,7 +777,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final idx = _books.indexWhere((b) => b['id'] == _selectedBookId);
       if (idx != -1 && _booksScrollController.hasClients) {
-        _booksScrollController.jumpTo(idx * 48.0);
+        _booksScrollController.jumpTo(idx * 49.0);
       }
     });
   }
@@ -743,7 +793,7 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
         index < _books.length &&
         _booksScrollController.hasClients) {
       _booksScrollController.animateTo(
-        index * 48.0,
+        index * 49.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -897,16 +947,26 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
                       Expanded(
                         child: ListView.builder(
                           controller: _booksScrollController,
-                          itemExtent: 48.0,
+                          itemExtent: 49.0,
                           itemCount: _books.length,
                           itemBuilder: (ctx, i) {
                             final b = _books[i];
-                            return ListTile(
-                              selected: _selectedBookId == b['id'],
-                              title: Text(b['name']),
-                              onTap: () => setState(() {
-                                _selectedBookId = b['id'];
-                              }),
+                            final endsGroup = (i + 1) % 3 == 0;
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 48,
+                                  child: ListTile(
+                                    selected: _selectedBookId == b['id'],
+                                    title: Text(b['name']),
+                                    onTap: () => setState(() {
+                                      _selectedBookId = b['id'];
+                                    }),
+                                  ),
+                                ),
+                                if (endsGroup && i < _books.length - 1)
+                                  const Divider(height: 1),
+                              ],
                             );
                           },
                         ),
@@ -966,6 +1026,9 @@ class CommentaryPane extends ConsumerStatefulWidget {
     required this.bookId,
     required this.chapter,
     required this.hasCurrentChapterCommentary,
+    required this.onDragStart,
+    required this.onDragUpdate,
+    required this.onDragEnd,
   });
 
   final String dbPath;
@@ -973,6 +1036,9 @@ class CommentaryPane extends ConsumerStatefulWidget {
   final int bookId;
   final int chapter;
   final bool hasCurrentChapterCommentary;
+  final VoidCallback onDragStart;
+  final ValueChanged<double> onDragUpdate;
+  final ValueChanged<double> onDragEnd;
 
   @override
   ConsumerState<CommentaryPane> createState() => _CommentaryPaneState();
@@ -987,17 +1053,6 @@ class _CommentarySwitchOption {
 class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
   final _scrollController = ScrollController();
   Future<List<_CommentarySwitchOption>>? _alternativeCommentariesFuture;
-  double _headerDragDistance = 0;
-
-  void _handleHeaderDragEnd(DragEndDetails details) {
-    final velocity = details.primaryVelocity ?? 0;
-    if (_headerDragDistance < -36 || velocity < -300) {
-      ref.read(commentaryFullScreenProvider.notifier).setFullScreen(true);
-    } else if (_headerDragDistance > 36 || velocity > 300) {
-      ref.read(commentaryVisibilityProvider.notifier).hide();
-    }
-    _headerDragDistance = 0;
-  }
 
   Future<List<_CommentarySwitchOption>>
   _findCommentariesForCurrentChapter() async {
@@ -1417,12 +1472,12 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
         children: [
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onVerticalDragStart: (_) => _headerDragDistance = 0,
-            onVerticalDragUpdate: (details) {
-              _headerDragDistance += details.delta.dy;
-            },
-            onVerticalDragEnd: _handleHeaderDragEnd,
-            onVerticalDragCancel: () => _headerDragDistance = 0,
+            onVerticalDragStart: (_) => widget.onDragStart(),
+            onVerticalDragUpdate: (details) =>
+                widget.onDragUpdate(details.delta.dy),
+            onVerticalDragEnd: (details) =>
+                widget.onDragEnd(details.primaryVelocity ?? 0),
+            onVerticalDragCancel: () => widget.onDragEnd(0),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               color: theme.colorScheme.surfaceContainer,
