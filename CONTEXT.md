@@ -21,7 +21,7 @@
 - `book information action`: reader top-bar information button enabled only when the active commentary contains a non-empty introduction at `book_id = current book`, `chapter = 0`, `verse = 0`; opens that book description directly.
 - `light theme`: color-only warm editorial palette based on `Design_Claude_General.md`, using cream surfaces, coral primary actions, and warm ink text while preserving existing component design.
 - `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.
-- `rolling release`: Linux, macOS, Windows, and Android workflows move their dated rolling tag and mark its GitHub Release as latest, not prerelease.
+- `rolling release`: one root workflow builds Linux, macOS, Windows, and Android, then moves one dated rolling tag and publishes one latest non-prerelease with assets named `Love-v<app version>-d<data version>.<platform extension>`.
 
 ## Project Concepts
 

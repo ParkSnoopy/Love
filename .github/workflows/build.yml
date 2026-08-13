@@ -1,0 +1,288 @@
+name: Build all platforms
+
+on:
+  push:
+    branches: [ai-dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rolling-builds
+  cancel-in-progress: true
+
+env:
+  DATA_VERSION: '3.1'
+
+jobs:
+  prepare:
+    name: Prepare release metadata
+    runs-on: ubuntu-latest
+    outputs:
+      asset-prefix: ${{ steps.metadata.outputs.asset-prefix }}
+      rolling-tag: ${{ steps.metadata.outputs.rolling-tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read release versions
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          app_version="$(sed -n 's/^version:[[:space:]]*\([^+[:space:]]*\).*/\1/p' pubspec.yaml)"
+          test -n "${app_version}"
+          [[ "${app_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]
+          [[ "${DATA_VERSION}" =~ ^[0-9]+(\.[0-9]+)*$ ]]
+          echo "asset-prefix=Love-v${app_version}-d${DATA_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "rolling-tag=rolling-$(date -u +%Y%m%d)" >> "${GITHUB_OUTPUT}"
+
+  build-android:
+    name: Android APK
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Restore assets archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
+          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
+          test -f assets/data.zip
+          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSerifCJK.ttc
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Package Android artifact
+        env:
+          ASSET_PREFIX: ${{ needs.prepare.outputs.asset-prefix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset="${ASSET_PREFIX}.android.apk"
+          cp build/app/outputs/flutter-apk/app-release.apk "${asset}"
+          sha256sum "${asset}" > "${asset}.sha256"
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: Love-v*-d*.android.apk*
+          if-no-files-found: error
+
+  build-linux:
+    name: Linux release bundle
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsqlite3-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Restore assets archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
+          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
+          test -f assets/data.zip
+          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSerifCJK.ttc
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Linux
+        run: flutter build linux --release
+
+      - name: Package Linux artifact
+        env:
+          ASSET_PREFIX: ${{ needs.prepare.outputs.asset-prefix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset="${ASSET_PREFIX}.linux-x64.tar.gz"
+          tar -C build/linux/x64/release/bundle -czf "${asset}" .
+          sha256sum "${asset}" > "${asset}.sha256"
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: Love-v*-d*.linux-x64.tar.gz*
+          if-no-files-found: error
+
+  build-macos:
+    name: macOS release bundle
+    needs: prepare
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Restore assets archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
+          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
+          test -f assets/data.zip
+          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSerifCJK.ttc
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build macOS
+        run: flutter build macos --release
+
+      - name: Package macOS artifact
+        env:
+          ASSET_PREFIX: ${{ needs.prepare.outputs.asset-prefix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset="${ASSET_PREFIX}.macos.zip"
+          ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/Love.app "${asset}"
+          shasum -a 256 "${asset}" > "${asset}.sha256"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-release
+          path: Love-v*-d*.macos.zip*
+          if-no-files-found: error
+
+  build-windows:
+    name: Windows release bundle
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Restore assets archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $assetArchiveUrl = (Get-Content .assets-uri | Select-Object -First 1).Trim()
+          $archivePath = Join-Path $env:RUNNER_TEMP 'love-assets.zip'
+          Invoke-WebRequest -Uri $assetArchiveUrl -OutFile $archivePath
+          Expand-Archive -Path $archivePath -DestinationPath . -Force
+          if (!(Test-Path 'assets/data.zip')) { throw 'Missing assets/data.zip' }
+          if (!(Test-Path 'assets/fonts/NotoSansCJK-VF.ttf.ttc')) { throw 'Missing assets/fonts/NotoSansCJK-VF.ttf.ttc' }
+          if (!(Test-Path 'assets/fonts/NotoSerifCJK.ttc')) { throw 'Missing assets/fonts/NotoSerifCJK.ttc' }
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Package Windows artifact
+        env:
+          ASSET_PREFIX: ${{ needs.prepare.outputs.asset-prefix }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $asset = "$env:ASSET_PREFIX.windows-x64.zip"
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath $asset -Force
+          $hash = (Get-FileHash $asset -Algorithm SHA256).Hash.ToLower()
+          "$hash  $asset" | Out-File -Encoding ascii "$asset.sha256"
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: Love-v*-d*.windows-x64.zip*
+          if-no-files-found: error
+
+  release:
+    name: Publish rolling release
+    if: github.ref == 'refs/heads/ai-dev'
+    needs:
+      - prepare
+      - build-android
+      - build-linux
+      - build-macos
+      - build-windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-release'
+          path: release-assets
+          merge-multiple: true
+
+      - name: Move rolling tag
+        env:
+          ROLLING_TAG: ${{ needs.prepare.outputs.rolling-tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git tag -f "${ROLLING_TAG}" "${GITHUB_SHA}"
+          git push -f origin "${ROLLING_TAG}"
+
+      - name: Upload rolling release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.rolling-tag }}
+          name: Rolling Release ${{ needs.prepare.outputs.rolling-tag }}
+          prerelease: false
+          make_latest: true
+          overwrite_files: true
+          files: release-assets/Love-v*-d*.*
