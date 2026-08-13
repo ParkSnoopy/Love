@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../app/app_preferences.dart';
 import '../domain/bible_pack.dart';
 import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
@@ -12,6 +17,10 @@ import '../../../app/font_controller.dart';
 import '../../../app/locale_controller.dart';
 import '../../../app/reader_settings_controller.dart';
 import '../../../app/app_localizations.dart';
+import '../../../data/backup/app_data_backup_service.dart';
+import '../../../data/storage/app_storage.dart';
+import '../../reader/providers/reader_controller.dart';
+import '../../study/providers/user_data_controller.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -21,6 +30,8 @@ class SettingPage extends ConsumerStatefulWidget {
 }
 
 class _SettingPageState extends ConsumerState<SettingPage> {
+  bool _appDataOperationActive = false;
+
   String _themeLabel(AppLocalizations l10n, ThemeMode mode) => switch (mode) {
     ThemeMode.system => l10n.t('system'),
     ThemeMode.light => l10n.t('light'),
@@ -337,6 +348,52 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             ),
           ),
           const SizedBox(height: 24),
+          _buildSectionHeader(l10n.t('appData')),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                ListTile(
+                  enabled: !_appDataOperationActive,
+                  leading: Icon(
+                    Icons.backup_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(l10n.t('backupAppData')),
+                  subtitle: Text(l10n.t('backupAppDataSubtitle')),
+                  trailing: _appDataOperationActive
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.save_alt),
+                  onTap: _appDataOperationActive
+                      ? null
+                      : () => _backupAppData(context),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  enabled: !_appDataOperationActive,
+                  leading: Icon(
+                    Icons.restore_page_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(l10n.t('importAppData')),
+                  subtitle: Text(l10n.t('importAppDataSubtitle')),
+                  trailing: const Icon(Icons.file_open_outlined),
+                  onTap: _appDataOperationActive
+                      ? null
+                      : () => _importAppData(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
           _buildSectionHeader(l10n.t('support')),
           Card(
             clipBehavior: Clip.antiAlias,
@@ -405,6 +462,117 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _backupAppData(BuildContext context) async {
+    final l10n = context.l10n;
+    setState(() => _appDataOperationActive = true);
+    try {
+      final appDataPath = (await getAppDataDirectory()).path;
+      final bytes = await const AppDataBackupService().createBackup(
+        appDataPath: appDataPath,
+      );
+      final now = DateTime.now();
+      final date =
+          '${now.year.toString().padLeft(4, '0')}'
+          '${now.month.toString().padLeft(2, '0')}'
+          '${now.day.toString().padLeft(2, '0')}';
+      final fileName = 'Love-backup-$date.lovebackup';
+      final backupFile = XFile.fromData(bytes, mimeType: 'application/zip');
+      if (Platform.isAndroid || Platform.isIOS) {
+        final result = await SharePlus.instance.share(
+          ShareParams(
+            title: l10n.t('backupAppData'),
+            files: [backupFile],
+            fileNameOverrides: [fileName],
+          ),
+        );
+        if (!context.mounted || result.status == ShareResultStatus.dismissed) {
+          return;
+        }
+      } else {
+        final location = await getSaveLocation(suggestedName: fileName);
+        if (!context.mounted || location == null) return;
+        await backupFile.saveTo(location.path);
+      }
+      _showAppDataMessage(context, l10n.t('backupAppDataComplete'));
+    } catch (error) {
+      if (!context.mounted) return;
+      _showAppDataMessage(context, l10n.error(error));
+    } finally {
+      if (mounted) setState(() => _appDataOperationActive = false);
+    }
+  }
+
+  Future<void> _importAppData(BuildContext context) async {
+    final l10n = context.l10n;
+    const backupType = XTypeGroup(
+      label: 'Love backup',
+      extensions: [AppDataBackupService.fileExtension],
+      mimeTypes: ['application/zip'],
+      uniformTypeIdentifiers: ['public.zip-archive'],
+    );
+    final picked = await openFile(acceptedTypeGroups: [backupType]);
+    if (!context.mounted || picked == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.t('importAppDataConfirmTitle')),
+        content: Text(l10n.t('importAppDataConfirmMessage')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.t('cancel')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.t('import')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _appDataOperationActive = true);
+    try {
+      final bytes = await picked.readAsBytes();
+      final appDataPath = (await getAppDataDirectory()).path;
+      await const AppDataBackupService().importBackup(
+        appDataPath: appDataPath,
+        backupBytes: bytes,
+      );
+      AppPreferences.reloadFromDisk();
+      _refreshImportedAppData();
+      if (!context.mounted) return;
+      _showAppDataMessage(context, l10n.t('importAppDataComplete'));
+    } catch (error) {
+      if (!context.mounted) return;
+      _showAppDataMessage(context, l10n.error(error));
+    } finally {
+      if (mounted) setState(() => _appDataOperationActive = false);
+    }
+  }
+
+  void _refreshImportedAppData() {
+    ref.invalidate(themeModeProvider);
+    ref.invalidate(appLocaleProvider);
+    ref.invalidate(fontTypeProvider);
+    ref.invalidate(readerSettingsProvider);
+    ref.invalidate(activeBibleSelectionProvider);
+    ref.invalidate(activeCommentarySelectionProvider);
+    ref.invalidate(activeDbPathProvider);
+    ref.invalidate(readerRefProvider);
+    ref.invalidate(userDataInitProvider);
+    ref.invalidate(bookmarksProvider);
+    ref.invalidate(highlightsProvider);
+    ref.invalidate(notesProvider);
+  }
+
+  void _showAppDataMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

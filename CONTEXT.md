@@ -22,6 +22,7 @@
 - `light theme`: color-only warm editorial palette based on `Design_Claude_General.md`, using cream surfaces, coral primary actions, and warm ink text while preserving existing component design.
 - `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.
 - `rolling release`: one root workflow builds Linux, macOS, Windows, and Android, then moves one dated rolling tag and publishes one latest non-prerelease with assets named `Love-v<app version>-d<data version>.<platform extension>`.
+- `app data backup`: settings action that exports preferences, reading position, bookmarks, highlights, notes, and history to a validated `.lovebackup` archive; import replaces current app data only after confirmation and archive validation.
 
 ## Project Concepts
 

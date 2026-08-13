@@ -26,6 +26,10 @@ class AppPreferences {
     _instance = null;
   }
 
+  static void reloadFromDisk() {
+    _instance = null;
+  }
+
   static Future<AppPreferences> getInstance() async {
     final existing = _instance;
     if (existing != null) return existing;
