@@ -24,7 +24,7 @@ jobs:
       rolling-tag: ${{ steps.metadata.outputs.rolling-tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Read release versions
         id: metadata
@@ -44,10 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -86,7 +86,7 @@ jobs:
           sha256sum "${asset}" > "${asset}.sha256"
 
       - name: Upload Android artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-release
           path: Love-v*-d*.android.apk*
@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Linux build dependencies
         run: |
@@ -139,7 +139,7 @@ jobs:
           sha256sum "${asset}" > "${asset}.sha256"
 
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-release
           path: Love-v*-d*.linux-x64.tar.gz*
@@ -151,7 +151,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -187,7 +187,7 @@ jobs:
           shasum -a 256 "${asset}" > "${asset}.sha256"
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: macos-release
           path: Love-v*-d*.macos.zip*
@@ -199,7 +199,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -237,7 +237,7 @@ jobs:
           "$hash  $asset" | Out-File -Encoding ascii "$asset.sha256"
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-release
           path: Love-v*-d*.windows-x64.zip*
@@ -257,12 +257,12 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Download release artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: '*-release'
           path: release-assets
@@ -278,7 +278,7 @@ jobs:
           git push -f origin "${ROLLING_TAG}"
 
       - name: Upload rolling release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.prepare.outputs.rolling-tag }}
           name: Rolling Release ${{ needs.prepare.outputs.rolling-tag }}
