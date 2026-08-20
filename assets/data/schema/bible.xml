@@ -51,7 +51,10 @@
 
   <xs:complexType name="BibleChapter">
     <xs:sequence>
-      <xs:element name="verse" type="BibleVerse" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="heading" type="xs:string"/>
+        <xs:element name="verse" type="BibleVerse"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="number" type="xs:positiveInteger" use="required"/>
   </xs:complexType>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bible format-version="1">
+  <metadata>
+    <id>test_headings</id>
+    <name>Heading Schema Fixture</name>
+  </metadata>
+  <books>
+    <book id="1" osis="Gen" testament="OT" chapters="1">
+      <english-name>Genesis</english-name>
+      <name>창세기</name>
+      <chapter number="1">
+        <heading>세상의 시작</heading>
+        <heading>첫날 — 빛</heading>
+        <verse number="1">태초에 하나님이 천지를 창조하셨다.</verse>
+        <heading>上帝创造天地</heading>
+        <verse number="2">땅이 혼돈하고 공허했다.</verse>
+      </chapter>
+    </book>
+  </books>
+</bible>

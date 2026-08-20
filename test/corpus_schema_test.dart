@@ -34,6 +34,17 @@ void main() {
       }
     });
 
+    test('accept Bible chapter headings in every language', () {
+      final result = Process.runSync('xmllint', [
+        '--noout',
+        '--schema',
+        'assets/data/schema/bible.xml',
+        'test/fixtures/bible_with_headings.xml',
+      ]);
+
+      expect(result.exitCode, 0, reason: result.stderr);
+    });
+
     test(
       'Korean delimiter headings preserve body text after the verse marker',
       () {
