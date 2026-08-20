@@ -306,6 +306,7 @@ class VerseActionPane extends ConsumerWidget {
                       dbPath: userDataDbPath,
                       bookId: bookId,
                       chapter: chapter,
+                      verseStart: sortedVersesList.first.verse,
                       verse: last.verse,
                       content: text,
                       now: now,

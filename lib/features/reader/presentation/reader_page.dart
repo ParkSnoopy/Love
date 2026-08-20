@@ -219,6 +219,11 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             if (note.bookId == rr.bookId && note.chapter == rr.chapter)
               note.verse: note,
         };
+        final notedVerses = <int>{
+          for (final note in chapterNotes.values)
+            for (var verse = note.verseStart; verse <= note.verse; verse++)
+              verse,
+        };
 
         final readerSettingsAsync = ref.watch(readerSettingsProvider);
         final readerSettings =
@@ -440,7 +445,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                   decoration: _verseDecoration(
                                     context,
                                     selected: selected,
-                                    hasMemo: chapterNotes.containsKey(v.verse),
+                                    hasMemo: notedVerses.contains(v.verse),
                                     previousSelected: previousSelected,
                                     nextSelected: nextSelected,
                                   ),
@@ -657,7 +662,7 @@ class _ChapterNavigationControls extends StatelessWidget {
               child: Text(
                 chapterLabel,
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),

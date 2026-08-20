@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:share_plus/share_plus.dart';
@@ -30,6 +31,7 @@ class SettingPage extends ConsumerStatefulWidget {
 }
 
 class _SettingPageState extends ConsumerState<SettingPage> {
+  static const _backupChannel = MethodChannel('com.example.love/backup');
   bool _appDataOperationActive = false;
 
   String _themeLabel(AppLocalizations l10n, ThemeMode mode) => switch (mode) {
@@ -510,8 +512,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           '${now.month.toString().padLeft(2, '0')}'
           '${now.day.toString().padLeft(2, '0')}';
       final fileName = 'Love-backup-$date.lovebackup';
-      final backupFile = XFile.fromData(bytes, mimeType: 'application/zip');
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (Platform.isAndroid) {
+        await _backupChannel.invokeMethod<void>('saveToDownloads', {
+          'name': fileName,
+          'bytes': bytes,
+        });
+      } else if (Platform.isIOS) {
+        final backupFile = XFile.fromData(bytes, mimeType: 'application/zip');
         final result = await SharePlus.instance.share(
           ShareParams(
             title: l10n.t('backupAppData'),
@@ -523,6 +530,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           return;
         }
       } else {
+        final backupFile = XFile.fromData(bytes, mimeType: 'application/zip');
         final location = await getSaveLocation(suggestedName: fileName);
         if (!context.mounted || location == null) return;
         await backupFile.saveTo(location.path);
@@ -544,7 +552,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       mimeTypes: ['application/zip'],
       uniformTypeIdentifiers: ['public.zip-archive'],
     );
-    final picked = await openFile(acceptedTypeGroups: [backupType]);
+    final picked = Platform.isAndroid
+        ? await openFile()
+        : await openFile(acceptedTypeGroups: [backupType]);
     if (!context.mounted || picked == null) return;
 
     final confirmed = await showDialog<bool>(

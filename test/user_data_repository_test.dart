@@ -161,5 +161,21 @@ void main() {
       expect(highlights[0].verseEnd, equals(7));
       expect(highlights[0].color, equals('red'));
     });
+
+    test('upsertNote keeps the selected verse range', () {
+      repo.upsertNote(
+        dbPath: dbPath,
+        bookId: 1,
+        chapter: 1,
+        verseStart: 2,
+        verse: 4,
+        content: 'range memo',
+        now: 100,
+      );
+
+      final note = repo.loadAllNotes(dbPath: dbPath).single;
+      expect(note.verseStart, 2);
+      expect(note.verse, 4);
+    });
   });
 }

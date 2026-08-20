@@ -58,9 +58,9 @@ class ManifestRepository {
         : '2';
     final koreanRank = pack.language == 'Korean' ? '0' : '1';
     final koreanBibleRank = pack.type == 'bible' && pack.language == 'Korean'
-        ? switch (pack.name) {
+        ? switch (pack.name.replaceAll(RegExp(r'\s+'), '')) {
             '개역개정판' => '0',
-            '개역개정 4판' => '1',
+            '개역개정4판' => '1',
             '우리말성경' => '2',
             _ => '3',
           }

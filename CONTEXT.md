@@ -14,18 +14,19 @@
 - `automatically attach`: prefill the GitHub issue body with captured logs and copy the same body to clipboard; GitHub new-issue URLs cannot attach files directly.
 - `book and chapter search`: a search query ending in a chapter number, such as `창세기 26장`, `창 26`, `삿 21`, `삼상 26`, `삼하 24`, or `Genesis 26`; resolves canonical Korean abbreviations, exact names, or unambiguous name prefixes and returns every verse in that chapter. Bare `삼` searches both Samuel books, while `삼상` and `삼하` select one.
 - `reader chat bubble`: reader app-bar action defaults to showing saved verse memos with an outlined chat-bubble icon; hiding memos uses a crossed chat-bubble icon. It no longer toggles commentary.
-- `memo under corresponding verse`: note content from `notesProvider`, keyed by book, chapter, and verse and rendered directly below the final verse of a selection with Markdown-style left rules. A multi-verse memo is stored only on that final verse.
+- `memo under corresponding verse`: note content from `notesProvider`, anchored on the final verse and rendered directly below it with Markdown-style left rules. A multi-verse memo also persists its first verse so every noted verse receives the same vertical left rule.
 - `reader typography`: reader settings persist font size, font weight, line spacing, and UI scale. The configured weight applies to reader, search, and commentary text, except highlighted verses remain bold.
 - `highlights`: overlapping highlights replace the selected range while adjacent ranges of the same color are automatically concatenated.
 - `app icon`: `image.png` is the canonical 1024×1024 source; ImageMagick generates opaque platform sizes for Android, iOS, macOS, web, and Windows, plus safe-margin web maskable icons.
 - `workflow builds are failing`: release jobs failing at `Restore assets archive` because the public GitHub release download was sent an authorization header; restore without credentials.
-- `chapter navigation controls`: flat opaque circular previous/next buttons at the reader's bottom-left and bottom-right on a transparent overlay immediately above the shared router bar; the bold book/chapter label is 22 px and reader content reserves the overlay height so bottom text remains unobscured.
+- `chapter navigation controls`: flat opaque circular previous/next buttons at the reader's bottom-left and bottom-right on a transparent overlay immediately above the shared router bar; the bold book/chapter label is 20 px and reader content reserves the overlay height so bottom text remains unobscured.
 - `book information action`: reader top-bar information button enabled only when the active commentary contains a non-empty introduction at `book_id = current book`, `chapter = 0`, `verse = 0`; opens that book description directly.
 - `light theme`: color-only warm editorial palette based on `Design_Claude_General.md`, using cream surfaces, coral primary actions, and warm ink text while preserving existing component design.
 - `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.
 - `rolling release`: one root workflow builds Linux, macOS, Windows, and Android, then moves one dated rolling tag and publishes one latest non-prerelease with assets named `Love-v<app version>-d<data version>.<platform extension>`.
 - `app data backup`: settings action that exports preferences, reading position, bookmarks, highlights, notes, and history to a validated `.lovebackup` archive; `AppDataBackupParser` owns archive parsing, and import replaces current app data only after confirmation and database validation. Production import treats missing supported metadata and database schema fields as legacy data, completing them with current defaults before replacement; malformed archives and corrupted databases remain rejected. Every committed `.lovebackup` fixture under `backup/` is regression-tested against the latest importer.
-- `Korean Bible order`: Bible selection lists `개역개정판`, `개역개정 4판`, and `우리말성경` before all other Korean translations.
+- `Korean Bible order`: Bible selection strips whitespace before ranking, then lists `개역개정판`, `개역개정 4판`, and `우리말 성경` before all other Korean translations.
+- `Android backup files`: exports save directly to the public Downloads collection; imports use Android's unrestricted system document picker and validate the selected bytes as a Love backup before replacement.
 
 ## Project Concepts
 

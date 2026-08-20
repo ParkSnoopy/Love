@@ -43,6 +43,7 @@ void main() {
       dbPath: sourceDatabase,
       bookId: 1,
       chapter: 2,
+      verseStart: 2,
       verse: 3,
       content: 'remember this',
       now: 200,
@@ -80,6 +81,7 @@ void main() {
     expect(bookmarks.single.chapter, 2);
     expect(bookmarks.single.verse, 3);
     expect(notes.single.content, 'remember this');
+    expect(notes.single.verseStart, 2);
     expect(preferences['reader_book_id'], 1);
     expect(preferences['reader_chapter'], 2);
   });

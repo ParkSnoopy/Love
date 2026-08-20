@@ -48,6 +48,7 @@ CREATE TABLE notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   book_id INTEGER NOT NULL,
   chapter INTEGER NOT NULL,
+  verse_start INTEGER NOT NULL DEFAULT 0,
   verse INTEGER NOT NULL,
   content TEXT NOT NULL,
   created_at INTEGER NOT NULL,
@@ -83,6 +84,7 @@ CREATE TABLE history (
     'notes': {
       'book_id': 'INTEGER NOT NULL DEFAULT 0',
       'chapter': 'INTEGER NOT NULL DEFAULT 0',
+      'verse_start': 'INTEGER NOT NULL DEFAULT 0',
       'verse': 'INTEGER NOT NULL DEFAULT 0',
       'content': "TEXT NOT NULL DEFAULT ''",
       'created_at': 'INTEGER NOT NULL DEFAULT 0',

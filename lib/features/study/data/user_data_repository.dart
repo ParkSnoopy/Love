@@ -34,6 +34,7 @@ class NoteEntry {
   const NoteEntry({
     required this.bookId,
     required this.chapter,
+    required this.verseStart,
     required this.verse,
     required this.content,
     required this.updatedAt,
@@ -41,6 +42,7 @@ class NoteEntry {
 
   final int bookId;
   final int chapter;
+  final int verseStart;
   final int verse;
   final String content;
   final int updatedAt;
@@ -107,6 +109,7 @@ CREATE TABLE IF NOT EXISTS notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   book_id INTEGER NOT NULL,
   chapter INTEGER NOT NULL,
+  verse_start INTEGER NOT NULL DEFAULT 0,
   verse INTEGER NOT NULL,
   content TEXT NOT NULL,
   created_at INTEGER NOT NULL,
@@ -114,6 +117,16 @@ CREATE TABLE IF NOT EXISTS notes (
   UNIQUE(book_id, chapter, verse)
 );
 ''');
+      final noteColumns = db
+          .select('PRAGMA table_info(notes)')
+          .map((column) => column['name'] as String)
+          .toSet();
+      if (!noteColumns.contains('verse_start')) {
+        db.execute(
+          'ALTER TABLE notes ADD COLUMN verse_start INTEGER NOT NULL DEFAULT 0',
+        );
+      }
+      db.execute('UPDATE notes SET verse_start = verse WHERE verse_start = 0');
       db.execute('''
 CREATE TABLE IF NOT EXISTS history (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -357,6 +370,7 @@ WHERE id IN (
     required String dbPath,
     required int bookId,
     required int chapter,
+    required int verseStart,
     required int verse,
     required String content,
     required int now,
@@ -364,9 +378,9 @@ WHERE id IN (
     final db = sqlite3.open(dbPath);
     try {
       db.execute(
-        'INSERT INTO notes (book_id, chapter, verse, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) '
-        'ON CONFLICT(book_id, chapter, verse) DO UPDATE SET content = excluded.content, updated_at = excluded.updated_at',
-        [bookId, chapter, verse, content, now, now],
+        'INSERT INTO notes (book_id, chapter, verse_start, verse, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) '
+        'ON CONFLICT(book_id, chapter, verse) DO UPDATE SET verse_start = excluded.verse_start, content = excluded.content, updated_at = excluded.updated_at',
+        [bookId, chapter, verseStart, verse, content, now, now],
       );
     } finally {
       db.close();
@@ -399,7 +413,7 @@ WHERE id IN (
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
       final rows = db.select(
-        'SELECT book_id, chapter, verse, content, updated_at FROM notes WHERE book_id=? AND chapter=? AND verse=? LIMIT 1',
+        'SELECT book_id, chapter, COALESCE(NULLIF(verse_start, 0), verse) AS verse_start, verse, content, updated_at FROM notes WHERE book_id=? AND chapter=? AND verse=? LIMIT 1',
         [bookId, chapter, verse],
       );
       if (rows.isEmpty) return null;
@@ -407,6 +421,7 @@ WHERE id IN (
       return NoteEntry(
         bookId: (r['book_id'] as int?) ?? 0,
         chapter: (r['chapter'] as int?) ?? 0,
+        verseStart: (r['verse_start'] as int?) ?? 0,
         verse: (r['verse'] as int?) ?? 0,
         content: (r['content'] as String?) ?? '',
         updatedAt: (r['updated_at'] as int?) ?? 0,
@@ -478,13 +493,14 @@ WHERE id IN (
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
       final rows = db.select(
-        'SELECT book_id, chapter, verse, content, updated_at FROM notes ORDER BY updated_at DESC, id DESC',
+        'SELECT book_id, chapter, COALESCE(NULLIF(verse_start, 0), verse) AS verse_start, verse, content, updated_at FROM notes ORDER BY updated_at DESC, id DESC',
       );
       return rows
           .map(
             (r) => NoteEntry(
               bookId: (r['book_id'] as int?) ?? 0,
               chapter: (r['chapter'] as int?) ?? 0,
+              verseStart: (r['verse_start'] as int?) ?? 0,
               verse: (r['verse'] as int?) ?? 0,
               content: (r['content'] as String?) ?? '',
               updatedAt: (r['updated_at'] as int?) ?? 0,

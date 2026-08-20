@@ -39,8 +39,8 @@ void main() {
   },
   {
     "id": "kor_woori",
-    "shortname": "우리말성경",
-    "name": "우리말성경",
+    "shortname": "우리말 성경",
+    "name": "우리말 성경",
     "language": "Korean",
     "type": "bible",
     "file": "nocr/kor_woori.sqlite",

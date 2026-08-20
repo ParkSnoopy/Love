@@ -190,7 +190,7 @@ List<_NoteGroup> _groupNotes(List<NoteEntry> notes) {
         _NoteGroup(
           bookId: run.first.bookId,
           chapter: run.first.chapter,
-          verseStart: run.first.verse,
+          verseStart: run.first.verseStart,
           verseEnd: run.last.verse,
           content: run.first.content,
           updatedAt: run.first.updatedAt,
@@ -612,6 +612,7 @@ class _NotesTab extends ConsumerWidget {
                                 dbPath: userDataDbPath,
                                 bookId: note.bookId,
                                 chapter: note.chapter,
+                                verseStart: note.verseStart,
                                 verse: note.verse,
                                 content: text,
                                 now: now,
