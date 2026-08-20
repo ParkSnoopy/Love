@@ -11,9 +11,9 @@
       <chapter number="1">
         <heading>세상의 시작</heading>
         <heading>첫날 — 빛</heading>
-        <verse number="1">태초에 하나님이 천지를 창조하셨다.</verse>
+        <verse number="1" end-number="2">태초에 하나님이 천지를 창조하셨다.</verse>
         <heading>上帝创造天地</heading>
-        <verse number="2">땅이 혼돈하고 공허했다.</verse>
+        <verse number="3">땅이 혼돈하고 공허했다.</verse>
       </chapter>
     </book>
   </books>

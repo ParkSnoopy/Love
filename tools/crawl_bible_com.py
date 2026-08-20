@@ -9,6 +9,7 @@ available.
 Examples:
   python3 tools/crawl_bible_com.py --version 86:kor_klb:KLB:한국인의 성경
   python3 tools/crawl_bible_com.py --version 3803:kor_koerv:KOERV:우리말 쉬운성경
+  python3 tools/crawl_bible_com.py --version 86:kor_klb:KLB:한국인의 성경 --parallel-version 3803:kor_koerv:KOERV:읽기 쉬운 성경
   python3 tools/crawl_bible_com.py --self-test
 
 The crawl state contains only completion metadata and is written outside the
@@ -34,7 +35,23 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE = ROOT / "assets/data/bible/kor_wrm.xml"
 DEFAULT_SCHEMA = ROOT / "assets/data/schema/bible.xml"
-VERSE_PATTERN = re.compile(r"^([1-3]?[A-Z][A-Z0-9]*)\.(\d+)\.(\d+)$")
+VERSE_REFERENCE_PATTERN = re.compile(r"^([1-3]?[A-Z][A-Z0-9]*)\.(\d+)\.(\d+)$")
+BIBLE_COM_BOOK_CODES = {
+    "Gen": "GEN", "Exod": "EXO", "Lev": "LEV", "Num": "NUM", "Deut": "DEU",
+    "Josh": "JOS", "Judg": "JDG", "Ruth": "RUT", "1Sam": "1SA", "2Sam": "2SA",
+    "1Kgs": "1KI", "2Kgs": "2KI", "1Chr": "1CH", "2Chr": "2CH", "Ezra": "EZR",
+    "Neh": "NEH", "Esth": "EST", "Job": "JOB", "Ps": "PSA", "Prov": "PRO",
+    "Eccl": "ECC", "Song": "SNG", "Isa": "ISA", "Jer": "JER", "Lam": "LAM",
+    "Ezek": "EZK", "Dan": "DAN", "Hos": "HOS", "Joel": "JOL", "Amos": "AMO",
+    "Obad": "OBA", "Jonah": "JON", "Mic": "MIC", "Nah": "NAM", "Hab": "HAB",
+    "Zeph": "ZEP", "Hag": "HAG", "Zech": "ZEC", "Mal": "MAL", "Matt": "MAT",
+    "Mark": "MRK", "Luke": "LUK", "John": "JHN", "Acts": "ACT", "Rom": "ROM",
+    "1Cor": "1CO", "2Cor": "2CO", "Gal": "GAL", "Eph": "EPH", "Phil": "PHP",
+    "Col": "COL", "1Thess": "1TH", "2Thess": "2TH", "1Tim": "1TI", "2Tim": "2TI",
+    "Titus": "TIT", "Phlm": "PHM", "Heb": "HEB", "Jas": "JAS", "1Pet": "1PE",
+    "2Pet": "2PE", "1John": "1JN", "2John": "2JN", "3John": "3JN", "Jude": "JUD",
+    "Rev": "REV",
+}
 
 
 class VersePageParser(HTMLParser):
@@ -42,67 +59,105 @@ class VersePageParser(HTMLParser):
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self.verses: dict[int, list[str]] = {}
-        self._active_verse: int | None = None
+        self.items: list[tuple[str, str | None, list[str]]] = []
+        self._active_fragments: list[str] | None = None
         self._active_depth = 0
         self._ignored_depth = 0
+        self._ignored_tags: list[bool] = []
+
+    def _start_item(self, kind: str, reference: str | None = None) -> None:
+        self._active_fragments = []
+        self.items.append((kind, reference, self._active_fragments))
+        self._active_depth = 1
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
         reference = attributes.get("data-usfm")
-        match = VERSE_PATTERN.fullmatch(reference or "")
-        if match:
-            self._active_verse = int(match.group(3))
-            self._active_depth = 1
-            self.verses.setdefault(self._active_verse, [])
+        class_name = attributes.get("class") or ""
+        if (
+            reference
+            and "verse" in class_name
+            and all(VERSE_REFERENCE_PATTERN.fullmatch(part) for part in reference.split("+"))
+        ):
+            self._start_item("verse", reference)
             return
-        if self._active_verse is not None:
+        if self._active_fragments is None and "heading" in class_name:
+            self._start_item("heading")
+            return
+        if self._active_fragments is not None:
             self._active_depth += 1
-            class_name = attributes.get("class") or ""
-            if tag in {"sup", "button"} or "label" in class_name:
+            is_ignored = (
+                tag in {"sup", "button"}
+                or "label" in class_name
+                or class_name.endswith("__fr")
+                or class_name.endswith("__ft")
+            )
+            self._ignored_tags.append(is_ignored)
+            if is_ignored:
                 self._ignored_depth += 1
 
     def handle_endtag(self, tag: str) -> None:
-        if self._active_verse is None:
+        if self._active_fragments is None:
             return
-        if self._ignored_depth:
+        if self._active_depth > 1 and self._ignored_tags.pop():
             self._ignored_depth -= 1
         self._active_depth -= 1
         if self._active_depth == 0:
-            self._active_verse = None
+            self._active_fragments = None
 
     def handle_data(self, data: str) -> None:
-        if self._active_verse is not None and not self._ignored_depth:
-            self.verses[self._active_verse].append(data)
+        if self._active_fragments is not None and not self._ignored_depth:
+            self._active_fragments.append(data)
 
-    def parsed_verses(self) -> dict[int, str]:
-        parsed: dict[int, str] = {}
-        for number, fragments in self.verses.items():
+    def parsed_items(self) -> list[tuple[str, str | None, str]]:
+        parsed: list[tuple[str, str | None, str]] = []
+        for kind, reference, fragments in self.items:
             text = " ".join("".join(fragments).split())
             if text:
-                parsed[number] = text
+                parsed.append((kind, reference, text))
         return parsed
 
 
-def parse_chapter_html(content: str, expected_osis: str, expected_chapter: int) -> dict[int, str]:
+def parse_chapter_html(
+    content: str,
+    expected_book_code: str,
+    expected_chapter: int,
+) -> list[tuple[str, int | None, int | None, str]]:
     parser = VersePageParser()
     parser.feed(content)
     parser.close()
-    verses = parser.parsed_verses()
-    if not verses:
+    raw_items = parser.parsed_items()
+    if not any(kind == "verse" for kind, _, _ in raw_items):
         raise ValueError(
-            f"No data-usfm verse elements found for {expected_osis}.{expected_chapter}. "
+            f"No data-usfm verse elements found for {expected_book_code}.{expected_chapter}. "
             "Bible.com may have changed its rendered page format."
         )
-    if min(verses) != 1:
-        raise ValueError(f"{expected_osis}.{expected_chapter} begins at verse {min(verses)}, not verse 1.")
-    expected_prefix = f'{expected_osis}.{expected_chapter}.'
-    for reference in re.findall(r'data-usfm=["\']([^"\']+)["\']', content):
-        if reference.startswith(expected_prefix):
-            break
-    else:
-        raise ValueError(f"The response has no verse reference for {expected_osis}.{expected_chapter}.")
-    return verses
+    chapter_items: list[tuple[str, int | None, int | None, str]] = []
+    verse_starts: list[int] = []
+    for kind, reference, text in raw_items:
+        if kind == "heading":
+            chapter_items.append(("heading", None, None, text))
+            continue
+        if reference is None:
+            raise ValueError("Verse item is missing a scripture reference.")
+        parts = [VERSE_REFERENCE_PATTERN.fullmatch(part) for part in reference.split("+")]
+        if any(part is None for part in parts):
+            raise ValueError(f"Invalid scripture reference: {reference}")
+        matches = [part for part in parts if part is not None]
+        if any(
+            match.group(1) != expected_book_code.upper()
+            or int(match.group(2)) != expected_chapter
+            for match in matches
+        ):
+            raise ValueError(f"Unexpected scripture reference: {reference}")
+        numbers = [int(match.group(3)) for match in matches]
+        if numbers != list(range(numbers[0], numbers[-1] + 1)):
+            raise ValueError(f"Non-contiguous scripture reference: {reference}")
+        verse_starts.append(numbers[0])
+        chapter_items.append(("verse", numbers[0], numbers[-1], text))
+    if min(verse_starts) != 1:
+        raise ValueError(f"{expected_book_code}.{expected_chapter} begins after verse 1.")
+    return chapter_items
 
 
 def load_books(template_path: Path) -> list[ET.Element]:
@@ -119,8 +174,8 @@ def chapter_requests(books: Iterable[ET.Element]) -> Iterable[tuple[ET.Element, 
             yield book, chapter
 
 
-def chapter_url(version_id: str, version_code: str, osis: str, chapter: int) -> str:
-    return f"https://www.bible.com/ko/bible/{version_id}/{osis.upper()}.{chapter}.{version_code.upper()}"
+def chapter_url(version_id: str, version_code: str, book_code: str, chapter: int) -> str:
+    return f"https://www.bible.com/ko/bible/{version_id}/{book_code}.{chapter}.{version_code.upper()}"
 
 
 def fetch(url: str, timeout: int) -> str:
@@ -146,12 +201,39 @@ def write_state(path: Path, state: dict[str, object]) -> None:
     temporary.replace(path)
 
 
-def replace_chapter(chapter: ET.Element, verses: dict[int, str]) -> None:
-    for verse in list(chapter):
-        chapter.remove(verse)
-    for number in sorted(verses):
-        verse = ET.SubElement(chapter, "verse", {"number": str(number)})
-        verse.text = verses[number]
+def decode_chapter_items(serialized: list[dict[str, object]]) -> list[tuple[str, int | None, int | None, str]]:
+    decoded: list[tuple[str, int | None, int | None, str]] = []
+    for item in serialized:
+        kind = item["kind"]
+        text = item["text"]
+        if kind == "heading":
+            decoded.append(("heading", None, None, text))
+        else:
+            decoded.append(("verse", int(item["number"]), int(item["end-number"]), text))
+    return decoded
+
+
+def encode_chapter_items(items: list[tuple[str, int | None, int | None, str]]) -> list[dict[str, object]]:
+    serialized: list[dict[str, object]] = []
+    for kind, start, end, text in items:
+        if kind == "heading":
+            serialized.append({"kind": "heading", "text": text})
+        else:
+            serialized.append({"kind": "verse", "number": start, "end-number": end, "text": text})
+    return serialized
+
+
+def replace_chapter(chapter: ET.Element, items: list[tuple[str, int | None, int | None, str]]) -> None:
+    for item in list(chapter):
+        chapter.remove(item)
+    for kind, start, end, text in items:
+        if kind == "heading":
+            ET.SubElement(chapter, "heading").text = text
+            continue
+        attributes = {"number": str(start)}
+        if end != start:
+            attributes["end-number"] = str(end)
+        ET.SubElement(chapter, "verse", attributes).text = text
 
 
 def build_tree(books: list[ET.Element], bible_id: str, name: str) -> ET.Element:
@@ -183,6 +265,26 @@ def write_output(root: ET.Element, output: Path) -> None:
     temporary.replace(output)
 
 
+def parse_compare_html(
+    content: str,
+    versions: dict[str, tuple[str, int]],
+) -> dict[str, list[tuple[str, int | None, int | None, str]]]:
+    markers = list(re.finditer(r'<div class="version vid(\d+)\b[^>]*>', content))
+    sections: dict[str, str] = {}
+    for index, marker in enumerate(markers):
+        version_id = marker.group(1)
+        if version_id in versions:
+            end = markers[index + 1].start() if index + 1 < len(markers) else len(content)
+            sections[version_id] = content[marker.end():end]
+    if sections.keys() != versions.keys():
+        raise ValueError(f"Compare response omitted versions: {sorted(versions.keys() - sections.keys())}")
+    return {
+        version_id: parse_chapter_html(section, book_code, chapter_number)
+        for version_id, (book_code, chapter_number) in versions.items()
+        for section in [sections[version_id]]
+    }
+
+
 def crawl(args: argparse.Namespace) -> None:
     version_id, bible_id, version_code, name = args.version.split(":", 3)
     output = ROOT / "assets/data/bible" / f"{bible_id}.xml"
@@ -198,20 +300,21 @@ def crawl(args: argparse.Namespace) -> None:
 
     for book, chapter in chapter_requests(books):
         osis = book.attrib["osis"]
+        book_code = BIBLE_COM_BOOK_CODES[osis]
         chapter_number = int(chapter.attrib["number"])
         key = f"{osis}.{chapter_number}"
         if key in completed:
-            replace_chapter(chapter, {int(number): text for number, text in completed[key].items()})
+            replace_chapter(chapter, decode_chapter_items(completed[key]))
             continue
 
-        url = chapter_url(version_id, version_code, osis, chapter_number)
+        url = chapter_url(version_id, version_code, book_code, chapter_number)
         print(f"Fetching {url}", file=sys.stderr)
         try:
-            verses = parse_chapter_html(fetch(url, args.timeout), osis, chapter_number)
+            verses = parse_chapter_html(fetch(url, args.timeout), book_code, chapter_number)
         except (HTTPError, URLError, TimeoutError, ValueError) as error:
             raise RuntimeError(f"Stopped at {key}: {error}") from error
         replace_chapter(chapter, verses)
-        completed[key] = {str(number): text for number, text in verses.items()}
+        completed[key] = encode_chapter_items(verses)
         write_state(state_path, state)
         time.sleep(args.delay)
 
@@ -220,18 +323,86 @@ def crawl(args: argparse.Namespace) -> None:
     print(f"Wrote and validated {output}", file=sys.stderr)
 
 
+def crawl_compare(args: argparse.Namespace) -> None:
+    primary_id, primary_output_id, primary_code, primary_name = args.version.split(":", 3)
+    parallel_id, parallel_output_id, parallel_code, parallel_name = args.parallel_version.split(":", 3)
+    state_path = ROOT / ".crawl-state" / f"{primary_output_id}-{parallel_output_id}.json"
+    if args.reset and state_path.exists():
+        state_path.unlink()
+
+    primary_books = load_books(args.template)
+    parallel_books = load_books(args.template)
+    state = load_state(state_path)
+    completed = state["completed"]
+    if not isinstance(completed, dict):
+        raise ValueError("Crawl state completed field must be an object.")
+
+    for (primary_book, primary_chapter), (parallel_book, parallel_chapter) in zip(
+        chapter_requests(primary_books), chapter_requests(parallel_books),
+        strict=True,
+    ):
+        osis = primary_book.attrib["osis"]
+        book_code = BIBLE_COM_BOOK_CODES[osis]
+        chapter_number = int(primary_chapter.attrib["number"])
+        key = f"{osis}.{chapter_number}"
+        if key in completed:
+            replace_chapter(primary_chapter, decode_chapter_items(completed[key][primary_id]))
+            replace_chapter(parallel_chapter, decode_chapter_items(completed[key][parallel_id]))
+            continue
+
+        url = f"{chapter_url(primary_id, primary_code, book_code, chapter_number)}?parallel={parallel_id}"
+        print(f"Fetching {url}", file=sys.stderr)
+        try:
+            parsed = parse_compare_html(
+                fetch(url, args.timeout),
+                {
+                    primary_id: (book_code, chapter_number),
+                    parallel_id: (book_code, chapter_number),
+                },
+            )
+        except (HTTPError, URLError, TimeoutError, ValueError) as error:
+            raise RuntimeError(f"Stopped at {key}: {error}") from error
+        replace_chapter(primary_chapter, parsed[primary_id])
+        replace_chapter(parallel_chapter, parsed[parallel_id])
+        completed[key] = {
+            primary_id: encode_chapter_items(parsed[primary_id]),
+            parallel_id: encode_chapter_items(parsed[parallel_id]),
+        }
+        write_state(state_path, state)
+        time.sleep(args.delay)
+
+    primary_output = ROOT / "assets/data/bible" / f"{primary_output_id}.xml"
+    parallel_output = ROOT / "assets/data/bible" / f"{parallel_output_id}.xml"
+    write_output(build_tree(primary_books, primary_output_id, primary_name), primary_output)
+    write_output(build_tree(parallel_books, parallel_output_id, parallel_name), parallel_output)
+    validate_output(primary_output, args.schema)
+    validate_output(parallel_output, args.schema)
+    print(f"Wrote and validated {primary_output} and {parallel_output}", file=sys.stderr)
+
+
 def self_test() -> None:
     fixture = """
     <article>
-      <span data-usfm="GEN.1.1"><span class="label">1</span>태초에 <em>말씀</em>이 계셨다.</span>
-      <span data-usfm="GEN.1.2"><span class="label">2</span>그 빛은 참빛이다.</span>
+      <span class="heading">세상의 시작</span>
+      <span class="verse" data-usfm="GEN.1.1+GEN.1.2"><span class="label">1-2</span>태초에 <em>말씀</em>이 계셨다.</span>
+      <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은 참빛이다.</span>
     </article>
     """
-    verses = parse_chapter_html(fixture, "GEN", 1)
-    expected = {1: "태초에 말씀이 계셨다.", 2: "그 빛은 참빛이다."}
+    verses = parse_chapter_html(fixture, BIBLE_COM_BOOK_CODES["Gen"], 1)
+    expected = [
+        ("heading", None, None, "세상의 시작"),
+        ("verse", 1, 2, "태초에 말씀이 계셨다."),
+        ("verse", 3, 3, "그 빛은 참빛이다."),
+    ]
     if verses != expected:
         raise AssertionError(f"Parser output differs: {verses!r}")
-    root = build_tree(load_books(DEFAULT_TEMPLATE), "kor_test", "Parser Test")
+    if chapter_url("86", "KLB", BIBLE_COM_BOOK_CODES["Exod"], 1).endswith("/EXO.1.KLB") is False:
+        raise AssertionError("Bible.com book-code mapping did not translate Exod to EXO.")
+    books = load_books(DEFAULT_TEMPLATE)
+    missing_codes = {book.attrib["osis"] for book in books} - BIBLE_COM_BOOK_CODES.keys()
+    if missing_codes:
+        raise AssertionError(f"Bible.com book-code mapping is missing: {sorted(missing_codes)}")
+    root = build_tree(books, "kor_test", "Parser Test")
     serialized = ET.tostring(root, encoding="unicode")
     if "<bible format-version=\"1\">" not in serialized or "<verse number=\"1\">" not in serialized:
         raise AssertionError("Generated XML does not match the canonical Bible structure.")
@@ -243,6 +414,10 @@ def arguments() -> argparse.Namespace:
     parser.add_argument(
         "--version",
         help="Bible.com version-id:output-id:version-code:display-name",
+    )
+    parser.add_argument(
+        "--parallel-version",
+        help="Compared Bible.com version-id:output-id:version-code:display-name",
     )
     parser.add_argument("--template", type=Path, default=DEFAULT_TEMPLATE)
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
@@ -259,8 +434,9 @@ def arguments() -> argparse.Namespace:
         parser.error("--delay must be non-negative")
     if not args.template.is_file() or not args.schema.is_file():
         parser.error("--template and --schema must name existing files")
-    if len(args.version.split(":", 3)) != 4:
-        parser.error("--version must be version-id:output-id:version-code:display-name")
+    for option, value in (("--version", args.version), ("--parallel-version", args.parallel_version)):
+        if value is not None and len(value.split(":", 3)) != 4:
+            parser.error(f"{option} must be version-id:output-id:version-code:display-name")
     return args
 
 
@@ -269,4 +445,7 @@ if __name__ == "__main__":
     if parsed_arguments.self_test:
         self_test()
     else:
-        crawl(parsed_arguments)
+        if parsed_arguments.parallel_version:
+            crawl_compare(parsed_arguments)
+        else:
+            crawl(parsed_arguments)
