@@ -2,11 +2,11 @@
 
 ## Vocabulary
 
-- `add note`: reader action pane note dialog opened from a selected verse or verse range.
-- `write note`: first-time note creation flow from the reader selection action pane.
-- `add note again`: reopening the same reader note dialog after saving; if exactly one verse is displayed as selected, the saved note content should prefill.
+- `add note`: reader action pane full-page editor opened from a selected verse or verse range; its upper third is a selected-verse reader and its lower area is the note editor.
+- `write note`: first-time full-page note creation flow from the reader selection action pane.
+- `add note again`: reopening the same reader note editor after saving; if exactly one verse is displayed as selected, the saved note content should prefill.
 - `notes tab`: saved study-data screen that lists persisted notes from SQLite via `notesProvider` / `UserDataRepository.loadAllNotes`.
-- `previous note is not showing on screen`: dialog prefill/rendering problem, not necessarily persistence failure, especially when the note is visible in the notes tab.
+- `previous note is not showing on screen`: editor prefill/rendering problem, not necessarily persistence failure, especially when the note is visible in the notes tab.
 - `selection`: Riverpod `verseSelectionProvider`; can be single or multi mode. A one-verse multi-selection is still one editable verse for note prefill.
 - `bug report`: user-facing settings support action for reporting app problems to GitHub Issues.
 - `github issue`: bug-report target at `https://github.com/ParkSnoopy/Love/issues/new`.
@@ -25,6 +25,7 @@
 - `dependency upgrades`: use `flutter pub upgrade --major-versions`; direct dependencies currently resolve at their newest compatible major versions, with Flutter SDK constraints governing newer transitive-only releases.
 - `rolling release`: one root workflow builds Linux, macOS, Windows, and Android, then moves one dated rolling tag and publishes one latest non-prerelease with assets named `Love-v<app version>-d<data version>.<platform extension>`.
 - `app data backup`: settings action that exports preferences, reading position, bookmarks, highlights, notes, and history to a validated `.lovebackup` archive; `AppDataBackupParser` owns archive parsing, and import replaces current app data only after confirmation and database validation. Production import treats missing supported metadata and database schema fields as legacy data, completing them with current defaults before replacement; malformed archives and corrupted databases remain rejected. Every committed `.lovebackup` fixture under `backup/` is regression-tested against the latest importer.
+- `Korean Bible order`: Bible selection lists `개역개정판`, `개역개정 4판`, and `우리말성경` before all other Korean translations.
 
 ## Project Concepts
 

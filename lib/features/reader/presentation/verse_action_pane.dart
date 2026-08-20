@@ -7,6 +7,7 @@ import '../providers/verse_selection_controller.dart';
 import '../providers/commentary_visibility_provider.dart';
 import '../../study/providers/user_data_controller.dart';
 import '../../study/data/user_data_repository.dart';
+import '../../study/presentation/note_editor_page.dart';
 import '../../library/providers/library_controller.dart';
 import 'reader_page.dart';
 import '../../../app/app_localizations.dart';
@@ -255,40 +256,30 @@ class VerseActionPane extends ConsumerWidget {
                         chapter: chapter,
                         verse: selectedSingleVerse,
                       );
-                final c = TextEditingController(text: existing?.content ?? '');
                 final container = ProviderScope.containerOf(context);
                 final range = VerseExportFormatter.formatVerseNumbers(
                   sortedVersesList.map((v) => v.verse).toList(),
                 );
 
-                final text = await showDialog<String>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(
-                      existing == null
-                          ? l10n.noteTitle('$chapter:$range')
-                          : l10n.editNoteTitle('$chapter:$range'),
-                    ),
-                    content: TextField(
-                      controller: c,
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: l10n.t('noteHint'),
+                final text = await Navigator.of(context, rootNavigator: true)
+                    .push<String>(
+                      MaterialPageRoute(
+                        builder: (_) => NoteEditorPage(
+                          title: existing == null
+                              ? l10n.noteTitle('$chapter:$range')
+                              : l10n.editNoteTitle('$chapter:$range'),
+                          reference: '$bookName $chapter:$range',
+                          verses: [
+                            for (final verse in sortedVersesList)
+                              NoteEditorVerse(
+                                verse: verse.verse,
+                                text: verse.text,
+                              ),
+                          ],
+                          initialContent: existing?.content ?? '',
+                        ),
                       ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: Text(l10n.t('cancel')),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(c.text),
-                        child: Text(l10n.t('save')),
-                      ),
-                    ],
-                  ),
-                );
+                    );
 
                 if (text != null) {
                   if (text.trim().isEmpty) {

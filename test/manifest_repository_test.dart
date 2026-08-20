@@ -5,8 +5,10 @@ import 'package:Love/features/library/domain/manifest_repository.dart';
 
 void main() {
   group('ManifestRepository', () {
-    test('normalizes cmn to Chinese and sorts Korean packs first per type', () {
-      const jsonText = '''
+    test(
+      'normalizes languages and gives requested Korean Bibles precedence',
+      () {
+        const jsonText = '''
 [
   {
     "id": "eng_bible",
@@ -27,12 +29,39 @@ void main() {
     "source": "helloao"
   },
   {
-    "id": "kor_bible",
-    "shortname": "Korean Bible",
-    "name": "Korean Bible",
+    "id": "kor_other",
+    "shortname": "새번역",
+    "name": "새번역",
     "language": "Korean",
     "type": "bible",
     "file": "nocr/kor_bible.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "kor_woori",
+    "shortname": "우리말성경",
+    "name": "우리말성경",
+    "language": "Korean",
+    "type": "bible",
+    "file": "nocr/kor_woori.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "kor_korkr4",
+    "shortname": "개역개정 4판",
+    "name": "개역개정 4판",
+    "language": "Korean",
+    "type": "bible",
+    "file": "nocr/kor_korkr4.sqlite",
+    "source": "nocr"
+  },
+  {
+    "id": "kor_korkrv",
+    "shortname": "개역개정판",
+    "name": "개역개정판",
+    "language": "Korean",
+    "type": "bible",
+    "file": "nocr/kor_korkrv.sqlite",
     "source": "nocr"
   },
   {
@@ -56,21 +85,28 @@ void main() {
 ]
 ''';
 
-      final packs = const ManifestRepository().parseBiblePacks(jsonText);
+        final packs = const ManifestRepository().parseBiblePacks(jsonText);
 
-      expect(packs.map((p) => p.id), [
-        'kor_bible',
-        'cmn_bible',
-        'eng_bible',
-        'kor_commentary',
-        'eng_commentary',
-      ]);
-      expect(packs.firstWhere((p) => p.id == 'cmn_bible').language, 'Chinese');
-      expect(
-        packs.firstWhere((p) => p.id == 'kor_commentary').language,
-        'Korean',
-      );
-    });
+        expect(packs.map((p) => p.id), [
+          'kor_korkrv',
+          'kor_korkr4',
+          'kor_woori',
+          'kor_other',
+          'cmn_bible',
+          'eng_bible',
+          'kor_commentary',
+          'eng_commentary',
+        ]);
+        expect(
+          packs.firstWhere((p) => p.id == 'cmn_bible').language,
+          'Chinese',
+        );
+        expect(
+          packs.firstWhere((p) => p.id == 'kor_commentary').language,
+          'Korean',
+        );
+      },
+    );
   });
 
   test('light theme uses warm editorial palette', () {

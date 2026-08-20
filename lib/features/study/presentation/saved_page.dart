@@ -9,6 +9,7 @@ import '../data/user_data_repository.dart';
 import '../providers/user_data_controller.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../../app/app_localizations.dart';
+import 'note_editor_page.dart';
 
 class SavedPage extends ConsumerWidget {
   const SavedPage({super.key});
@@ -566,35 +567,28 @@ class _NotesTab extends ConsumerWidget {
                     InkWell(
                       borderRadius: BorderRadius.circular(8),
                       onTap: () async {
-                        final c = TextEditingController(text: entry.content);
-                        final text = await showDialog<String>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text(
-                              l10n.editNoteTitle(
-                                '$bookName ${entry.chapter}:$rangeStr',
+                        final text =
+                            await Navigator.of(
+                              context,
+                              rootNavigator: true,
+                            ).push<String>(
+                              MaterialPageRoute(
+                                builder: (_) => NoteEditorPage(
+                                  title: l10n.editNoteTitle(
+                                    '$bookName ${entry.chapter}:$rangeStr',
+                                  ),
+                                  reference:
+                                      '$bookName ${entry.chapter}:$rangeStr',
+                                  verses: [
+                                    NoteEditorVerse(
+                                      verse: entry.verseStart,
+                                      text: verseText,
+                                    ),
+                                  ],
+                                  initialContent: entry.content,
+                                ),
                               ),
-                            ),
-                            content: TextField(
-                              controller: c,
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                hintText: l10n.t('noteHint'),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(),
-                                child: Text(l10n.t('cancel')),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(c.text),
-                                child: Text(l10n.t('save')),
-                              ),
-                            ],
-                          ),
-                        );
+                            );
 
                         if (text != null) {
                           if (text.trim().isEmpty) {

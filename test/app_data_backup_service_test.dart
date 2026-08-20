@@ -138,7 +138,7 @@ void main() {
     );
   });
 
-  test('backup missing schema fields is completed with defaults', () async {
+  test('backup missing supported fields is completed with defaults', () async {
     final source = createDirectory('legacy_source');
     final sourceDatabase = File('${source.path}/user_data.db');
     final database = sqlite.sqlite3.open(sourceDatabase.path);
@@ -151,12 +151,7 @@ void main() {
     database.close();
 
     final archive = Archive()
-      ..add(
-        ArchiveFile.string(
-          'metadata.json',
-          jsonEncode({'format': 'love-app-data'}),
-        ),
-      )
+      ..add(ArchiveFile.string('metadata.json', '{}'))
       ..add(ArchiveFile.string('preferences.json', '{}'))
       ..add(
         ArchiveFile.bytes('user_data.db', await sourceDatabase.readAsBytes()),
