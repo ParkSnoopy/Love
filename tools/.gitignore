@@ -1,7 +1,0 @@
-.venv/
-dist/
-*.zip
-*.xml
-*.json
-*.xlsx
-*.sqlite
