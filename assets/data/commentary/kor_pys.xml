@@ -7211,16 +7211,8 @@
         </entry>
       </chapter>
       <chapter number="33">
-        <entry>
-          <reference book="Deut" chapter="33" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="34">
-        <entry>
-          <reference book="Deut" chapter="34" />
-          <body>.</body>
-        </entry>
       </chapter>
     </book>
     <book id="6" osis="Josh" testament="OT" chapters="24">
@@ -11233,10 +11225,6 @@
         </entry>
       </chapter>
       <chapter number="16">
-        <entry>
-          <reference book="2Kgs" chapter="16" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="17">
         <entry>
@@ -12087,10 +12075,6 @@
         </entry>
       </chapter>
       <chapter number="18">
-        <entry>
-          <reference book="1Chr" chapter="18" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="19">
         <entry>
@@ -12333,10 +12317,6 @@
         </entry>
       </chapter>
       <chapter number="29">
-        <entry>
-          <reference book="1Chr" chapter="29" />
-          <body>.</body>
-        </entry>
       </chapter>
     </book>
     <book id="14" osis="2Chr" testament="OT" chapters="36">
@@ -12629,10 +12609,6 @@
         </entry>
       </chapter>
       <chapter number="18">
-        <entry>
-          <reference book="2Chr" chapter="18" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="19">
         <entry>
@@ -26613,10 +26589,6 @@
         </entry>
       </chapter>
       <chapter number="64">
-        <entry>
-          <reference book="Isa" chapter="64" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="65">
         <entry>
@@ -28627,76 +28599,28 @@
         </entry>
       </chapter>
       <chapter number="41">
-        <entry>
-          <reference book="Jer" chapter="41" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="42">
-        <entry>
-          <reference book="Jer" chapter="42" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="43">
-        <entry>
-          <reference book="Jer" chapter="43" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="44">
-        <entry>
-          <reference book="Jer" chapter="44" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="45">
-        <entry>
-          <reference book="Jer" chapter="45" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="46">
-        <entry>
-          <reference book="Jer" chapter="46" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="47">
-        <entry>
-          <reference book="Jer" chapter="47" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="48">
-        <entry>
-          <reference book="Jer" chapter="48" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="49">
-        <entry>
-          <reference book="Jer" chapter="49" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="50">
-        <entry>
-          <reference book="Jer" chapter="50" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="51">
-        <entry>
-          <reference book="Jer" chapter="51" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="52">
-        <entry>
-          <reference book="Jer" chapter="52" />
-          <body>.</body>
-        </entry>
       </chapter>
     </book>
     <book id="25" osis="Lam" testament="OT" chapters="5">
@@ -35607,28 +35531,12 @@
       <english-name>Malachi</english-name>
       <name>말라기</name>
       <chapter number="1">
-        <entry>
-          <reference book="Mal" chapter="1" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="2">
-        <entry>
-          <reference book="Mal" chapter="2" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="3">
-        <entry>
-          <reference book="Mal" chapter="3" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="4">
-        <entry>
-          <reference book="Mal" chapter="4" />
-          <body>.</body>
-        </entry>
       </chapter>
     </book>
     <book id="40" osis="Matt" testament="NT" chapters="28">
@@ -37095,10 +37003,6 @@
         </entry>
       </chapter>
       <chapter number="19">
-        <entry>
-          <reference book="Matt" chapter="19" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="20">
         <entry>
@@ -37635,10 +37539,6 @@
       <english-name>Mark</english-name>
       <name>마가복음</name>
       <chapter number="1">
-        <entry>
-          <reference book="Mark" chapter="1" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="2">
         <entry>
@@ -38191,28 +38091,12 @@
         </entry>
       </chapter>
       <chapter number="13">
-        <entry>
-          <reference book="Mark" chapter="13" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="14">
-        <entry>
-          <reference book="Mark" chapter="14" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="15">
-        <entry>
-          <reference book="Mark" chapter="15" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="16">
-        <entry>
-          <reference book="Mark" chapter="16" />
-          <body>.</body>
-        </entry>
       </chapter>
     </book>
     <book id="42" osis="Luke" testament="NT" chapters="24">
@@ -39893,16 +39777,8 @@
         </entry>
       </chapter>
       <chapter number="20">
-        <entry>
-          <reference book="Luke" chapter="20" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="21">
-        <entry>
-          <reference book="Luke" chapter="21" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="22">
         <entry>
@@ -40749,22 +40625,10 @@
         </entry>
       </chapter>
       <chapter number="5">
-        <entry>
-          <reference book="Acts" chapter="5" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="6">
-        <entry>
-          <reference book="Acts" chapter="6" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="7">
-        <entry>
-          <reference book="Acts" chapter="7" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="8">
         <entry>
@@ -42793,22 +42657,10 @@
       <english-name>Romans</english-name>
       <name>로마서</name>
       <chapter number="1">
-        <entry>
-          <reference book="Rom" chapter="1" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="2">
-        <entry>
-          <reference book="Rom" chapter="2" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="3">
-        <entry>
-          <reference book="Rom" chapter="3" />
-          <body>.</body>
-        </entry>
       </chapter>
       <chapter number="4">
         <entry>
