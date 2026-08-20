@@ -1,5 +1,7 @@
-# Databases
-data/
+# Generated databases
+data/**/*.sqlite
+data/**/*.sqlite3
+data/**/*.db
 *.zip
 
 # Fonts
