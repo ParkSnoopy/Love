@@ -207,14 +207,25 @@ WHERE id IN (
   }) {
     final db = sqlite3.open(dbPath);
     try {
-      // Find overlapping highlights
       final rows = db.select(
         'SELECT id, verse_start, verse_end, color, created_at FROM highlights '
-        'WHERE book_id = ? AND chapter = ? AND verse_start <= ? AND ? <= verse_end',
-        [bookId, chapter, verseEnd, verseStart],
+        'WHERE book_id = ? AND chapter = ? AND '
+        '(verse_start <= ? AND ? <= verse_end OR '
+        '(color = ? AND verse_start <= ? AND ? <= verse_end))',
+        [
+          bookId,
+          chapter,
+          verseEnd,
+          verseStart,
+          color,
+          verseEnd + 1,
+          verseStart - 1,
+        ],
       );
 
       final toInsert = <Map<String, dynamic>>[];
+      var mergedStart = verseStart;
+      var mergedEnd = verseEnd;
 
       for (final r in rows) {
         final oldId = r['id'] as int;
@@ -223,31 +234,31 @@ WHERE id IN (
         final oldColor = r['color'] as String;
         final oldCreatedAt = r['created_at'] as int;
 
-        // Delete the old highlight
-        db.execute('DELETE FROM highlights WHERE id = ?', [oldId]);
-
-        // Keep left leftover
-        if (oldStart < verseStart) {
-          toInsert.add({
-            'start': oldStart,
-            'end': verseStart - 1,
-            'color': oldColor,
-            'createdAt': oldCreatedAt,
-          });
-        }
-
-        // Keep right leftover
-        if (oldEnd > verseEnd) {
-          toInsert.add({
-            'start': verseEnd + 1,
-            'end': oldEnd,
-            'color': oldColor,
-            'createdAt': oldCreatedAt,
-          });
+        if (oldColor == color) {
+          mergedStart = mergedStart < oldStart ? mergedStart : oldStart;
+          mergedEnd = mergedEnd > oldEnd ? mergedEnd : oldEnd;
+          db.execute('DELETE FROM highlights WHERE id = ?', [oldId]);
+        } else if (oldStart <= verseEnd && verseStart <= oldEnd) {
+          db.execute('DELETE FROM highlights WHERE id = ?', [oldId]);
+          if (oldStart < verseStart) {
+            toInsert.add({
+              'start': oldStart,
+              'end': verseStart - 1,
+              'color': oldColor,
+              'createdAt': oldCreatedAt,
+            });
+          }
+          if (oldEnd > verseEnd) {
+            toInsert.add({
+              'start': verseEnd + 1,
+              'end': oldEnd,
+              'color': oldColor,
+              'createdAt': oldCreatedAt,
+            });
+          }
         }
       }
 
-      // Insert leftovers
       for (final item in toInsert) {
         db.execute(
           'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
@@ -263,11 +274,10 @@ WHERE id IN (
         );
       }
 
-      // Insert new highlight
       db.execute(
         'INSERT INTO highlights (book_id, chapter, verse_start, verse_end, color, created_at) '
         'VALUES (?, ?, ?, ?, ?, ?)',
-        [bookId, chapter, verseStart, verseEnd, color, createdAt],
+        [bookId, chapter, mergedStart, mergedEnd, color, createdAt],
       );
     } finally {
       db.close();

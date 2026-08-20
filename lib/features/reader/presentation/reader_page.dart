@@ -78,7 +78,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
   final Map<VerseKey, GlobalKey> _verseKeys = {};
   final ScrollController _readerScrollController = ScrollController();
   final GlobalKey _commentaryPaneKey = GlobalKey();
-  bool _showMemos = false;
+  bool _showMemos = true;
   int? _lastBookId;
   int? _lastChapter;
   double? _commentaryDragExtent;
@@ -324,7 +324,9 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
               IconButton(
                 tooltip: l10n.t('toggleMemos'),
                 icon: Icon(
-                  _showMemos ? Icons.chat_bubble : Icons.chat_bubble_outline,
+                  _showMemos
+                      ? Icons.chat_bubble_outline
+                      : Icons.speaker_notes_off_outlined,
                   color: _showMemos
                       ? Theme.of(context).colorScheme.primary
                       : null,
@@ -435,13 +437,13 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
 
                                 return DecoratedBox(
                                   key: _getKeyForVerse(key),
-                                  decoration: selected
-                                      ? _selectedVerseDecoration(
-                                          context,
-                                          previousSelected: previousSelected,
-                                          nextSelected: nextSelected,
-                                        )
-                                      : const BoxDecoration(),
+                                  decoration: _verseDecoration(
+                                    context,
+                                    selected: selected,
+                                    hasMemo: chapterNotes.containsKey(v.verse),
+                                    previousSelected: previousSelected,
+                                    nextSelected: nextSelected,
+                                  ),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
@@ -488,6 +490,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                               height:
                                                   readerSettings.lineSpacing,
                                               color: textColor,
+                                              fontWeight:
+                                                  matchingHighlight.id != -1
+                                                  ? FontWeight.bold
+                                                  : readerSettings.fontWeight,
                                             ),
                                             children: [
                                               if (isBookmarked)
@@ -536,18 +542,24 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                           ),
                                           padding: const EdgeInsets.all(12),
                                           decoration: BoxDecoration(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.secondaryContainer,
-                                            borderRadius: BorderRadius.circular(
-                                              8,
+                                            border: Border(
+                                              left: BorderSide(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                                width: 3,
+                                              ),
                                             ),
                                           ),
                                           child: Text(
                                             chapterNotes[v.verse]!.content,
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  fontWeight:
+                                                      readerSettings.fontWeight,
+                                                ),
                                           ),
                                         ),
                                     ],
@@ -642,7 +654,13 @@ class _ChapterNavigationControls extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: onChapterTap,
-              child: Text(chapterLabel, style: const TextStyle(fontSize: 18)),
+              child: Text(
+                chapterLabel,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
           Positioned(
@@ -684,7 +702,7 @@ class _FloatingChapterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      elevation: 3,
+      elevation: 0,
       shape: const CircleBorder(),
       child: IconButton(
         tooltip: tooltip,
@@ -717,6 +735,33 @@ BoxDecoration _selectedVerseDecoration(
       bottom: nextSelected ? BorderSide.none : side,
     ),
   );
+}
+
+BoxDecoration _verseDecoration(
+  BuildContext context, {
+  required bool selected,
+  required bool hasMemo,
+  required bool previousSelected,
+  required bool nextSelected,
+}) {
+  if (selected) {
+    return _selectedVerseDecoration(
+      context,
+      previousSelected: previousSelected,
+      nextSelected: nextSelected,
+    );
+  }
+  if (hasMemo) {
+    return BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 3,
+        ),
+      ),
+    );
+  }
+  return const BoxDecoration();
 }
 
 BorderRadius _selectedVerseBorderRadius({
@@ -1329,11 +1374,13 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
           fontFamily: fontFamilyForType(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
+          fontWeight: readerSettings.fontWeight,
         ) ??
         TextStyle(
           fontFamily: fontFamilyForType(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
+          fontWeight: readerSettings.fontWeight,
         );
     final activeCommentary = ref
         .watch(activeCommentarySelectionProvider)

@@ -303,11 +303,13 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
           fontFamily: fontFamilyForType(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
+          fontWeight: readerSettings.fontWeight,
         ) ??
         TextStyle(
           fontFamily: fontFamilyForType(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
+          fontWeight: readerSettings.fontWeight,
         );
 
     return Scaffold(

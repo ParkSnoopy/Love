@@ -97,6 +97,7 @@ const _localizedValues = <String, Map<String, String>>{
 
     'readerTypography': 'Reader Typography',
     'fontSize': 'Font Size',
+    'fontWeight': 'Font Weight',
     'lineSpacing': 'Line Spacing',
     'uiScale': 'UI Scale',
     'biblesCommentaries': 'Bibles & Commentaries',
@@ -235,6 +236,7 @@ const _localizedValues = <String, Map<String, String>>{
 
     'readerTypography': '리더 글자 설정',
     'fontSize': '글자 크기',
+    'fontWeight': '글자 굵기',
     'lineSpacing': '줄 간격',
     'uiScale': 'UI 크기',
     'biblesCommentaries': '성경 및 주석',
@@ -365,6 +367,7 @@ const _localizedValues = <String, Map<String, String>>{
 
     'readerTypography': '阅读排版',
     'fontSize': '字体大小',
+    'fontWeight': '字重',
     'lineSpacing': '行距',
     'uiScale': '界面缩放',
     'biblesCommentaries': '圣经与注释',
@@ -494,6 +497,7 @@ const _localizedValues = <String, Map<String, String>>{
 
     'readerTypography': 'リーダー文字設定',
     'fontSize': '文字サイズ',
+    'fontWeight': '文字の太さ',
     'lineSpacing': '行間',
     'uiScale': 'UIスケール',
     'biblesCommentaries': '聖書と注解',

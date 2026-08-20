@@ -303,15 +303,22 @@ class VerseActionPane extends ConsumerWidget {
                   } else {
                     final now = DateTime.now().millisecondsSinceEpoch;
                     for (final v in sortedVersesList) {
-                      userDataRepo.upsertNote(
+                      userDataRepo.deleteNote(
                         dbPath: userDataDbPath,
                         bookId: bookId,
                         chapter: chapter,
                         verse: v.verse,
-                        content: text,
-                        now: now,
                       );
                     }
+                    final last = sortedVersesList.last;
+                    userDataRepo.upsertNote(
+                      dbPath: userDataDbPath,
+                      bookId: bookId,
+                      chapter: chapter,
+                      verse: last.verse,
+                      content: text,
+                      now: now,
+                    );
                   }
                   container.invalidate(notesProvider);
                 }

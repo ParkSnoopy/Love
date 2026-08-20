@@ -284,11 +284,13 @@ class _CommentaryIntroViewerPage extends ConsumerWidget {
           fontFamily: fontFamilyForType(fontType),
           height: readerSettings.lineSpacing,
           fontSize: readerSettings.fontSize,
+          fontWeight: readerSettings.fontWeight,
         ) ??
         TextStyle(
           fontFamily: fontFamilyForType(fontType),
           height: readerSettings.lineSpacing,
           fontSize: readerSettings.fontSize,
+          fontWeight: readerSettings.fontWeight,
         );
 
     return Scaffold(

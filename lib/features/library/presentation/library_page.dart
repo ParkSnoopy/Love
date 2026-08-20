@@ -178,6 +178,38 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
+                        l10n.t('fontWeight'),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '${readerSettings.fontWeight.value}',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: readerSettings.fontWeight.value.toDouble(),
+                    min: 100,
+                    max: 900,
+                    divisions: 8,
+                    onChanged: (val) {
+                      ref
+                          .read(readerSettingsProvider.notifier)
+                          .setFontWeight(
+                            FontWeight.values[(val / 100).round() - 1],
+                          );
+                    },
+                  ),
+                  const Divider(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
                         l10n.t('lineSpacing'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,

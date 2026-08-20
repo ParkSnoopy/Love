@@ -46,6 +46,33 @@ void main() {
       expect(highlights[0].color, equals('yellow'));
     });
 
+    test('addHighlight joins adjacent highlights with the same color', () {
+      repo.addHighlight(
+        dbPath: dbPath,
+        bookId: 1,
+        chapter: 1,
+        verseStart: 1,
+        verseEnd: 2,
+        color: 'yellow',
+        createdAt: 100,
+      );
+      repo.addHighlight(
+        dbPath: dbPath,
+        bookId: 1,
+        chapter: 1,
+        verseStart: 3,
+        verseEnd: 4,
+        color: 'yellow',
+        createdAt: 200,
+      );
+
+      final highlights = repo.loadHighlights(dbPath: dbPath);
+      expect(highlights, hasLength(1));
+      expect(highlights.single.verseStart, equals(1));
+      expect(highlights.single.verseEnd, equals(4));
+      expect(highlights.single.color, equals('yellow'));
+    });
+
     test('addHighlight splits overlapping highlights properly', () {
       // 1. Add a wide highlight from verse 3 to 10
       repo.addHighlight(
