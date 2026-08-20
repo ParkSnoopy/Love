@@ -33,5 +33,57 @@ void main() {
         }
       }
     });
+
+    test(
+      'Korean delimiter headings preserve body text after the verse marker',
+      () {
+        final hochma = File(
+          'assets/data/commentary/kor_hochma.xml',
+        ).readAsStringSync();
+
+        expect(
+          hochma,
+          contains(
+            '<reference book="Gen" chapter="31" verses="1" />\n'
+            '          <body>야곱이...다 빼앗고',
+          ),
+        );
+        expect(
+          hochma,
+          contains(
+            '<reference book="2Sam" chapter="4" verses="4" />\n'
+            '          <body>절뚝발이 아들...므비보셋',
+          ),
+        );
+        expect(
+          hochma,
+          contains(
+            '<reference book="Exod" chapter="20" verses="5" />\n'
+            '          <body>절하지 말며',
+          ),
+        );
+        expect(
+          hochma,
+          contains(
+            '<reference book="Deut" chapter="5" verses="9" />\n'
+            '          <body>절하지 말며..섬기지 말라',
+          ),
+        );
+        expect(
+          hochma,
+          contains(
+            '<reference book="Num" chapter="31" verses="27" />\n'
+            '          <body>절반은 회중에게',
+          ),
+        );
+        expect(
+          hochma,
+          contains(
+            '<reference book="Josh" chapter="15" verses="21-62" />\n'
+            '          <body>1-12절에서는',
+          ),
+        );
+      },
+    );
   });
 }
