@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:documentation>
+      Canonical schema for commentary corpus XML format version 1.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="commentary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="metadata" type="CommentaryMetadata"/>
+        <xs:element name="books" type="CommentaryBooks"/>
+      </xs:sequence>
+      <xs:attribute name="format-version" type="xs:positiveInteger" use="required" fixed="1"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="CommentaryMetadata">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="english-name" type="xs:string" minOccurs="0"/>
+      <xs:element name="language" type="xs:string" minOccurs="0"/>
+      <xs:element name="website" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="license-url" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="source-api" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CommentaryBooks">
+    <xs:sequence>
+      <xs:element name="book" type="CommentaryBook" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CommentaryBook">
+    <xs:sequence>
+      <xs:element name="english-name" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="chapter" type="CommentaryChapter" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:integer" use="required"/>
+    <xs:attribute name="osis" type="xs:string" use="required"/>
+    <xs:attribute name="testament" type="Testament" use="optional"/>
+    <xs:attribute name="chapters" type="xs:nonNegativeInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="Testament">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OT"/>
+      <xs:enumeration value="NT"/>
+      <xs:enumeration value="AP"/>
+      <xs:enumeration value="INTRO"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="CommentaryChapter">
+    <xs:sequence>
+      <xs:element name="entry" type="CommentaryEntry" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="number" type="xs:nonNegativeInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="CommentaryEntry">
+    <xs:sequence>
+      <xs:element name="reference" type="ScriptureReference"/>
+      <xs:element name="body" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScriptureReference">
+    <xs:attribute name="book" type="xs:string" use="required"/>
+    <xs:attribute name="chapter" type="xs:nonNegativeInteger" use="required"/>
+    <xs:attribute name="verses" type="xs:string" use="optional"/>
+  </xs:complexType>
+</xs:schema>

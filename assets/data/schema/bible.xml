@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:documentation>
+      Canonical schema for Bible corpus XML format version 1.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="bible">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="metadata" type="BibleMetadata"/>
+        <xs:element name="books" type="BibleBooks"/>
+      </xs:sequence>
+      <xs:attribute name="format-version" type="xs:positiveInteger" use="required" fixed="1"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="BibleMetadata">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BibleBooks">
+    <xs:sequence>
+      <xs:element name="book" type="BibleBook" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BibleBook">
+    <xs:sequence>
+      <xs:element name="english-name" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="chapter" type="BibleChapter" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="osis" type="xs:string" use="required"/>
+    <xs:attribute name="testament" type="Testament" use="required"/>
+    <xs:attribute name="chapters" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="Testament">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OT"/>
+      <xs:enumeration value="NT"/>
+      <xs:enumeration value="AP"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="BibleChapter">
+    <xs:sequence>
+      <xs:element name="verse" type="BibleVerse" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="number" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="BibleVerse" mixed="true">
+    <xs:attribute name="number" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+</xs:schema>
