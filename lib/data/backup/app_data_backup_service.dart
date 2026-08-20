@@ -6,21 +6,15 @@ import 'package:archive/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
-class AppDataBackupException implements Exception {
-  const AppDataBackupException(this.message);
+import 'app_data_backup_parser.dart';
 
-  final String message;
-
-  @override
-  String toString() => message;
-}
+export 'app_data_backup_parser.dart' show AppDataBackupException;
 
 class AppDataBackupService {
   const AppDataBackupService();
 
-  static const formatVersion = 1;
+  static const formatVersion = AppDataBackupParser.formatVersion;
   static const fileExtension = 'lovebackup';
-  static const _maxBackupBytes = 64 * 1024 * 1024;
   static const _requiredDatabaseTables = {
     'bookmarks',
     'highlights',
@@ -70,16 +64,7 @@ class AppDataBackupService {
     required String appDataPath,
     required Uint8List backupBytes,
   }) async {
-    if (backupBytes.isEmpty || backupBytes.length > _maxBackupBytes) {
-      throw const AppDataBackupException('Invalid backup file size.');
-    }
-
-    final archive = _decodeArchive(backupBytes);
-    final metadataBytes = _requiredFile(archive, 'metadata.json');
-    final preferencesBytes = _requiredFile(archive, 'preferences.json');
-    final userDataBytes = _requiredFile(archive, 'user_data.db');
-    _validateMetadata(metadataBytes);
-    _validatePreferences(preferencesBytes);
+    final backup = const AppDataBackupParser().parse(backupBytes);
 
     final appDataDirectory = Directory(appDataPath);
     await appDataDirectory.create(recursive: true);
@@ -95,9 +80,9 @@ class AppDataBackupService {
     );
 
     try {
-      await importedDatabase.writeAsBytes(userDataBytes, flush: true);
+      await importedDatabase.writeAsBytes(backup.userData, flush: true);
       _validateDatabase(importedDatabase.path);
-      await importedPreferences.writeAsBytes(preferencesBytes, flush: true);
+      await importedPreferences.writeAsBytes(backup.preferences, flush: true);
 
       await _deleteIfExists(oldDatabase);
       await _deleteIfExists(oldPreferences);
@@ -142,67 +127,6 @@ class AppDataBackupService {
     } finally {
       destination.close();
       source.close();
-    }
-  }
-
-  Archive _decodeArchive(Uint8List bytes) {
-    try {
-      final archive = ZipDecoder().decodeBytes(bytes, verify: true);
-      if (archive.length != 3 || archive.any((entry) => !entry.isFile)) {
-        throw const AppDataBackupException('Backup has unexpected contents.');
-      }
-      return archive;
-    } on AppDataBackupException {
-      rethrow;
-    } catch (_) {
-      throw const AppDataBackupException('Backup is not a valid archive.');
-    }
-  }
-
-  Uint8List _requiredFile(Archive archive, String name) {
-    final entry = archive.find(name);
-    final bytes = entry?.readBytes();
-    if (entry == null || !entry.isFile || bytes == null) {
-      throw AppDataBackupException('Backup is missing $name.');
-    }
-    return bytes;
-  }
-
-  void _validateMetadata(Uint8List bytes) {
-    try {
-      final metadata = jsonDecode(utf8.decode(bytes));
-      if (metadata is! Map<String, dynamic> ||
-          metadata['format'] != 'love-app-data' ||
-          metadata['version'] != formatVersion) {
-        throw const AppDataBackupException(
-          'Backup format is not supported by this app version.',
-        );
-      }
-    } on AppDataBackupException {
-      rethrow;
-    } catch (_) {
-      throw const AppDataBackupException('Backup metadata is invalid.');
-    }
-  }
-
-  void _validatePreferences(Uint8List bytes) {
-    try {
-      final preferences = jsonDecode(utf8.decode(bytes));
-      if (preferences is! Map<String, dynamic>) {
-        throw const AppDataBackupException('Backup settings are invalid.');
-      }
-      for (final value in preferences.values) {
-        if (value != null &&
-            value is! num &&
-            value is! bool &&
-            value is! String) {
-          throw const AppDataBackupException('Backup settings are invalid.');
-        }
-      }
-    } on AppDataBackupException {
-      rethrow;
-    } catch (_) {
-      throw const AppDataBackupException('Backup settings are invalid.');
     }
   }
 

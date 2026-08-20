@@ -136,4 +136,31 @@ void main() {
       throwsA(isA<AppDataBackupException>()),
     );
   });
+
+  test('committed backup fixtures import successfully', () async {
+    final backupFiles = Directory('backup').listSync().whereType<File>().where(
+      (file) => file.path.endsWith('.lovebackup'),
+    );
+    expect(backupFiles, isNotEmpty);
+
+    for (final backupFile in backupFiles) {
+      final destination = createDirectory('fixture_$counter');
+      await service.importBackup(
+        appDataPath: destination.path,
+        backupBytes: await backupFile.readAsBytes(),
+      );
+
+      final databasePath = '${destination.path}/user_data.db';
+      repository.loadBookmarks(dbPath: databasePath);
+      repository.loadHighlights(dbPath: databasePath);
+      repository.loadAllNotes(dbPath: databasePath);
+      repository.loadRecentHistory(dbPath: databasePath);
+      expect(
+        jsonDecode(
+          await File('${destination.path}/preferences.json').readAsString(),
+        ),
+        isA<Map<String, dynamic>>(),
+      );
+    }
+  });
 }
