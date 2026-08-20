@@ -21,6 +21,80 @@ class AppDataBackupService {
     'notes',
     'history',
   };
+  static const _tableDefinitions = <String, String>{
+    'bookmarks': '''
+CREATE TABLE bookmarks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  verse INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,
+  UNIQUE(book_id, chapter, verse)
+)
+''',
+    'highlights': '''
+CREATE TABLE highlights (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  verse_start INTEGER NOT NULL,
+  verse_end INTEGER NOT NULL,
+  color TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+)
+''',
+    'notes': '''
+CREATE TABLE notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  verse INTEGER NOT NULL,
+  content TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  UNIQUE(book_id, chapter, verse)
+)
+''',
+    'history': '''
+CREATE TABLE history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  verse INTEGER NOT NULL,
+  visited_at INTEGER NOT NULL
+)
+''',
+  };
+  static const _columnDefinitions = <String, Map<String, String>>{
+    'bookmarks': {
+      'book_id': 'INTEGER NOT NULL DEFAULT 0',
+      'chapter': 'INTEGER NOT NULL DEFAULT 0',
+      'verse': 'INTEGER NOT NULL DEFAULT 0',
+      'created_at': 'INTEGER NOT NULL DEFAULT 0',
+    },
+    'highlights': {
+      'book_id': 'INTEGER NOT NULL DEFAULT 0',
+      'chapter': 'INTEGER NOT NULL DEFAULT 0',
+      'verse_start': 'INTEGER NOT NULL DEFAULT 0',
+      'verse_end': 'INTEGER NOT NULL DEFAULT 0',
+      'color': "TEXT NOT NULL DEFAULT 'yellow'",
+      'created_at': 'INTEGER NOT NULL DEFAULT 0',
+    },
+    'notes': {
+      'book_id': 'INTEGER NOT NULL DEFAULT 0',
+      'chapter': 'INTEGER NOT NULL DEFAULT 0',
+      'verse': 'INTEGER NOT NULL DEFAULT 0',
+      'content': "TEXT NOT NULL DEFAULT ''",
+      'created_at': 'INTEGER NOT NULL DEFAULT 0',
+      'updated_at': 'INTEGER NOT NULL DEFAULT 0',
+    },
+    'history': {
+      'book_id': 'INTEGER NOT NULL DEFAULT 0',
+      'chapter': 'INTEGER NOT NULL DEFAULT 0',
+      'verse': 'INTEGER NOT NULL DEFAULT 0',
+      'visited_at': 'INTEGER NOT NULL DEFAULT 0',
+    },
+  };
 
   Future<Uint8List> createBackup({required String appDataPath}) async {
     final appDataDirectory = Directory(appDataPath);
@@ -133,11 +207,12 @@ class AppDataBackupService {
   void _validateDatabase(String path) {
     Database? database;
     try {
-      database = sqlite3.open(path, mode: OpenMode.readOnly);
+      database = sqlite3.open(path);
       final integrity = database.select('PRAGMA integrity_check;');
       if (integrity.length != 1 || integrity.first.values.first != 'ok') {
         throw const AppDataBackupException('Backup database is corrupted.');
       }
+      _repairDatabase(database);
       final rows = database.select(
         "SELECT name FROM sqlite_master WHERE type = 'table'",
       );
@@ -154,6 +229,65 @@ class AppDataBackupService {
     } finally {
       database?.close();
     }
+  }
+
+  void _repairDatabase(Database database) {
+    for (final table in _requiredDatabaseTables) {
+      final existing = database.select(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+        [table],
+      );
+      if (existing.isEmpty) {
+        database.execute(_tableDefinitions[table]!);
+        continue;
+      }
+
+      final columns = _columnsFor(database, table);
+      if (!columns.contains('id')) {
+        _rebuildTable(database, table, columns);
+        continue;
+      }
+
+      for (final entry in _columnDefinitions[table]!.entries) {
+        if (!columns.contains(entry.key)) {
+          database.execute(
+            'ALTER TABLE $table ADD COLUMN ${entry.key} ${entry.value}',
+          );
+        }
+      }
+    }
+  }
+
+  Set<String> _columnsFor(Database database, String table) {
+    return database
+        .select('PRAGMA table_info($table)')
+        .map((row) => row['name'] as String)
+        .toSet();
+  }
+
+  void _rebuildTable(
+    Database database,
+    String table,
+    Set<String> legacyColumns,
+  ) {
+    final legacyTable = '${table}_legacy';
+    database.execute('DROP TABLE IF EXISTS $legacyTable');
+    database.execute('ALTER TABLE $table RENAME TO $legacyTable');
+    database.execute(_tableDefinitions[table]!);
+
+    final columns = _columnDefinitions[table]!.keys.toList(growable: false);
+    final values = columns
+        .map(
+          (column) => legacyColumns.contains(column)
+              ? column
+              : _columnDefinitions[table]![column]!.split(' DEFAULT ').last,
+        )
+        .join(', ');
+    database.execute(
+      'INSERT OR REPLACE INTO $table (${columns.join(', ')}) '
+      'SELECT $values FROM $legacyTable',
+    );
+    database.execute('DROP TABLE $legacyTable');
   }
 
   Future<void> _deleteIfExists(File file) async {

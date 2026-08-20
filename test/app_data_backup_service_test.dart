@@ -6,6 +6,7 @@ import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:Love/data/backup/app_data_backup_service.dart';
 import 'package:Love/features/study/data/user_data_repository.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
   const service = AppDataBackupService();
@@ -135,6 +136,45 @@ void main() {
       ),
       throwsA(isA<AppDataBackupException>()),
     );
+  });
+
+  test('backup missing schema fields is completed with defaults', () async {
+    final source = createDirectory('legacy_source');
+    final sourceDatabase = File('${source.path}/user_data.db');
+    final database = sqlite.sqlite3.open(sourceDatabase.path);
+    database.execute(
+      'CREATE TABLE bookmarks (book_id INTEGER, chapter INTEGER, verse INTEGER)',
+    );
+    database.execute(
+      'INSERT INTO bookmarks (book_id, chapter, verse) VALUES (1, 2, 3)',
+    );
+    database.close();
+
+    final archive = Archive()
+      ..add(
+        ArchiveFile.string(
+          'metadata.json',
+          jsonEncode({'format': 'love-app-data'}),
+        ),
+      )
+      ..add(ArchiveFile.string('preferences.json', '{}'))
+      ..add(
+        ArchiveFile.bytes('user_data.db', await sourceDatabase.readAsBytes()),
+      );
+    final destination = createDirectory('legacy_destination');
+
+    await service.importBackup(
+      appDataPath: destination.path,
+      backupBytes: ZipEncoder().encodeBytes(archive),
+    );
+
+    final databasePath = '${destination.path}/user_data.db';
+    final bookmarks = repository.loadBookmarks(dbPath: databasePath);
+    expect(bookmarks, hasLength(1));
+    expect(bookmarks.single.createdAt, 0);
+    expect(repository.loadHighlights(dbPath: databasePath), isEmpty);
+    expect(repository.loadAllNotes(dbPath: databasePath), isEmpty);
+    expect(repository.loadRecentHistory(dbPath: databasePath), isEmpty);
   });
 
   test('committed backup fixtures import successfully', () async {

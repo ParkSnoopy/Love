@@ -68,9 +68,12 @@ class AppDataBackupParser {
   void _validateMetadata(Uint8List bytes) {
     try {
       final metadata = jsonDecode(utf8.decode(bytes));
-      if (metadata is! Map<String, dynamic> ||
-          metadata['format'] != 'love-app-data' ||
-          metadata['version'] != formatVersion) {
+      if (metadata is! Map<String, dynamic>) {
+        throw const AppDataBackupException('Backup metadata is invalid.');
+      }
+      final format = metadata['format'] ?? 'love-app-data';
+      final version = metadata['version'] ?? formatVersion;
+      if (format != 'love-app-data' || version != formatVersion) {
         throw const AppDataBackupException(
           'Backup format is not supported by this app version.',
         );
