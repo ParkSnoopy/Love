@@ -158,7 +158,11 @@ CREATE TABLE history (
     try {
       await importedDatabase.writeAsBytes(backup.userData, flush: true);
       _validateDatabase(importedDatabase.path);
-      await importedPreferences.writeAsBytes(backup.preferences, flush: true);
+      final preferences = await _updatedPreferences(
+        targetPreferences,
+        backup.preferences,
+      );
+      await importedPreferences.writeAsBytes(preferences, flush: true);
 
       await _deleteIfExists(oldDatabase);
       await _deleteIfExists(oldPreferences);
@@ -204,6 +208,23 @@ CREATE TABLE history (
       destination.close();
       source.close();
     }
+  }
+
+  Future<Uint8List> _updatedPreferences(
+    File currentPreferences,
+    Uint8List importedPreferences,
+  ) async {
+    final updated = <String, dynamic>{};
+    if (currentPreferences.existsSync()) {
+      try {
+        final current = jsonDecode(await currentPreferences.readAsString());
+        if (current is Map<String, dynamic>) updated.addAll(current);
+      } catch (_) {}
+    }
+    updated.addAll(
+      jsonDecode(utf8.decode(importedPreferences)) as Map<String, dynamic>,
+    );
+    return Uint8List.fromList(utf8.encode(jsonEncode(updated)));
   }
 
   void _validateDatabase(String path) {

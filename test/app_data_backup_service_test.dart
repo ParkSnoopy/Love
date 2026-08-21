@@ -86,6 +86,33 @@ void main() {
     expect(preferences['reader_chapter'], 2);
   });
 
+  test('partial backup preferences update the current configuration', () async {
+    final source = createDirectory('partial_source');
+    repository.init('${source.path}/user_data.db');
+    await File(
+      '${source.path}/preferences.json',
+    ).writeAsString(jsonEncode({'reader_chapter': 7}));
+    final backup = await service.createBackup(appDataPath: source.path);
+
+    final destination = createDirectory('partial_destination');
+    repository.init('${destination.path}/user_data.db');
+    await File(
+      '${destination.path}/preferences.json',
+    ).writeAsString(jsonEncode({'theme_mode': 'dark', 'reader_chapter': 2}));
+
+    await service.importBackup(
+      appDataPath: destination.path,
+      backupBytes: backup,
+    );
+
+    expect(
+      jsonDecode(
+        await File('${destination.path}/preferences.json').readAsString(),
+      ),
+      {'theme_mode': 'dark', 'reader_chapter': 7},
+    );
+  });
+
   test('invalid backup leaves existing app data unchanged', () async {
     final destination = createDirectory('unchanged');
     final databasePath = '${destination.path}/user_data.db';

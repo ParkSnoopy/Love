@@ -549,18 +549,10 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
   Future<void> _importAppData(BuildContext context) async {
     final l10n = context.l10n;
-    const backupType = XTypeGroup(
-      label: 'Love backup',
-      extensions: [AppDataBackupService.fileExtension],
-      mimeTypes: ['application/zip'],
-      uniformTypeIdentifiers: ['public.zip-archive'],
-    );
     final androidBytes = Platform.isAndroid
         ? await const AndroidBackupFilePicker().pickBackup()
         : null;
-    final picked = Platform.isAndroid
-        ? null
-        : await openFile(acceptedTypeGroups: [backupType]);
+    final picked = Platform.isAndroid ? null : await openFile();
     if (!context.mounted || (androidBytes == null && picked == null)) return;
 
     final confirmed = await showDialog<bool>(
