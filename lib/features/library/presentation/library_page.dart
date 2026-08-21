@@ -18,6 +18,7 @@ import '../../../app/font_controller.dart';
 import '../../../app/locale_controller.dart';
 import '../../../app/reader_settings_controller.dart';
 import '../../../app/app_localizations.dart';
+import '../../../data/backup/android_backup_file_picker.dart';
 import '../../../data/backup/app_data_backup_service.dart';
 import '../../../data/storage/app_storage.dart';
 import '../../reader/providers/reader_controller.dart';
@@ -554,10 +555,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
       mimeTypes: ['application/zip'],
       uniformTypeIdentifiers: ['public.zip-archive'],
     );
+    final androidBytes = Platform.isAndroid
+        ? await const AndroidBackupFilePicker().pickBackup()
+        : null;
     final picked = Platform.isAndroid
-        ? await openFile()
+        ? null
         : await openFile(acceptedTypeGroups: [backupType]);
-    if (!context.mounted || picked == null) return;
+    if (!context.mounted || (androidBytes == null && picked == null)) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -580,7 +584,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
     setState(() => _appDataOperationActive = true);
     try {
-      final bytes = await picked.readAsBytes();
+      final bytes = androidBytes ?? await picked!.readAsBytes();
       final appDataPath = (await getAppDataDirectory()).path;
       await const AppDataBackupService().importBackup(
         appDataPath: appDataPath,
