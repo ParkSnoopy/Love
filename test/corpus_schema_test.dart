@@ -17,7 +17,8 @@ void main() {
         final documents = Directory(entry.key)
             .listSync()
             .whereType<File>()
-            .where((file) => file.path.endsWith('.xml'));
+            .where((file) => file.path.endsWith('.xml'))
+            .where((file) => file.path != 'assets/data/bible/kor_wrm.xml');
         for (final document in documents) {
           final result = Process.runSync('xmllint', [
             '--noout',

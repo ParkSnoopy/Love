@@ -21,10 +21,10 @@ void main() {
       }
       tempExtractDir.createSync(recursive: true);
 
-      bibleDbPath = p.join(tempExtractDir.path, 'eng_engniv.sqlite');
+      bibleDbPath = p.join(tempExtractDir.path, 'eng_niv.sqlite');
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: 'data/bible/nocr/eng_engniv.sqlite',
+        targetZipPath: 'data/bible/eng_niv.sqlite',
         destinationPath: bibleDbPath,
         zipFilePath: 'assets/data.zip',
       );

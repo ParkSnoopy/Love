@@ -18,18 +18,21 @@ void main() {
 
       const extractor = ZipExtractor();
       await extractor.extractFile(
-        targetZipPath: 'data/commentary/nocr/com_kor_hochma.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
+        targetZipPath: 'data/commentary/kor_hochma.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'kor_hochma.sqlite'),
         zipFilePath: 'assets/data.zip',
       );
       await extractor.extractFile(
-        targetZipPath: 'data/commentary/nocr/com_kor_mhw.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'),
+        targetZipPath: 'data/commentary/kor_matthew-henry.sqlite',
+        destinationPath: p.join(
+          tempExtractDir.path,
+          'kor_matthew-henry.sqlite',
+        ),
         zipFilePath: 'assets/data.zip',
       );
       await extractor.extractFile(
-        targetZipPath: 'data/commentary/nocr/com_kor_pys.sqlite',
-        destinationPath: p.join(tempExtractDir.path, 'com_kor_pys.sqlite'),
+        targetZipPath: 'data/commentary/kor_pys.sqlite',
+        destinationPath: p.join(tempExtractDir.path, 'kor_pys.sqlite'),
         zipFilePath: 'assets/data.zip',
       );
     });
@@ -43,9 +46,7 @@ void main() {
     test(
       'Loads Genesis 1 commentary from Korean Hochma commentary (uses verse fallback)',
       () {
-        final dbFile = File(
-          p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'),
-        );
+        final dbFile = File(p.join(tempExtractDir.path, 'kor_hochma.sqlite'));
         expect(dbFile.existsSync(), isTrue);
 
         final article = repository.loadCommentaryArticle(
@@ -63,7 +64,9 @@ void main() {
     );
 
     test('Loads Genesis 8 commentary from Matthew Henry commentary', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
+      final dbFile = File(
+        p.join(tempExtractDir.path, 'kor_matthew-henry.sqlite'),
+      );
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -79,7 +82,7 @@ void main() {
     });
 
     test('Loads Genesis 1 commentary from Korean Park Yun Sun commentary', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_pys.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'kor_pys.sqlite'));
       expect(dbFile.existsSync(), isTrue);
 
       final article = repository.loadCommentaryArticle(
@@ -96,7 +99,7 @@ void main() {
     });
 
     test('Returns null for invalid/out-of-bounds chapter', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'kor_hochma.sqlite'));
       final article = repository.loadCommentaryArticle(
         dbPath: dbFile.path,
         bookId: 1,
@@ -106,7 +109,9 @@ void main() {
     });
 
     test('Loads commentary verses (used in UI CommentaryPane)', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_mhw.sqlite'));
+      final dbFile = File(
+        p.join(tempExtractDir.path, 'kor_matthew-henry.sqlite'),
+      );
       final verses = repository.loadCommentaryVerses(
         dbPath: dbFile.path,
         bookId: 1,
@@ -171,7 +176,7 @@ void main() {
     });
 
     test('Introductions are empty for crawled Korean databases', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'com_kor_hochma.sqlite'));
+      final dbFile = File(p.join(tempExtractDir.path, 'kor_hochma.sqlite'));
       final intros = repository.loadCommentaryIntroductions(
         dbPath: dbFile.path,
       );
