@@ -6,8 +6,7 @@
   </metadata>
   <books>
     <book id="1" osis="Gen" testament="OT" chapters="50">
-      <english-name>Genesis</english-name>
-      <name>창세기</name>
+      <name>創世記</name>
       <chapter number="1">
         <heading>天地の創造</heading>
         <verse number="1">初めに、神は天地を創造された。</verse>
@@ -2234,8 +2233,7 @@
       </chapter>
     </book>
     <book id="2" osis="Exod" testament="OT" chapters="40">
-      <english-name>Exodus</english-name>
-      <name>출애굽기</name>
+      <name>出エジプト記</name>
       <chapter number="1">
         <heading>エジプトでのイスラエル人</heading>
         <verse number="1">ヤコブと共に一家を挙げてエジプトへ下ったイスラエルの子らの名前は次のとおりである。</verse>
@@ -3754,8 +3752,7 @@
       </chapter>
     </book>
     <book id="3" osis="Lev" testament="OT" chapters="27">
-      <english-name>Leviticus</english-name>
-      <name>레위기</name>
+      <name>レビ記</name>
       <chapter number="1">
         <heading>焼き尽くす献げ物</heading>
         <verse number="1">主は臨在の幕屋から、モーセを呼んで仰せになった。</verse>
@@ -4746,8 +4743,7 @@
       </chapter>
     </book>
     <book id="4" osis="Num" testament="OT" chapters="36">
-      <english-name>Numbers</english-name>
-      <name>민수기</name>
+      <name>民数記</name>
       <chapter number="1">
         <heading>人口調査</heading>
         <verse number="1">イスラエルの人々がエジプトの国を出た翌年の第二の月の一日、シナイの荒れ野にいたとき、主は臨在の幕屋でモーセに仰せになった。</verse>
@@ -6351,8 +6347,7 @@
       </chapter>
     </book>
     <book id="5" osis="Deut" testament="OT" chapters="34">
-      <english-name>Deuteronomy</english-name>
-      <name>신명기</name>
+      <name>申命記</name>
       <chapter number="1">
         <heading>はじめに</heading>
         <verse number="1">モーセはイスラエルのすべての人にこれらの言葉を告げた。それは、ヨルダン川の東側にある荒れ野で、一方にパラン、他方にトフェル、ラバン、ハツェロト、ディ・ザハブがあるスフに近いアラバにおいてであった。</verse>
@@ -7672,8 +7667,7 @@
       </chapter>
     </book>
     <book id="6" osis="Josh" testament="OT" chapters="24">
-      <english-name>Joshua</english-name>
-      <name>여호수아</name>
+      <name>ヨシュア記</name>
       <chapter number="1">
         <heading>モーセの後継者ヨシュア</heading>
         <verse number="1">主の僕モーセの死後、主はモーセの従者、ヌンの子ヨシュアに言われた。</verse>
@@ -8482,8 +8476,7 @@
       </chapter>
     </book>
     <book id="7" osis="Judg" testament="OT" chapters="21">
-      <english-name>Judges</english-name>
-      <name>사사기</name>
+      <name>士師記</name>
       <chapter number="1">
         <heading>カナンの征服</heading>
         <verse number="1">ヨシュアの死後、イスラエルの人々は主に問うて言った。「わたしたちのうち、誰が最初に上って行って、カナン人を攻撃すべきでしょうか。」</verse>
@@ -9250,8 +9243,7 @@
       </chapter>
     </book>
     <book id="8" osis="Ruth" testament="OT" chapters="4">
-      <english-name>Ruth</english-name>
-      <name>룻기</name>
+      <name>ルツ記</name>
       <chapter number="1">
         <heading>残されたナオミ</heading>
         <verse number="1">士師が世を治めていたころ、飢饉が国を襲ったので、ある人が妻と二人の息子を連れて、ユダのベツレヘムからモアブの野に移り住んだ。</verse>
@@ -9395,8 +9387,7 @@
       </chapter>
     </book>
     <book id="9" osis="1Sam" testament="OT" chapters="31">
-      <english-name>1 Samuel</english-name>
-      <name>사무엘상</name>
+      <name>サムエル記上</name>
       <chapter number="1">
         <heading>サムエルの誕生</heading>
         <verse number="1">エフライムの山地ラマタイム・ツォフィムに一人の男がいた。名をエルカナといい、その家系をさかのぼると、エロハム、エリフ、トフ、エフライム人のツフに至る。</verse>
@@ -10353,8 +10344,7 @@
       </chapter>
     </book>
     <book id="10" osis="2Sam" testament="OT" chapters="24">
-      <english-name>2 Samuel</english-name>
-      <name>사무엘하</name>
+      <name>サムエル記下</name>
       <chapter number="1">
         <heading>ダビデ、サウルの死を知る</heading>
         <verse number="1">サウルが死んだ後のことである。ダビデはアマレク人を討ってツィクラグに帰り、二日過ごした。</verse>
@@ -11280,8 +11270,7 @@
       </chapter>
     </book>
     <book id="11" osis="1Kgs" testament="OT" chapters="22">
-      <english-name>1 Kings</english-name>
-      <name>열왕기상</name>
+      <name>列王記上</name>
       <chapter number="1">
         <heading>王位継承の争い</heading>
         <verse number="1">ダビデ王は多くの日を重ねて老人になり、衣を何枚着せられても暖まらなかった。</verse>
@@ -12196,8 +12185,7 @@
       </chapter>
     </book>
     <book id="12" osis="2Kgs" testament="OT" chapters="25">
-      <english-name>2 Kings</english-name>
-      <name>열왕기하</name>
+      <name>列王記下</name>
       <chapter number="1">
         <heading>エリヤとイスラエルの王アハズヤ</heading>
         <verse number="1">アハブの死後、モアブはイスラエルに反旗を翻した。</verse>
@@ -13049,8 +13037,7 @@
       </chapter>
     </book>
     <book id="13" osis="1Chr" testament="OT" chapters="29">
-      <english-name>1 Chronicles</english-name>
-      <name>역대상</name>
+      <name>歴代誌上</name>
       <chapter number="1">
         <heading>アダムからアブラハムまでの系図</heading>
         <verse number="1">アダム、セト、エノシュ、</verse>
@@ -14152,8 +14139,7 @@
       </chapter>
     </book>
     <book id="14" osis="2Chr" testament="OT" chapters="36">
-      <english-name>2 Chronicles</english-name>
-      <name>역대하</name>
+      <name>歴代誌下</name>
       <chapter number="1">
         <heading>ソロモンの知恵と富</heading>
         <verse number="1">ダビデの子ソロモンは自分の支配を固めた。彼の神、主が共にいて、彼を高め偉大な者とされた。</verse>
@@ -15094,8 +15080,7 @@
       </chapter>
     </book>
     <book id="15" osis="Ezra" testament="OT" chapters="10">
-      <english-name>Ezra</english-name>
-      <name>에스라</name>
+      <name>エズラ記</name>
       <chapter number="1">
         <heading>ペルシアの王キュロスの布告</heading>
         <verse number="1">ペルシアの王キュロスの第一年のことである。主はかつてエレミヤの口によって約束されたことを成就するため、ペルシアの王キュロスの心を動かされた。キュロスは文書にも記して、国中に次のような布告を行き渡らせた。</verse>
@@ -15428,8 +15413,7 @@
       </chapter>
     </book>
     <book id="16" osis="Neh" testament="OT" chapters="13">
-      <english-name>Nehemiah</english-name>
-      <name>느헤미야</name>
+      <name>ネヘミヤ記</name>
       <chapter number="1">
         <heading>ネヘミヤの祈り</heading>
         <verse number="1">ハカルヤの子、ネヘミヤの記録。</verse>
@@ -16027,8 +16011,7 @@
       </chapter>
     </book>
     <book id="17" osis="Esth" testament="OT" chapters="10">
-      <english-name>Esther</english-name>
-      <name>에스더</name>
+      <name>エステル記</name>
       <chapter number="1">
         <heading>クセルクセス王の酒宴</heading>
         <verse number="1">クセルクセスの時代のことである。このクセルクセスは、インドからクシュに至るまで百二十七州の支配者であった。</verse>
@@ -16233,8 +16216,7 @@
       </chapter>
     </book>
     <book id="18" osis="Job" testament="OT" chapters="42">
-      <english-name>Job</english-name>
-      <name>욥기</name>
+      <name>ヨブ記</name>
       <chapter number="1">
         <heading>事の起こり</heading>
         <verse number="1">ウツの地にヨブという人がいた。無垢な正しい人で、神を畏れ、悪を避けて生きていた。</verse>
@@ -18724,8 +18706,7 @@
       </chapter>
     </book>
     <book id="19" osis="Ps" testament="OT" chapters="150">
-      <english-name>Psalms</english-name>
-      <name>시편</name>
+      <name>詩編</name>
       <chapter number="1">
         <verse number="1">いかに幸いなことか</verse>
         <verse number="1">神に逆らう者の計らいに従って歩まず</verse>
@@ -25264,8 +25245,7 @@
       </chapter>
     </book>
     <book id="20" osis="Prov" testament="OT" chapters="31">
-      <english-name>Proverbs</english-name>
-      <name>잠언</name>
+      <name>箴言</name>
       <chapter number="1">
         <verse number="1">イスラエルの王、ダビデの子、ソロモンの箴言。</verse>
         <verse number="2">これは知恵と諭しをわきまえ</verse>
@@ -27212,8 +27192,7 @@
       </chapter>
     </book>
     <book id="21" osis="Eccl" testament="OT" chapters="12">
-      <english-name>Ecclesiastes</english-name>
-      <name>전도서</name>
+      <name>コヘレトの言葉</name>
       <chapter number="1">
         <verse number="1">エルサレムの王、ダビデの子、コヘレトの言葉。</verse>
         <verse number="2">コヘレトは言う。</verse>
@@ -27773,8 +27752,7 @@
       </chapter>
     </book>
     <book id="22" osis="Song" testament="OT" chapters="8">
-      <english-name>Song of Songs</english-name>
-      <name>아가</name>
+      <name>雅歌</name>
       <chapter number="1">
         <verse number="1">ソロモンの雅歌。</verse>
         <verse number="2">どうかあの方が、その口のくちづけをもって</verse>
@@ -28189,8 +28167,7 @@
       </chapter>
     </book>
     <book id="23" osis="Isa" testament="OT" chapters="66">
-      <english-name>Isaiah</english-name>
-      <name>이사야</name>
+      <name>イザヤ書</name>
       <chapter number="1">
         <verse number="1">アモツの子イザヤが、ユダとエルサレムについて見た幻。</verse>
         <verse number="1">これはユダの王、ウジヤ、ヨタム、アハズ、ヒゼキヤの治世のことである。</verse>
@@ -32777,8 +32754,7 @@
       </chapter>
     </book>
     <book id="24" osis="Jer" testament="OT" chapters="52">
-      <english-name>Jeremiah</english-name>
-      <name>예레미야</name>
+      <name>エレミヤ書</name>
       <chapter number="1">
         <verse number="1">エレミヤの言葉。彼はベニヤミンの地のアナトトの祭司ヒルキヤの子であった。</verse>
         <verse number="2">主の言葉が彼に臨んだのは、ユダの王、アモンの子ヨシヤの時代、その治世の第十三年のことであり、</verse>
@@ -36268,8 +36244,7 @@
       </chapter>
     </book>
     <book id="25" osis="Lam" testament="OT" chapters="5">
-      <english-name>Lamentations</english-name>
-      <name>예레미야애가</name>
+      <name>哀歌</name>
       <chapter number="1">
         <heading>第一の歌（アルファベットによる詩）</heading>
         <verse number="1">なにゆえ、独りで座っているのか</verse>
@@ -36755,8 +36730,7 @@
       </chapter>
     </book>
     <book id="26" osis="Ezek" testament="OT" chapters="48">
-      <english-name>Ezekiel</english-name>
-      <name>에스겔</name>
+      <name>エゼキエル書</name>
       <chapter number="1">
         <heading>エゼキエルの召命</heading>
         <verse number="1">第三十年の四月五日のことである。わたしはケバル川の河畔に住んでいた捕囚の人々の間にいたが、そのとき天が開かれ、わたしは神の顕現に接した。</verse>
@@ -38633,8 +38607,7 @@
       </chapter>
     </book>
     <book id="27" osis="Dan" testament="OT" chapters="12">
-      <english-name>Daniel</english-name>
-      <name>다니엘</name>
+      <name>ダニエル書</name>
       <chapter number="1">
         <heading>バビロンの宮廷でのダニエル</heading>
         <verse number="1">ユダの王ヨヤキムが即位して三年目のことであった。バビロンの王ネブカドネツァルが攻めて来て、エルサレムを包囲した。</verse>
@@ -39161,8 +39134,7 @@
       </chapter>
     </book>
     <book id="28" osis="Hos" testament="OT" chapters="14">
-      <english-name>Hosea</english-name>
-      <name>호세아</name>
+      <name>ホセア書</name>
       <chapter number="1">
         <verse number="1">ユダの王、ウジヤ、ヨタム、アハズ、ヒゼキヤの時代、イスラエルの王ヨアシュの子ヤロブアムの時代に、ベエリの子ホセアに臨んだ主の言葉。</verse>
         <heading>ホセアの妻と子</heading>
@@ -39928,8 +39900,7 @@
       </chapter>
     </book>
     <book id="29" osis="Joel" testament="OT" chapters="3">
-      <english-name>Joel</english-name>
-      <name>요엘</name>
+      <name>ヨエル書</name>
       <chapter number="1">
         <verse number="1">ペトエルの子ヨエルに臨んだ主の言葉。</verse>
         <heading>いなごによる荒廃</heading>
@@ -40131,8 +40102,7 @@
       </chapter>
     </book>
     <book id="30" osis="Amos" testament="OT" chapters="9">
-      <english-name>Amos</english-name>
-      <name>아모스</name>
+      <name>アモス書</name>
       <chapter number="1">
         <verse number="1">テコアの牧者の一人であったアモスの言葉。それは、ユダの王ウジヤとイスラエルの王ヨアシュの子ヤロブアムの時代、あの地震の二年前に、イスラエルについて示されたものである。</verse>
         <heading>諸国民に対する審判</heading>
@@ -40714,8 +40684,7 @@
       </chapter>
     </book>
     <book id="31" osis="Obad" testament="OT" chapters="1">
-      <english-name>Obadiah</english-name>
-      <name>오바댜</name>
+      <name>オバデヤ書</name>
       <chapter number="1">
         <heading>エドムの傲慢と滅亡</heading>
         <verse number="1">オバデヤの幻。</verse>
@@ -40802,8 +40771,7 @@
       </chapter>
     </book>
     <book id="32" osis="Jonah" testament="OT" chapters="4">
-      <english-name>Jonah</english-name>
-      <name>요나</name>
+      <name>ヨナ書</name>
       <chapter number="1">
         <heading>ヨナの逃亡</heading>
         <verse number="1">主の言葉がアミタイの子ヨナに臨んだ。</verse>
@@ -40902,8 +40870,7 @@
       </chapter>
     </book>
     <book id="33" osis="Mic" testament="OT" chapters="7">
-      <english-name>Micah</english-name>
-      <name>미가</name>
+      <name>ミカ書</name>
       <chapter number="1">
         <verse number="1">ユダの王ヨタム、アハズ、ヒゼキヤの時代に、モレシェトの人ミカに臨んだ主の言葉。それは、彼がサマリアとエルサレムについて幻に見たものである。</verse>
         <heading>神の審判</heading>
@@ -41337,8 +41304,7 @@
       </chapter>
     </book>
     <book id="34" osis="Nah" testament="OT" chapters="3">
-      <english-name>Nahum</english-name>
-      <name>나훔</name>
+      <name>ナホム書</name>
       <chapter number="1">
         <verse number="1">ニネベについての託宣。</verse>
         <verse number="1">エルコシュの人ナホムの幻を記した書。</verse>
@@ -41521,8 +41487,7 @@
       </chapter>
     </book>
     <book id="35" osis="Hab" testament="OT" chapters="3">
-      <english-name>Habakkuk</english-name>
-      <name>하박국</name>
+      <name>ハバクク書</name>
       <chapter number="1">
         <verse number="1">預言者ハバククが、幻で示された託宣。</verse>
         <heading>預言者の嘆き</heading>
@@ -41744,8 +41709,7 @@
       </chapter>
     </book>
     <book id="36" osis="Zeph" testament="OT" chapters="3">
-      <english-name>Zephaniah</english-name>
-      <name>스바냐</name>
+      <name>ゼファニヤ書</name>
       <chapter number="1">
         <verse number="1">ユダの王アモンの子ヨシヤの時代に、クシの子ゼファニヤに臨んだ主の言葉。クシはゲダルヤの子、ゲダルヤはアマルヤの子、アマルヤはヒズキヤの子である。</verse>
         <heading>主の怒りの日</heading>
@@ -41968,8 +41932,7 @@
       </chapter>
     </book>
     <book id="37" osis="Hag" testament="OT" chapters="2">
-      <english-name>Haggai</english-name>
-      <name>학개</name>
+      <name>ハガイ書</name>
       <chapter number="1">
         <heading>神殿再建の呼びかけ</heading>
         <verse number="1">ダレイオス王の第二年六月一日に、主の言葉が預言者ハガイを通して、ユダの総督シェアルティエルの子ゼルバベルと大祭司ヨツァダクの子ヨシュアに臨んだ。</verse>
@@ -42091,8 +42054,7 @@
       </chapter>
     </book>
     <book id="38" osis="Zech" testament="OT" chapters="14">
-      <english-name>Zechariah</english-name>
-      <name>스가랴</name>
+      <name>ゼカリヤ書</name>
       <chapter number="1">
         <verse number="1">ダレイオスの第二年八月に、イドの孫でベレクヤの子である預言者ゼカリヤに主の言葉が臨んだ。</verse>
         <verse number="2">「主はあなたたちの先祖に向かって激しく怒られた。</verse>
@@ -42609,8 +42571,7 @@
       </chapter>
     </book>
     <book id="39" osis="Mal" testament="OT" chapters="4">
-      <english-name>Malachi</english-name>
-      <name>말라기</name>
+      <name>マラキ書</name>
       <chapter number="1">
         <verse number="1">託宣。マラキによってイスラエルに臨んだ主の言葉。</verse>
         <heading>イスラエルとエドム</heading>
@@ -42854,8 +42815,7 @@
       </chapter>
     </book>
     <book id="40" osis="Matt" testament="NT" chapters="28">
-      <english-name>Matthew</english-name>
-      <name>마태복음</name>
+      <name>マタイによる福音書</name>
       <chapter number="1">
         <heading>イエス・キリストの系図</heading>
         <verse number="1">アブラハムの子ダビデの子、イエス・キリストの系図。</verse>
@@ -44233,8 +44193,7 @@
       </chapter>
     </book>
     <book id="41" osis="Mark" testament="NT" chapters="16">
-      <english-name>Mark</english-name>
-      <name>마가복음</name>
+      <name>マルコによる福音書</name>
       <chapter number="1">
         <heading>洗礼者ヨハネ、教えを宣べる</heading>
         <verse number="1">神の子イエス・キリストの福音の初め。</verse>
@@ -45084,8 +45043,7 @@
       </chapter>
     </book>
     <book id="42" osis="Luke" testament="NT" chapters="24">
-      <english-name>Luke</english-name>
-      <name>누가복음</name>
+      <name>ルカによる福音書</name>
       <chapter number="1">
         <heading>献呈の言葉</heading>
         <verse number="1" end-number="2">わたしたちの間で実現した事柄について、最初から目撃して御言葉のために働いた人々がわたしたちに伝えたとおりに、物語を書き連ねようと、多くの人々が既に手を着けています。</verse>
@@ -46523,8 +46481,7 @@
       </chapter>
     </book>
     <book id="43" osis="John" testament="NT" chapters="21">
-      <english-name>John</english-name>
-      <name>요한복음</name>
+      <name>ヨハネによる福音書</name>
       <chapter number="1">
         <heading>言が肉となった</heading>
         <verse number="1">初めに言があった。言は神と共にあった。言は神であった。</verse>
@@ -47551,8 +47508,7 @@
       </chapter>
     </book>
     <book id="44" osis="Acts" testament="NT" chapters="28">
-      <english-name>Acts</english-name>
-      <name>사도행전</name>
+      <name>使徒言行録</name>
       <chapter number="1">
         <heading>はしがき</heading>
         <verse number="1" end-number="2">テオフィロさま、わたしは先に第一巻を著して、イエスが行い、また教え始めてから、お選びになった使徒たちに聖霊を通して指図を与え、天に上げられた日までのすべてのことについて書き記しました。</verse>
@@ -48792,8 +48748,7 @@
       </chapter>
     </book>
     <book id="45" osis="Rom" testament="NT" chapters="16">
-      <english-name>Romans</english-name>
-      <name>로마서</name>
+      <name>ローマの信徒への手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">キリスト・イエスの僕、神の福音のために選び出され、召されて使徒となったパウロから、――</verse>
@@ -49369,8 +49324,7 @@
       </chapter>
     </book>
     <book id="46" osis="1Cor" testament="NT" chapters="16">
-      <english-name>1 Corinthians</english-name>
-      <name>고린도전서</name>
+      <name>コリントの信徒への手紙一</name>
       <chapter number="1">
         <heading>挨拶と感謝</heading>
         <verse number="1">神の御心によって召されてキリスト・イエスの使徒となったパウロと、兄弟ソステネから、</verse>
@@ -49902,8 +49856,7 @@
       </chapter>
     </book>
     <book id="47" osis="2Cor" testament="NT" chapters="13">
-      <english-name>2 Corinthians</english-name>
-      <name>고린도후서</name>
+      <name>コリントの信徒への手紙二</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">神の御心によってキリスト・イエスの使徒とされたパウロと、兄弟テモテから、コリントにある神の教会と、アカイア州の全地方に住むすべての聖なる者たちへ。</verse>
@@ -50224,8 +50177,7 @@
       </chapter>
     </book>
     <book id="48" osis="Gal" testament="NT" chapters="6">
-      <english-name>Galatians</english-name>
-      <name>갈라디아서</name>
+      <name>ガラテヤの信徒への手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">人々からでもなく、人を通してでもなく、イエス・キリストと、キリストを死者の中から復活させた父である神とによって使徒とされたパウロ、</verse>
@@ -50409,8 +50361,7 @@
       </chapter>
     </book>
     <book id="49" osis="Eph" testament="NT" chapters="6">
-      <english-name>Ephesians</english-name>
-      <name>에베소서</name>
+      <name>エフェソの信徒への手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">神の御心によってキリスト・イエスの使徒とされたパウロから、エフェソにいる聖なる者たち、キリスト・イエスを信ずる人たちへ。</verse>
@@ -50602,8 +50553,7 @@
       </chapter>
     </book>
     <book id="50" osis="Phil" testament="NT" chapters="4">
-      <english-name>Philippians</english-name>
-      <name>빌립보서</name>
+      <name>フィリピの信徒への手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">キリスト・イエスの僕であるパウロとテモテから、フィリピにいて、キリスト・イエスに結ばれているすべての聖なる者たち、ならびに監督たちと奉仕者たちへ。</verse>
@@ -50729,8 +50679,7 @@
       </chapter>
     </book>
     <book id="51" osis="Col" testament="NT" chapters="4">
-      <english-name>Colossians</english-name>
-      <name>골로새서</name>
+      <name>コロサイの信徒への手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">神の御心によってキリスト・イエスの使徒とされたパウロと兄弟テモテから、</verse>
@@ -50845,8 +50794,7 @@
       </chapter>
     </book>
     <book id="52" osis="1Thess" testament="NT" chapters="5">
-      <english-name>1 Thessalonians</english-name>
-      <name>데살로니가전서</name>
+      <name>テサロニケの信徒への手紙一</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">パウロ、シルワノ、テモテから、父である神と主イエス・キリストとに結ばれているテサロニケの教会へ。恵みと平和が、あなたがたにあるように。</verse>
@@ -50955,8 +50903,7 @@
       </chapter>
     </book>
     <book id="53" osis="2Thess" testament="NT" chapters="3">
-      <english-name>2 Thessalonians</english-name>
-      <name>데살로니가후서</name>
+      <name>テサロニケの信徒への手紙二</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">パウロ、シルワノ、テモテから、わたしたちの父である神と主イエス・キリストに結ばれているテサロニケの教会へ。</verse>
@@ -51019,8 +50966,7 @@
       </chapter>
     </book>
     <book id="54" osis="1Tim" testament="NT" chapters="6">
-      <english-name>1 Timothy</english-name>
-      <name>디모데전서</name>
+      <name>テモテへの手紙一</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">わたしたちの救い主である神とわたしたちの希望であるキリスト・イエスによって任命され、キリスト・イエスの使徒となったパウロから、</verse>
@@ -51169,8 +51115,7 @@
       </chapter>
     </book>
     <book id="55" osis="2Tim" testament="NT" chapters="4">
-      <english-name>2 Timothy</english-name>
-      <name>디모데후서</name>
+      <name>テモテへの手紙二</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">キリスト・イエスによって与えられる命の約束を宣べ伝えるために、神の御心によってキリスト・イエスの使徒とされたパウロから、</verse>
@@ -51280,8 +51225,7 @@
       </chapter>
     </book>
     <book id="56" osis="Titus" testament="NT" chapters="3">
-      <english-name>Titus</english-name>
-      <name>디도서</name>
+      <name>テトスへの手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">神の僕、イエス・キリストの使徒パウロから――わたしが使徒とされたのは、神に選ばれた人々の信仰を助け、彼らを信心に一致する真理の認識に導くためです。</verse>
@@ -51342,8 +51286,7 @@
       </chapter>
     </book>
     <book id="57" osis="Phlm" testament="NT" chapters="1">
-      <english-name>Philemon</english-name>
-      <name>빌레몬서</name>
+      <name>フィレモンへの手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">キリスト・イエスの囚人パウロと兄弟テモテから、わたしたちの愛する協力者フィレモン、</verse>
@@ -51377,8 +51320,7 @@
       </chapter>
     </book>
     <book id="58" osis="Heb" testament="NT" chapters="13">
-      <english-name>Hebrews</english-name>
-      <name>히브리서</name>
+      <name>ヘブライ人への手紙</name>
       <chapter number="1">
         <heading>神は御子によって語られた</heading>
         <verse number="1">神は、かつて預言者たちによって、多くのかたちで、また多くのしかたで先祖に語られたが、</verse>
@@ -51841,8 +51783,7 @@
       </chapter>
     </book>
     <book id="59" osis="Jas" testament="NT" chapters="5">
-      <english-name>James</english-name>
-      <name>야고보서</name>
+      <name>ヤコブの手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">神と主イエス・キリストの僕であるヤコブが、離散している十二部族の人たちに挨拶いたします。</verse>
@@ -51980,8 +51921,7 @@
       </chapter>
     </book>
     <book id="60" osis="1Pet" testament="NT" chapters="5">
-      <english-name>1 Peter</english-name>
-      <name>베드로전서</name>
+      <name>ペトロの手紙一</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">イエス・キリストの使徒ペトロから、ポントス、ガラテヤ、カパドキア、アジア、ビティニアの各地に離散して仮住まいをしている選ばれた人たちへ。</verse>
@@ -52141,8 +52081,7 @@
       </chapter>
     </book>
     <book id="61" osis="2Pet" testament="NT" chapters="3">
-      <english-name>2 Peter</english-name>
-      <name>베드로후서</name>
+      <name>ペトロの手紙二</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">イエス・キリストの僕であり、使徒であるシメオン・ペトロから、わたしたちの神と救い主イエス・キリストの義によって、わたしたちと同じ尊い信仰を受けた人たちへ。</verse>
@@ -52222,8 +52161,7 @@
       </chapter>
     </book>
     <book id="62" osis="1John" testament="NT" chapters="5">
-      <english-name>1 John</english-name>
-      <name>요한1서</name>
+      <name>ヨハネの手紙一</name>
       <chapter number="1">
         <heading>命の言</heading>
         <verse number="1">初めからあったもの、わたしたちが聞いたもの、目で見たもの、よく見て、手で触れたものを伝えます。すなわち、命の言について。――</verse>
@@ -52369,8 +52307,7 @@
       </chapter>
     </book>
     <book id="63" osis="2John" testament="NT" chapters="1">
-      <english-name>2 John</english-name>
-      <name>요한2서</name>
+      <name>ヨハネの手紙二</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">長老のわたしから、選ばれた婦人とその子たちへ。わたしは、あなたがたを真に愛しています。わたしばかりでなく、真理を知っている人はすべて、あなたがたを愛しています。</verse>
@@ -52391,8 +52328,7 @@
       </chapter>
     </book>
     <book id="64" osis="3John" testament="NT" chapters="1">
-      <english-name>3 John</english-name>
-      <name>요한3서</name>
+      <name>ヨハネの手紙三</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">長老のわたしから、愛するガイオへ。わたしは、あなたを真に愛しています。</verse>
@@ -52415,8 +52351,7 @@
       </chapter>
     </book>
     <book id="65" osis="Jude" testament="NT" chapters="1">
-      <english-name>Jude</english-name>
-      <name>유다서</name>
+      <name>ユダの手紙</name>
       <chapter number="1">
         <heading>挨拶</heading>
         <verse number="1">イエス・キリストの僕で、ヤコブの兄弟であるユダから、父である神に愛され、イエス・キリストに守られている召された人たちへ。</verse>
@@ -52450,8 +52385,7 @@
       </chapter>
     </book>
     <book id="66" osis="Rev" testament="NT" chapters="22">
-      <english-name>Revelation</english-name>
-      <name>요한계시록</name>
+      <name>ヨハネの黙示録</name>
       <chapter number="1">
         <heading>序文と挨拶</heading>
         <verse number="1">イエス・キリストの黙示。この黙示は、すぐにも起こるはずのことを、神がその僕たちに示すためキリストにお与えになり、そして、キリストがその天使を送って僕ヨハネにお伝えになったものである。</verse>

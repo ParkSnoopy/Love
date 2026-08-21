@@ -6,7 +6,6 @@
   </metadata>
   <books>
     <book id="1" osis="Gen" testament="OT" chapters="50">
-      <english-name>Genesis</english-name>
       <name>창세기</name>
       <chapter number="1">
         <verse number="1">태초에 하나님이 천지를 창조하시니라</verse>
@@ -1643,7 +1642,6 @@
       </chapter>
     </book>
     <book id="2" osis="Exod" testament="OT" chapters="40">
-      <english-name>Exodus</english-name>
       <name>출애굽기</name>
       <chapter number="1">
         <verse number="1">야곱과 함께 각기 권속을 데리고 애굽에 이른 이스라엘 아들들의 이름은 이러하니</verse>
@@ -2940,7 +2938,6 @@
       </chapter>
     </book>
     <book id="3" osis="Lev" testament="OT" chapters="27">
-      <english-name>Leviticus</english-name>
       <name>레위기</name>
       <chapter number="1">
         <verse number="1">여호와께서 회막에서 모세를 부르시고 그에게 일러 가라사대</verse>
@@ -3857,7 +3854,6 @@
       </chapter>
     </book>
     <book id="4" osis="Num" testament="OT" chapters="36">
-      <english-name>Numbers</english-name>
       <name>민수기</name>
       <chapter number="1">
         <verse number="1">이스라엘 자손이 애굽 땅에서 나온 후 제 이년 이월 일일에 여호와께서 시내 광야 회막에서 모세에게 일러 가라사대</verse>
@@ -5221,7 +5217,6 @@
       </chapter>
     </book>
     <book id="5" osis="Deut" testament="OT" chapters="34">
-      <english-name>Deuteronomy</english-name>
       <name>신명기</name>
       <chapter number="1">
         <verse number="1">이는 모세가 요단 저편 숩 맞은편의 아라바 광야 곧 바란과 도벨과 라반과 하세롯과 디사합 사이에서 이스라엘 무리에게 선포한 말씀이니라</verse>
@@ -6252,7 +6247,6 @@
       </chapter>
     </book>
     <book id="6" osis="Josh" testament="OT" chapters="24">
-      <english-name>Joshua</english-name>
       <name>여호수아</name>
       <chapter number="1">
         <verse number="1">여호와의 종 모세가 죽은 후에 여호와께서 모세의 시종 눈의 아들 여호수아에게 일러 가라사대</verse>
@@ -6962,7 +6956,6 @@
       </chapter>
     </book>
     <book id="7" osis="Judg" testament="OT" chapters="21">
-      <english-name>Judges</english-name>
       <name>사사기</name>
       <chapter number="1">
         <verse number="1">여호수아가 죽은 후에 이스라엘 자손이 여호와께 묻자와 가로되 우리 중 누가 먼저 올라가서 가나안 사람과 싸우리이까</verse>
@@ -7593,7 +7586,6 @@
       </chapter>
     </book>
     <book id="8" osis="Ruth" testament="OT" chapters="4">
-      <english-name>Ruth</english-name>
       <name>룻기</name>
       <chapter number="1">
         <verse number="1">사사들의 치리하던 때에 그 땅에 흉년이 드니라 유다 베들레헴에 한 사람이 그 아내와 두 아들을 데리고 모압 지방에 가서 우거하였는데</verse>
@@ -7690,7 +7682,6 @@
       </chapter>
     </book>
     <book id="9" osis="1Sam" testament="OT" chapters="31">
-      <english-name>1 Samuel</english-name>
       <name>사무엘상</name>
       <chapter number="1">
         <verse number="1">에브라임 산지 라마다임소빔에 에브라임 사람 엘가나라 하는 자가 있으니 그는 여로함의 아들이요 엘리후의 손자요 도후의 증손이요 숩의 현손이더라</verse>
@@ -8566,7 +8557,6 @@
       </chapter>
     </book>
     <book id="10" osis="2Sam" testament="OT" chapters="24">
-      <english-name>2 Samuel</english-name>
       <name>사무엘하</name>
       <chapter number="1">
         <verse number="1">사울의 죽은 후라 다윗이 아말렉 사람을 도륙하고 돌아와서 시글락에서 이틀을 유하더니</verse>
@@ -9313,7 +9303,6 @@
       </chapter>
     </book>
     <book id="11" osis="1Kgs" testament="OT" chapters="22">
-      <english-name>1 Kings</english-name>
       <name>열왕기상</name>
       <chapter number="1">
         <verse number="1">다윗왕이 나이 많아 늙으니 이불을 덮어도 따뜻하지 아니한지라</verse>
@@ -10177,7 +10166,6 @@
       </chapter>
     </book>
     <book id="12" osis="2Kgs" testament="OT" chapters="25">
-      <english-name>2 Kings</english-name>
       <name>열왕기하</name>
       <chapter number="1">
         <verse number="1">아합이 죽은 후에 모압이 이스라엘을 배반하였더라</verse>
@@ -10950,7 +10938,6 @@
       </chapter>
     </book>
     <book id="13" osis="1Chr" testament="OT" chapters="29">
-      <english-name>1 Chronicles</english-name>
       <name>역대상</name>
       <chapter number="1">
         <verse number="1">아담, 셋, 에노스,</verse>
@@ -11954,7 +11941,6 @@
       </chapter>
     </book>
     <book id="14" osis="2Chr" testament="OT" chapters="36">
-      <english-name>2 Chronicles</english-name>
       <name>역대하</name>
       <chapter number="1">
         <verse number="1">다윗의 아들 솔로몬의 왕위가 견고하여가며 그 하나님 여호와께서 저와 함께하사 심히 창대케 하시니라</verse>
@@ -12852,7 +12838,6 @@
       </chapter>
     </book>
     <book id="15" osis="Ezra" testament="OT" chapters="10">
-      <english-name>Ezra</english-name>
       <name>에스라</name>
       <chapter number="1">
         <verse number="1">바사 왕 고레스 원년에 여호와께서 예레미야의 입으로 하신 말씀을 응하게 하시려고 바사 왕 고레스의 마음을 감동시키시매 저가 온 나라에 공포도 하고 조서도 내려 가로되</verse>
@@ -13156,7 +13141,6 @@
       </chapter>
     </book>
     <book id="16" osis="Neh" testament="OT" chapters="13">
-      <english-name>Nehemiah</english-name>
       <name>느헤미야</name>
       <chapter number="1">
         <verse number="1">하가랴의 아들 느헤미야의 말이라 아닥사스다왕 제 이십년 기슬르월에 내가 수산궁에 있더니</verse>
@@ -13592,7 +13576,6 @@
       </chapter>
     </book>
     <book id="17" osis="Esth" testament="OT" chapters="10">
-      <english-name>Esther</english-name>
       <name>에스더</name>
       <chapter number="1">
         <verse number="1">이 일은 아하수에로왕 때에 된 것이니 아하수에로는 인도로 구스까지 일백 이십 칠도를 치리하는 왕이라</verse>
@@ -13783,7 +13766,6 @@
       </chapter>
     </book>
     <book id="18" osis="Job" testament="OT" chapters="42">
-      <english-name>Job</english-name>
       <name>욥기</name>
       <chapter number="1">
         <verse number="1">우스 땅에 욥이라 이름하는 사람이 있었는데 그 사람은 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자더라</verse>
@@ -14941,7 +14923,6 @@
       </chapter>
     </book>
     <book id="19" osis="Ps" testament="OT" chapters="150">
-      <english-name>Psalms</english-name>
       <name>시편</name>
       <chapter number="1">
         <verse number="1">복 있는 사람은 악인의 꾀를 좇지 아니하며 죄인의 길에 서지 아니하며 오만한 자의 자리에 앉지 아니하고</verse>
@@ -17706,7 +17687,6 @@
       </chapter>
     </book>
     <book id="20" osis="Prov" testament="OT" chapters="31">
-      <english-name>Proverbs</english-name>
       <name>잠언</name>
       <chapter number="1">
         <verse number="1">다윗의 아들 이스라엘 왕 솔로몬의 잠언이라</verse>
@@ -18687,7 +18667,6 @@
       </chapter>
     </book>
     <book id="21" osis="Eccl" testament="OT" chapters="12">
-      <english-name>Ecclesiastes</english-name>
       <name>전도서</name>
       <chapter number="1">
         <verse number="1">다윗의 아들 예루살렘 왕 전도자의 말씀이라</verse>
@@ -18937,7 +18916,6 @@
       </chapter>
     </book>
     <book id="22" osis="Song" testament="OT" chapters="8">
-      <english-name>Song of Songs</english-name>
       <name>아가</name>
       <chapter number="1">
         <verse number="1">솔로몬의 아가라</verse>
@@ -19075,7 +19053,6 @@
       </chapter>
     </book>
     <book id="23" osis="Isa" testament="OT" chapters="66">
-      <english-name>Isaiah</english-name>
       <name>이사야</name>
       <chapter number="1">
         <verse number="1">유다 왕 웃시야와 요담과 아하스와 히스기야 시대에 아모스의 아들 이사야가 유다와 예루살렘에 대하여 본 이상이라</verse>
@@ -20503,7 +20480,6 @@
       </chapter>
     </book>
     <book id="24" osis="Jer" testament="OT" chapters="52">
-      <english-name>Jeremiah</english-name>
       <name>예레미야</name>
       <chapter number="1">
         <verse number="1">베냐민 땅 아나돗의 제사장 중 힐기야의 아들 예레미야의 말이라</verse>
@@ -21975,7 +21951,6 @@
       </chapter>
     </book>
     <book id="25" osis="Lam" testament="OT" chapters="5">
-      <english-name>Lamentations</english-name>
       <name>예레미야애가</name>
       <chapter number="1">
         <verse number="1">슬프다 이 성이여 본래는 거민이 많더니 이제는 어찌 그리 적막히 앉았는고 본래는 열국 중에 크던 자가 이제는 과부 같고 본래는 열방 중에 공주 되었던 자가 이제는 조공 드리는 자가 되었도다</verse>
@@ -22143,7 +22118,6 @@
       </chapter>
     </book>
     <book id="26" osis="Ezek" testament="OT" chapters="48">
-      <english-name>Ezekiel</english-name>
       <name>에스겔</name>
       <chapter number="1">
         <verse number="1">제 삼십년 사월 오일에 내가 그발강 가 사로잡힌 자 중에 있더니 하늘이 열리며 하나님의 이상을 내게 보이시니</verse>
@@ -23516,7 +23490,6 @@
       </chapter>
     </book>
     <book id="27" osis="Dan" testament="OT" chapters="12">
-      <english-name>Daniel</english-name>
       <name>다니엘</name>
       <chapter number="1">
         <verse number="1">유다 왕 여호야김이 위에 있은지 삼년에 바벨론 왕 느부갓네살이 예루살렘에 이르러 그것을 에워쌌더니</verse>
@@ -23901,7 +23874,6 @@
       </chapter>
     </book>
     <book id="28" osis="Hos" testament="OT" chapters="14">
-      <english-name>Hosea</english-name>
       <name>호세아</name>
       <chapter number="1">
         <verse number="1">웃시야와 요담과 아하스와 히스기야가 이어 유다 왕이 된 시대 곧 요아스의 아들 여로보암이 이스라엘 왕이 된 시대에 브에리의 아들 호세아에게 임한 여호와의 말씀이라</verse>
@@ -24130,7 +24102,6 @@
       </chapter>
     </book>
     <book id="29" osis="Joel" testament="OT" chapters="3">
-      <english-name>Joel</english-name>
       <name>요엘</name>
       <chapter number="1">
         <verse number="1">여호와께서 브두엘의 아들 요엘에게 이르신 말씀이라</verse>
@@ -24213,7 +24184,6 @@
       </chapter>
     </book>
     <book id="30" osis="Amos" testament="OT" chapters="9">
-      <english-name>Amos</english-name>
       <name>아모스</name>
       <chapter number="1">
         <verse number="1">유다 왕 웃시야의 시대 곧 이스라엘 왕 요아스의 아들 여로보암의 시대의 지진 전 이년에 드고아 목자 중 아모스가 이스라엘에 대하여 묵시 받은 말씀이라</verse>
@@ -24381,7 +24351,6 @@
       </chapter>
     </book>
     <book id="31" osis="Obad" testament="OT" chapters="1">
-      <english-name>Obadiah</english-name>
       <name>오바댜</name>
       <chapter number="1">
         <verse number="1">오바댜의 묵시라 주 여호와께서 에돔에 대하여 이같이 말씀하시니라 우리가 여호와께로 말미암아 소식을 들었나니 곧 사자가 열국 중에 보내심을 받고 이르기를 너희는 일어날찌어다 우리가 일어나서 그로 더불어 싸우자 하는 것이니라</verse>
@@ -24408,7 +24377,6 @@
       </chapter>
     </book>
     <book id="32" osis="Jonah" testament="OT" chapters="4">
-      <english-name>Jonah</english-name>
       <name>요나</name>
       <chapter number="1">
         <verse number="1">여호와의 말씀이 아밋대의 아들 요나에게 임하니라 이르시되</verse>
@@ -24468,7 +24436,6 @@
       </chapter>
     </book>
     <book id="33" osis="Mic" testament="OT" chapters="7">
-      <english-name>Micah</english-name>
       <name>미가</name>
       <chapter number="1">
         <verse number="1">유다 열왕 요담과 아하스와 히스기야 시대에 모레셋 사람 미가에게 임한 여호와의 말씀 곧 사마리아와 예루살렘에 관한 묵시라</verse>
@@ -24591,7 +24558,6 @@
       </chapter>
     </book>
     <book id="34" osis="Nah" testament="OT" chapters="3">
-      <english-name>Nahum</english-name>
       <name>나훔</name>
       <chapter number="1">
         <verse number="1">니느웨에 대한 중한 경고 곧 엘고스 사람 나훔의 묵시의 글이라</verse>
@@ -24648,7 +24614,6 @@
       </chapter>
     </book>
     <book id="35" osis="Hab" testament="OT" chapters="3">
-      <english-name>Habakkuk</english-name>
       <name>하박국</name>
       <chapter number="1">
         <verse number="1">선지자 하박국의 묵시로 받은 경고라</verse>
@@ -24714,7 +24679,6 @@
       </chapter>
     </book>
     <book id="36" osis="Zeph" testament="OT" chapters="3">
-      <english-name>Zephaniah</english-name>
       <name>스바냐</name>
       <chapter number="1">
         <verse number="1">아몬의 아들 유다 왕 요시아의 시대에 스바냐에게 임한 여호와의 말씀이라 스바냐는 히스기야의 현손이요 아마랴의 증손이요 그다랴의 손자요 구시의 아들이었더라</verse>
@@ -24777,7 +24741,6 @@
       </chapter>
     </book>
     <book id="37" osis="Hag" testament="OT" chapters="2">
-      <english-name>Haggai</english-name>
       <name>학개</name>
       <chapter number="1">
         <verse number="1">다리오왕 이년 유월 곧 그 달 초하루에 여호와의 말씀이 선지자 학개로 말미암아 스알디엘의 아들 유다 총독 스룹바벨과 여호사닥의 아들 대제사장 여호수아에게 임하니라 가라사대</verse>
@@ -24823,7 +24786,6 @@
       </chapter>
     </book>
     <book id="38" osis="Zech" testament="OT" chapters="14">
-      <english-name>Zechariah</english-name>
       <name>스가랴</name>
       <chapter number="1">
         <verse number="1">다리오왕 이년 팔월에 여호와의 말씀이 잇도의 손자 베레갸의 아들 선지자 스가랴에게 임하니라 가라사대</verse>
@@ -25066,7 +25028,6 @@
       </chapter>
     </book>
     <book id="39" osis="Mal" testament="OT" chapters="4">
-      <english-name>Malachi</english-name>
       <name>말라기</name>
       <chapter number="1">
         <verse number="1">여호와께서 말라기로 이스라엘에게 말씀하신 경고라</verse>
@@ -25133,7 +25094,6 @@
       </chapter>
     </book>
     <book id="40" osis="Matt" testament="NT" chapters="28">
-      <english-name>Matthew</english-name>
       <name>마태복음</name>
       <chapter number="1">
         <verse number="1">아브라함과 다윗의 자손 예수 그리스도의 세계라</verse>
@@ -26264,7 +26224,6 @@
       </chapter>
     </book>
     <book id="41" osis="Mark" testament="NT" chapters="16">
-      <english-name>Mark</english-name>
       <name>마가복음</name>
       <chapter number="1">
         <verse number="1">하나님의 아들 예수 그리스도 복음의 시작이라</verse>
@@ -26978,7 +26937,6 @@
       </chapter>
     </book>
     <book id="42" osis="Luke" testament="NT" chapters="24">
-      <english-name>Luke</english-name>
       <name>누가복음</name>
       <chapter number="1">
         <verse number="1">우리 중에 이루어진 사실에 대하여</verse>
@@ -28181,7 +28139,6 @@
       </chapter>
     </book>
     <book id="43" osis="John" testament="NT" chapters="21">
-      <english-name>John</english-name>
       <name>요한복음</name>
       <chapter number="1">
         <verse number="1">태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라</verse>
@@ -29106,7 +29063,6 @@
       </chapter>
     </book>
     <book id="44" osis="Acts" testament="NT" chapters="28">
-      <english-name>Acts</english-name>
       <name>사도행전</name>
       <chapter number="1">
         <verse number="1">데오빌로여 내가 먼저 쓴 글에는 무릇 예수의 행하시며 가르치시기를 시작하심부터</verse>
@@ -30173,7 +30129,6 @@
       </chapter>
     </book>
     <book id="45" osis="Rom" testament="NT" chapters="16">
-      <english-name>Romans</english-name>
       <name>로마서</name>
       <chapter number="1">
         <verse number="1">예수 그리스도의 종 바울은 사도로 부르심을 받아 하나님의 복음을 위하여 택정함을 입었으니</verse>
@@ -30642,7 +30597,6 @@
       </chapter>
     </book>
     <book id="46" osis="1Cor" testament="NT" chapters="16">
-      <english-name>1 Corinthians</english-name>
       <name>고린도전서</name>
       <chapter number="1">
         <verse number="1">하나님의 뜻을 따라 그리스도 예수의 사도로 부르심을 입은 바울과 및 형제 소스데네는</verse>
@@ -31115,7 +31069,6 @@
       </chapter>
     </book>
     <book id="47" osis="2Cor" testament="NT" chapters="13">
-      <english-name>2 Corinthians</english-name>
       <name>고린도후서</name>
       <chapter number="1">
         <verse number="1">하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울과 및 형제 디모데는 고린도에 있는 하나님의 교회와 또 온 아가야에 있는 모든 성도에게</verse>
@@ -31401,7 +31354,6 @@
       </chapter>
     </book>
     <book id="48" osis="Gal" testament="NT" chapters="6">
-      <english-name>Galatians</english-name>
       <name>갈라디아서</name>
       <chapter number="1">
         <verse number="1">사람들에게서 난 것도 아니요 사람으로 말미암은 것도 아니요 오직 예수 그리스도와 및 죽은 자 가운데서 그리스도를 살리신 하나님 아버지로 말미암아 사도된 바울은</verse>
@@ -31566,7 +31518,6 @@
       </chapter>
     </book>
     <book id="49" osis="Eph" testament="NT" chapters="6">
-      <english-name>Ephesians</english-name>
       <name>에베소서</name>
       <chapter number="1">
         <verse number="1">하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울은 에베소에 있는 성도들과 그리스도 예수 안의 신실한 자들에게 편지하노니</verse>
@@ -31737,7 +31688,6 @@
       </chapter>
     </book>
     <book id="50" osis="Phil" testament="NT" chapters="4">
-      <english-name>Philippians</english-name>
       <name>빌립보서</name>
       <chapter number="1">
         <verse number="1">그리스도 예수의 종 바울과 디모데는 그리스도 예수 안에서 빌립보에 사는 모든 성도와 또는 감독들과 집사들에게 편지하노니</verse>
@@ -31853,7 +31803,6 @@
       </chapter>
     </book>
     <book id="51" osis="Col" testament="NT" chapters="4">
-      <english-name>Colossians</english-name>
       <name>골로새서</name>
       <chapter number="1">
         <verse number="1">하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울과 형제 디모데는</verse>
@@ -31960,7 +31909,6 @@
       </chapter>
     </book>
     <book id="52" osis="1Thess" testament="NT" chapters="5">
-      <english-name>1 Thessalonians</english-name>
       <name>데살로니가전서</name>
       <chapter number="1">
         <verse number="1">바울과 실루아노와 디모데는 하나님 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니 은혜와 평강이 너희에게 있을찌어다</verse>
@@ -32063,7 +32011,6 @@
       </chapter>
     </book>
     <book id="53" osis="2Thess" testament="NT" chapters="3">
-      <english-name>2 Thessalonians</english-name>
       <name>데살로니가후서</name>
       <chapter number="1">
         <verse number="1">바울과 실루아노와 디모데는 하나님 우리 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니</verse>
@@ -32120,7 +32067,6 @@
       </chapter>
     </book>
     <book id="54" osis="1Tim" testament="NT" chapters="6">
-      <english-name>1 Timothy</english-name>
       <name>디모데전서</name>
       <chapter number="1">
         <verse number="1">우리 구주 하나님과 우리 소망이신 그리스도 예수의 명령을 따라 그리스도 예수의 사도 된 바울은</verse>
@@ -32249,7 +32195,6 @@
       </chapter>
     </book>
     <book id="55" osis="2Tim" testament="NT" chapters="4">
-      <english-name>2 Timothy</english-name>
       <name>디모데후서</name>
       <chapter number="1">
         <verse number="1">하나님의 뜻으로 말미암아 그리스도 예수 안에 있는 생명의 약속대로 그리스도 예수의 사도 된 바울은</verse>
@@ -32344,7 +32289,6 @@
       </chapter>
     </book>
     <book id="56" osis="Titus" testament="NT" chapters="3">
-      <english-name>Titus</english-name>
       <name>디도서</name>
       <chapter number="1">
         <verse number="1">하나님의 종이요 예수 그리스도의 사도인 바울 곧 나의 사도 된 것은 하나님의 택하신 자들의 믿음과 경건함에 속한 진리의 지식과</verse>
@@ -32400,7 +32344,6 @@
       </chapter>
     </book>
     <book id="57" osis="Phlm" testament="NT" chapters="1">
-      <english-name>Philemon</english-name>
       <name>빌레몬서</name>
       <chapter number="1">
         <verse number="1">그리스도 예수를 위하여 갇힌 자 된 바울과 및 형제 디모데는 우리의 사랑을 받는 자요 동역자인 빌레몬과</verse>
@@ -32431,7 +32374,6 @@
       </chapter>
     </book>
     <book id="58" osis="Heb" testament="NT" chapters="13">
-      <english-name>Hebrews</english-name>
       <name>히브리서</name>
       <chapter number="1">
         <verse number="1">옛적에 선지자들로 여러 부분과 여러 모양으로 우리 조상들에게 말씀하신 하나님이</verse>
@@ -32764,7 +32706,6 @@
       </chapter>
     </book>
     <book id="59" osis="Jas" testament="NT" chapters="5">
-      <english-name>James</english-name>
       <name>야고보서</name>
       <chapter number="1">
         <verse number="1">하나님과 주 예수 그리스도의 종 야고보는 흩어져 있는 열 두 지파에게 문안하노라</verse>
@@ -32886,7 +32827,6 @@
       </chapter>
     </book>
     <book id="60" osis="1Pet" testament="NT" chapters="5">
-      <english-name>1 Peter</english-name>
       <name>베드로전서</name>
       <chapter number="1">
         <verse number="1">예수 그리스도의 사도 베드로는 본도, 갈라디아, 갑바도기아, 아시아와 비두니아에 흩어진 나그네</verse>
@@ -33005,7 +32945,6 @@
       </chapter>
     </book>
     <book id="61" osis="2Pet" testament="NT" chapters="3">
-      <english-name>2 Peter</english-name>
       <name>베드로후서</name>
       <chapter number="1">
         <verse number="1">예수 그리스도의 종과 사도인 시몬 베드로는 우리 하나님과 구주 예수 그리스도의 의를 힘입어 동일하게 보배로운 믿음을 우리와 같이 받은 자들에게 편지하노니</verse>
@@ -33076,7 +33015,6 @@
       </chapter>
     </book>
     <book id="62" osis="1John" testament="NT" chapters="5">
-      <english-name>1 John</english-name>
       <name>요한1서</name>
       <chapter number="1">
         <verse number="1">태초부터 있는 생명의 말씀에 관하여는 우리가 들은 바요 눈으로 본 바요 주목하고 우리 손으로 만진 바라</verse>
@@ -33195,7 +33133,6 @@
       </chapter>
     </book>
     <book id="63" osis="2John" testament="NT" chapters="1">
-      <english-name>2 John</english-name>
       <name>요한2서</name>
       <chapter number="1">
         <verse number="1">장로는 택하심을 입은 부녀와 그의 자녀에게 편지하노니 내가 참으로 사랑하는 자요 나뿐 아니라 진리를 아는 모든 자도 그리하는 것은</verse>
@@ -33214,7 +33151,6 @@
       </chapter>
     </book>
     <book id="64" osis="3John" testament="NT" chapters="1">
-      <english-name>3 John</english-name>
       <name>요한3서</name>
       <chapter number="1">
         <verse number="1">장로는 사랑하는 가이오 곧 나의 참으로 사랑하는 자에게 편지하노라</verse>
@@ -33235,7 +33171,6 @@
       </chapter>
     </book>
     <book id="65" osis="Jude" testament="NT" chapters="1">
-      <english-name>Jude</english-name>
       <name>유다서</name>
       <chapter number="1">
         <verse number="1">예수 그리스도의 종이요 야고보의 형제인 유다는 부르심을 입은 자 곧 하나님 아버지 안에서 사랑을 얻고 예수 그리스도를 위하여 지키심을 입은 자들에게 편지하노라</verse>
@@ -33266,7 +33201,6 @@
       </chapter>
     </book>
     <book id="66" osis="Rev" testament="NT" chapters="22">
-      <english-name>Revelation</english-name>
       <name>요한계시록</name>
       <chapter number="1">
         <verse number="1">예수 그리스도의 계시라 이는 하나님이 그에게 주사 반드시 속히 될 일을 그 종들에게 보이시려고 그 천사를 그 종 요한에게 보내어 지시하신 것이라</verse>

@@ -6,7 +6,6 @@
   </metadata>
   <books>
     <book id="1" osis="Gen" testament="OT" chapters="1">
-      <english-name>Genesis</english-name>
       <name>창세기</name>
       <chapter number="1">
         <heading>세상의 시작</heading>

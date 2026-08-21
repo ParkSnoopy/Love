@@ -31,7 +31,6 @@
 
   <xs:complexType name="BibleBook">
     <xs:sequence>
-      <xs:element name="english-name" type="xs:string"/>
       <xs:element name="name" type="xs:string"/>
       <xs:element name="chapter" type="BibleChapter" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>

@@ -53,6 +53,30 @@ BIBLE_COM_BOOK_CODES = {
     "2Pet": "2PE", "1John": "1JN", "2John": "2JN", "3John": "3JN", "Jude": "JUD",
     "Rev": "REV",
 }
+LOCALIZED_BOOK_NAMES = {
+    "zho": (
+        "创世纪", "出埃及记", "利未记", "民数记", "申命记", "约书亚记", "士师记", "路得记",
+        "撒母耳记上", "撒母耳记下", "列王纪上", "列王纪下", "历代志上", "历代志下", "以斯拉记", "尼希米记",
+        "以斯帖记", "约伯记", "诗篇", "箴言", "传道书", "雅歌", "以赛亚书", "耶利米书",
+        "耶利米哀歌", "以西结书", "但以理书", "何西阿书", "约珥书", "阿摩司书", "俄巴底亚书", "约拿书",
+        "弥迦书", "那鸿书", "哈巴谷书", "西番雅书", "哈该书", "撒迦利亚书", "玛拉基书", "马太福音",
+        "马可福音", "路加福音", "约翰福音", "使徒行传", "罗马书", "哥林多前书", "哥林多后书", "加拉太书",
+        "以弗所书", "腓立比书", "歌罗西书", "帖撒罗尼迦前书", "帖撒罗尼迦后书", "提摩太前书", "提摩太后书", "提多书",
+        "腓利门书", "希伯来书", "雅各书", "彼得前书", "彼得后书", "约翰一书", "约翰二书", "约翰三书",
+        "犹大书", "启示录",
+    ),
+    "jpn": (
+        "創世記", "出エジプト記", "レビ記", "民数記", "申命記", "ヨシュア記", "士師記", "ルツ記",
+        "サムエル記上", "サムエル記下", "列王記上", "列王記下", "歴代誌上", "歴代誌下", "エズラ記", "ネヘミヤ記",
+        "エステル記", "ヨブ記", "詩編", "箴言", "コヘレトの言葉", "雅歌", "イザヤ書", "エレミヤ書",
+        "哀歌", "エゼキエル書", "ダニエル書", "ホセア書", "ヨエル書", "アモス書", "オバデヤ書", "ヨナ書",
+        "ミカ書", "ナホム書", "ハバクク書", "ゼファニヤ書", "ハガイ書", "ゼカリヤ書", "マラキ書", "マタイによる福音書",
+        "マルコによる福音書", "ルカによる福音書", "ヨハネによる福音書", "使徒言行録", "ローマの信徒への手紙", "コリントの信徒への手紙一", "コリントの信徒への手紙二", "ガラテヤの信徒への手紙",
+        "エフェソの信徒への手紙", "フィリピの信徒への手紙", "コロサイの信徒への手紙", "テサロニケの信徒への手紙一", "テサロニケの信徒への手紙二", "テモテへの手紙一", "テモテへの手紙二", "テトスへの手紙",
+        "フィレモンへの手紙", "ヘブライ人への手紙", "ヤコブの手紙", "ペトロの手紙一", "ペトロの手紙二", "ヨハネの手紙一", "ヨハネの手紙二", "ヨハネの手紙三",
+        "ユダの手紙", "ヨハネの黙示録",
+    ),
+}
 
 
 class VersePageParser(HTMLParser):
@@ -171,6 +195,30 @@ def load_books(template_path: Path) -> list[ET.Element]:
     if books is None:
         raise ValueError(f"Template has no books element: {template_path}")
     return [book for book in books.findall("book")]
+
+
+def localize_book_names(books: list[ET.Element], bible_id: str) -> None:
+    language = bible_id.split("_", 1)[0]
+    if language == "eng":
+        for book in books:
+            english_name = book.find("english-name")
+            name = book.find("name")
+            if english_name is None or english_name.text is None or name is None:
+                raise ValueError(f"Book has no English name: {book.attrib['osis']}")
+            name.text = english_name.text
+    elif language != "kor":
+        localized_names = LOCALIZED_BOOK_NAMES.get(language)
+        if localized_names is None or len(localized_names) != len(books):
+            raise ValueError(f"Unsupported or incomplete book-name localization: {language}")
+        for book, localized_name in zip(books, localized_names, strict=True):
+            name = book.find("name")
+            if name is None:
+                raise ValueError(f"Book has no localized name element: {book.attrib['osis']}")
+            name.text = localized_name
+    for book in books:
+        english_name = book.find("english-name")
+        if english_name is not None:
+            book.remove(english_name)
 
 
 def chapter_requests(books: Iterable[ET.Element]) -> Iterable[tuple[ET.Element, ET.Element]]:
@@ -363,6 +411,7 @@ def crawl(args: argparse.Namespace) -> None:
         state_path.unlink()
 
     books = load_books(args.template)
+    localize_book_names(books, bible_id)
     state = load_state(state_path)
     completed = state["completed"]
     if not isinstance(completed, dict):
@@ -406,6 +455,8 @@ def crawl_compare(args: argparse.Namespace) -> None:
 
     primary_books = load_books(args.template)
     parallel_books = load_books(args.template)
+    localize_book_names(primary_books, primary_output_id)
+    localize_book_names(parallel_books, parallel_output_id)
     state = load_state(state_path)
     completed = state["completed"]
     if not isinstance(completed, dict):
@@ -513,6 +564,18 @@ def self_test() -> None:
     if chapter_url("86", "KLB", BIBLE_COM_BOOK_CODES["Exod"], 1).endswith("/EXO.1.KLB") is False:
         raise AssertionError("Bible.com book-code mapping did not translate Exod to EXO.")
     books = load_books(DEFAULT_TEMPLATE)
+    localize_book_names(books, "eng_test")
+    first_book = books[0]
+    if first_book.findtext("name") != "Genesis" or first_book.find("english-name") is not None:
+        raise AssertionError("English book-name localization did not replace the redundant English name.")
+    chinese_books = load_books(DEFAULT_TEMPLATE)
+    localize_book_names(chinese_books, "zho_test")
+    if chinese_books[0].findtext("name") != "创世纪" or chinese_books[0].find("english-name") is not None:
+        raise AssertionError("Chinese book-name localization did not replace the redundant English name.")
+    japanese_books = load_books(DEFAULT_TEMPLATE)
+    localize_book_names(japanese_books, "jpn_test")
+    if japanese_books[0].findtext("name") != "創世記" or japanese_books[0].find("english-name") is not None:
+        raise AssertionError("Japanese book-name localization did not replace the redundant English name.")
     missing_codes = {book.attrib["osis"] for book in books} - BIBLE_COM_BOOK_CODES.keys()
     if missing_codes:
         raise AssertionError(f"Bible.com book-code mapping is missing: {sorted(missing_codes)}")
