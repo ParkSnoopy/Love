@@ -1,362 +1,191 @@
 [
   {
-    "id": "kor_korkr4",
-    "shortname": "개역개정 4판",
-    "name": "개역개정 4판",
-    "language": "Korean",
+    "id": "zho_rcuvss",
+    "shortname": "和合本修订版",
+    "name": "和合本修订版",
+    "language": "Chinese",
     "type": "bible",
-    "file": "nocr/kor_korkr4.sqlite",
-    "source": "nocr"
+    "file": "zho_rcuvss.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korkrv",
-    "shortname": "개역개정판",
-    "name": "개역개정판",
-    "language": "Korean",
+    "id": "zho_ccb",
+    "shortname": "当代译本",
+    "name": "当代译本",
+    "language": "Chinese",
     "type": "bible",
-    "file": "nocr/kor_korkrv.sqlite",
-    "source": "nocr"
+    "file": "zho_ccb.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korhrc",
-    "shortname": "개역성경 국한문혼용",
-    "name": "개역성경 국한문혼용",
-    "language": "Korean",
+    "id": "eng_niv",
+    "shortname": "New International Version",
+    "name": "New International Version",
+    "language": "English",
     "type": "bible",
-    "file": "nocr/kor_korhrc.sqlite",
-    "source": "nocr"
+    "file": "eng_niv.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korkcb",
-    "shortname": "공동번역",
-    "name": "공동번역",
-    "language": "Korean",
+    "id": "eng_nlt",
+    "shortname": "New Living Translation",
+    "name": "New Living Translation",
+    "language": "English",
     "type": "bible",
-    "file": "nocr/kor_korkcb.sqlite",
-    "source": "nocr"
+    "file": "eng_nlt.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korctr",
-    "shortname": "공동번역 개정판",
-    "name": "공동번역 개정판",
-    "language": "Korean",
+    "id": "jpn_jcb",
+    "shortname": "Japanese Contemporary Bible",
+    "name": "Japanese Contemporary Bible",
+    "language": "Japanese",
     "type": "bible",
-    "file": "nocr/kor_korctr.sqlite",
-    "source": "nocr"
+    "file": "jpn_jcb.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korkrb",
-    "shortname": "바른성경",
-    "name": "바른성경",
-    "language": "Korean",
+    "id": "jpn_shinkyoudoyaku",
+    "shortname": "新共同訳",
+    "name": "新共同訳",
+    "language": "Japanese",
     "type": "bible",
-    "file": "nocr/kor_korkrb.sqlite",
-    "source": "nocr"
+    "file": "jpn_shinkyoudoyaku.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korbbh",
-    "shortname": "바른성경 한문",
-    "name": "바른성경 한문",
+    "id": "kor_krv",
+    "shortname": "개역한글",
+    "name": "개역한글",
     "language": "Korean",
     "type": "bible",
-    "file": "nocr/kor_korbbh.sqlite",
-    "source": "nocr"
+    "file": "kor_krv.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_kornrr",
+    "id": "kor_rnksv",
     "shortname": "새번역",
     "name": "새번역",
     "language": "Korean",
     "type": "bible",
-    "file": "nocr/kor_kornrr.sqlite",
-    "source": "nocr"
+    "file": "kor_rnksv.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korwrm",
+    "id": "korwrm",
     "shortname": "우리말 성경",
     "name": "우리말 성경",
     "language": "Korean",
     "type": "bible",
-    "file": "nocr/kor_korwrm.sqlite",
-    "source": "nocr"
+    "file": "kor_wrm.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korcat",
-    "shortname": "카톨릭 성경",
-    "name": "카톨릭 성경",
+    "id": "kor_koerv",
+    "shortname": "읽기 쉬운 성경",
+    "name": "읽기 쉬운 성경",
     "language": "Korean",
     "type": "bible",
-    "file": "nocr/kor_korcat.sqlite",
-    "source": "nocr"
+    "file": "kor_koerv.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_kornks",
-    "shortname": "표준새번역",
-    "name": "표준새번역",
+    "id": "kor_klb",
+    "shortname": "한국인의 성경",
+    "name": "한국인의 성경",
     "language": "Korean",
     "type": "bible",
-    "file": "nocr/kor_kornks.sqlite",
-    "source": "nocr"
+    "file": "kor_klb.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "kor_korkjv",
-    "shortname": "한글 KJV",
-    "name": "한글 KJV",
-    "language": "Korean",
-    "type": "bible",
-    "file": "nocr/kor_korkjv.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "kor_korhum",
-    "shortname": "한글 흠정역",
-    "name": "한글 흠정역",
-    "language": "Korean",
-    "type": "bible",
-    "file": "nocr/kor_korhum.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "kor_korkml",
-    "shortname": "현대어 성경",
-    "name": "현대어 성경",
-    "language": "Korean",
-    "type": "bible",
-    "file": "nocr/kor_korkml.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "kor_korkmb",
-    "shortname": "현대인의 성경",
-    "name": "현대인의 성경",
-    "language": "Korean",
-    "type": "bible",
-    "file": "nocr/kor_korkmb.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "cmn_cbs",
-    "shortname": "Biblica® 圣经当代译本开放资源",
-    "name": "Biblica® 圣经当代译本开放资源",
-    "language": "Chinese",
-    "type": "bible",
-    "file": "helloao/cmn_cbs.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "cmn_cbt",
-    "shortname": "Biblica® 聖經，當代譯本開放資源",
-    "name": "Biblica® 聖經，當代譯本開放資源",
-    "language": "Chinese",
-    "type": "bible",
-    "file": "helloao/cmn_cbt.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "cmn_cu1",
-    "shortname": "新标点和合本",
-    "name": "新标点和合本",
-    "language": "Chinese",
-    "type": "bible",
-    "file": "helloao/cmn_cu1.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "cmn_cuv",
-    "shortname": "新標點和合本",
-    "name": "新標點和合本",
-    "language": "Chinese",
-    "type": "bible",
-    "file": "helloao/cmn_cuv.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "eng_nasb2020",
-    "shortname": "NASB 2020",
-    "name": "NASB 2020",
+    "id": "adam-clarke",
+    "shortname": "Adam Clarke Bible Commentary",
+    "name": "Adam Clarke Bible Commentary",
     "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_nasb2020.sqlite",
-    "source": "nocr"
+    "type": "commentary",
+    "file": "eng_adam-clarke.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "eng_engniv",
-    "shortname": "NIV 1984",
-    "name": "NIV 1984",
+    "id": "keil-delitzsch",
+    "shortname": "Carl Friedrich Keil and Franz Delitzsch Old Testament Commentary",
+    "name": "Carl Friedrich Keil and Franz Delitzsch Old Testament Commentary",
     "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_engniv.sqlite",
-    "source": "nocr"
+    "type": "commentary",
+    "file": "eng_keil-delitzsch.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "eng_niv2011",
-    "shortname": "NIV 2011",
-    "name": "NIV 2011",
+    "id": "jamieson-fausset-brown",
+    "shortname": "Jamieson-Fausset-Brown Bible Commentary",
+    "name": "Jamieson-Fausset-Brown Bible Commentary",
     "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_niv2011.sqlite",
-    "source": "nocr"
+    "type": "commentary",
+    "file": "eng_jamieson-fausset-brown.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "eng_wbs_rwbs",
-    "shortname": "Webster / Revised Webster",
-    "name": "Webster / Revised Webster",
+    "id": "john-calvin",
+    "shortname": "John Calvin's Commentaries",
+    "name": "John Calvin's Commentaries",
     "language": "English",
-    "type": "bible",
-    "file": "nocr/eng_wbs_rwbs.sqlite",
-    "source": "nocr"
+    "type": "commentary",
+    "file": "eng_john-calvin.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "deu_elo",
-    "shortname": "Darby Unrevidierte Elberfelder",
-    "name": "Darby Unrevidierte Elberfelder",
-    "language": "German",
-    "type": "bible",
-    "file": "helloao/deu_elo.sqlite",
-    "source": "helloao"
+    "id": "john-gill",
+    "shortname": "John Gill Bible Commentary",
+    "name": "John Gill Bible Commentary",
+    "language": "English",
+    "type": "commentary",
+    "file": "eng_john-gill.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "deu_sch",
-    "shortname": "Die Schlachter-Bibel 1951",
-    "name": "Die Schlachter-Bibel 1951",
-    "language": "German",
-    "type": "bible",
-    "file": "helloao/deu_sch.sqlite",
-    "source": "helloao"
+    "id": "matthew-henry",
+    "shortname": "Matthew Henry Bible Commentary",
+    "name": "Matthew Henry Bible Commentary",
+    "language": "English",
+    "type": "commentary",
+    "file": "eng_matthew-henry.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "deu_elbbk",
-    "shortname": "Elberfelder Übersetzung (Version von bibelkommentare.de)",
-    "name": "Elberfelder Übersetzung (Version von bibelkommentare.de)",
-    "language": "German",
-    "type": "bible",
-    "file": "helloao/deu_elbbk.sqlite",
-    "source": "helloao"
+    "id": "tyndale",
+    "shortname": "Tyndale Open Study Notes",
+    "name": "Tyndale Open Study Notes",
+    "language": "English",
+    "type": "commentary",
+    "file": "eng_tyndale.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "deu_l12",
-    "shortname": "Lutherbibel 1912",
-    "name": "Lutherbibel 1912",
-    "language": "German",
-    "type": "bible",
-    "file": "helloao/deu_l12.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "deu_tkw",
-    "shortname": "Textbibel von Kautzsch und Weizsäcker",
-    "name": "Textbibel von Kautzsch und Weizsäcker",
-    "language": "German",
-    "type": "bible",
-    "file": "helloao/deu_tkw.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "heb_mod",
-    "shortname": "תנ ך עברי מודרני",
-    "name": "תנ ך עברי מודרני",
-    "language": "Hebrew",
-    "type": "bible",
-    "file": "helloao/heb_mod.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "jpn_japkougo",
-    "shortname": "口語訳「聖書」(1954/1955年版)",
-    "name": "口語訳「聖書」(1954/1955年版)",
-    "language": "Japanese",
-    "type": "bible",
-    "file": "getbible/jpn_japkougo.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "jpn_japbungo",
-    "shortname": "明治元訳「舊約聖書」大正改訳「新約聖書」",
-    "name": "明治元訳「舊約聖書」大正改訳「新約聖書」",
-    "language": "Japanese",
-    "type": "bible",
-    "file": "getbible/jpn_japbungo.sqlite",
-    "source": "getbible"
-  },
-  {
-    "id": "com_kor_mhw",
+    "id": "mhw",
     "shortname": "메튜 헨리 주석 전체",
     "name": "메튜 헨리 주석 전체",
     "language": "Korean",
     "type": "commentary",
-    "file": "nocr/com_kor_mhw.sqlite",
-    "source": "nocr"
+    "file": "kor_matthew-henry.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "com_kor_pys",
+    "id": "pys",
     "shortname": "박윤선 주석",
     "name": "박윤선 주석",
     "language": "Korean",
     "type": "commentary",
-    "file": "nocr/com_kor_pys.sqlite",
-    "source": "nocr"
+    "file": "kor_pys.sqlite",
+    "source": "canonical-xml"
   },
   {
-    "id": "com_kor_hochma",
+    "id": "hochma",
     "shortname": "호크마 주석",
     "name": "호크마 주석",
     "language": "Korean",
     "type": "commentary",
-    "file": "nocr/com_kor_hochma.sqlite",
-    "source": "nocr"
-  },
-  {
-    "id": "adam-clarke",
-    "shortname": "Adam Clarke",
-    "name": "Adam Clarke",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/adam-clarke.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "jamieson-fausset-brown",
-    "shortname": "Jamieson Fausset Brown",
-    "name": "Jamieson Fausset Brown",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/jamieson-fausset-brown.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "john-gill",
-    "shortname": "John Gill",
-    "name": "John Gill",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/john-gill.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "keil-delitzsch",
-    "shortname": "Keil Delitzsch",
-    "name": "Keil Delitzsch",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/keil-delitzsch.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "matthew-henry",
-    "shortname": "Matthew Henry",
-    "name": "Matthew Henry",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/matthew-henry.sqlite",
-    "source": "helloao"
-  },
-  {
-    "id": "tyndale",
-    "shortname": "Tyndale",
-    "name": "Tyndale",
-    "language": "English",
-    "type": "commentary",
-    "file": "helloao/tyndale.sqlite",
-    "source": "helloao"
+    "file": "kor_hochma.sqlite",
+    "source": "canonical-xml"
   }
 ]

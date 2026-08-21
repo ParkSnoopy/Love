@@ -888,10 +888,6 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
           .map((row) => row['name'] as String)
           .toSet();
 
-      final nameNativeCol = columns.contains('name_native')
-          ? 'name_native'
-          : 'name';
-      final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
       final chapterCol = columns.contains('chapter_count')
           ? 'chapter_count'
           : 'chapters';
@@ -899,16 +895,14 @@ class _BookChapterPickerState extends State<_BookChapterPicker> {
       final testamentCol = hasTestament ? 'testament' : 'NULL';
 
       final rows = db.select(
-        'SELECT book_id, $nameNativeCol, $nameEnCol, $chapterCol, $testamentCol AS testament FROM books ORDER BY book_id',
+        'SELECT book_id, name, $chapterCol, $testamentCol AS testament FROM books ORDER BY book_id',
       );
       setState(() {
         _books = rows
             .map(
               (r) => <String, dynamic>{
                 'id': r['book_id'],
-                'name': (r[nameNativeCol] as String?)?.trim().isNotEmpty == true
-                    ? r[nameNativeCol]
-                    : r[nameEnCol],
+                'name': r['name'],
                 'count': r[chapterCol],
                 'testament':
                     r['testament'] as String? ??

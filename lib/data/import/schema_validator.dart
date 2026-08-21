@@ -45,14 +45,7 @@ class SchemaValidator {
         );
       }
     }
-    if (!gotBooks.contains('name_en') && !gotBooks.contains('eng_name')) {
-      throw ImportException(
-        code: 'MISSING_COLUMN',
-        message: 'Required column missing: books.name_en (or eng_name)',
-        phase: 'Validate Bible',
-        detail: 'books.name_en',
-      );
-    }
+
     if (!gotBooks.contains('name_native') && !gotBooks.contains('name')) {
       throw ImportException(
         code: 'MISSING_COLUMN',

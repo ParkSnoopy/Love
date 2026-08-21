@@ -40,27 +40,11 @@ class ReaderRepository {
   String loadBookName({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final columns = db
-          .select('PRAGMA table_info(books)')
-          .map((row) => row['name'] as String)
-          .toSet();
-
-      final nameNativeCol = columns.contains('name_native')
-          ? 'name_native'
-          : 'name';
-      final nameEnCol = columns.contains('name_en') ? 'name_en' : 'eng_name';
-
-      final rows = db.select(
-        'SELECT $nameNativeCol, $nameEnCol FROM books WHERE book_id = ? LIMIT 1',
-        [bookId],
-      );
+      final rows = db.select('SELECT name FROM books WHERE book_id = ? LIMIT 1', [bookId]);
       if (rows.isEmpty) return 'Book$bookId';
       final row = rows.first;
-      final native = (row[nameNativeCol] as String?)?.trim();
-      if (native != null && native.isNotEmpty) return native;
-
-      final en = (row[nameEnCol] as String?)?.trim();
-      if (en != null && en.isNotEmpty) return en;
+      final name = (row['name'] as String?)?.trim();
+      if (name != null && name.isNotEmpty) return name;
 
       return 'Book$bookId';
     } finally {
