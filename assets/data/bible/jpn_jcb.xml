@@ -2,7 +2,7 @@
 <bible format-version="1">
   <metadata>
     <id>jpn_jcb</id>
-    <name>Japanese Contemporary Bible</name>
+    <name>リビングバイブル</name>
   </metadata>
   <books>
     <book id="1" osis="Gen" testament="OT" chapters="50">

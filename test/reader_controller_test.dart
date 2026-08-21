@@ -176,6 +176,20 @@ void main() {
       },
     );
 
+    test('migrates the legacy WRM ID to its canonical ID', () async {
+      AppPreferences.useMemoryStoreForTesting({'active_bible_id': 'korwrm'});
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final selection = await container.read(
+        activeBibleSelectionProvider.future,
+      );
+      expect(selection!.id, 'kor_wrm');
+
+      final prefs = await AppPreferences.getInstance();
+      expect(prefs.getString('active_bible_id'), 'kor_wrm');
+    });
+
     test('generated translations include Judges chapter 16', () async {
       const files = [
         'eng_niv.sqlite',
@@ -184,6 +198,7 @@ void main() {
         'jpn_shinkyoudoyaku.sqlite',
         'kor_klb.sqlite',
         'kor_koerv.sqlite',
+        'kor_korkrv.sqlite',
         'kor_krv.sqlite',
         'kor_rnksv.sqlite',
         'kor_wrm.sqlite',
@@ -242,5 +257,32 @@ void main() {
         expect(headingIndex, lessThan(verseIndex));
       },
     );
+
+    test('preserves imported ranged and continued Korean verses', () async {
+      final path = p.join(tempExtractDir.path, 'kor_korkrv_import.sqlite');
+      const extractor = ZipExtractor();
+      await extractor.extractFile(
+        targetZipPath: 'data/bible/kor_korkrv.sqlite',
+        destinationPath: path,
+        zipFilePath: 'assets/data.zip',
+      );
+
+      const repository = ReaderRepository();
+      final deuteronomy = repository.loadChapter(
+        dbPath: path,
+        bookId: 5,
+        chapter: 6,
+      );
+      expect(deuteronomy.where((line) => line.verse == 18), hasLength(1));
+
+      final john = repository.loadChapter(
+        dbPath: path,
+        bookId: 43,
+        chapter: 18,
+      );
+      final verse38 = john.singleWhere((line) => line.verse == 38);
+      expect(verse38.text, contains('진리가 무엇이냐'));
+      expect(verse38.text, contains('아무 죄도 찾지 못하였노라'));
+    });
   });
 }

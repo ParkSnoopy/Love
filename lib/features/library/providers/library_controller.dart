@@ -37,11 +37,13 @@ class ActiveBibleSelectionController
   static const _prefsKeyId = 'active_bible_id';
   static const _legacyPrefsKeyFile = 'active_bible_file';
   static const _legacyPrefsKeyName = 'active_bible_name';
+  static const _legacyIds = {'korwrm': 'kor_wrm'};
 
   @override
   Future<ActiveBibleSelection?> build() async {
     final prefs = await AppPreferences.getInstance();
-    final savedId = prefs.getString(_prefsKeyId);
+    final persistedId = prefs.getString(_prefsKeyId);
+    final savedId = _legacyIds[persistedId] ?? persistedId;
     const repo = ManifestRepository();
     final packs = await repo.loadBiblePacksFromAsset();
 
@@ -50,11 +52,13 @@ class ActiveBibleSelectionController
       if (matches.isNotEmpty) {
         final pack = matches.first;
         if (await _looksInstalled(pack.file, type: pack.type)) {
-          return ActiveBibleSelection(
+          final selection = ActiveBibleSelection(
             id: pack.id,
             file: pack.file,
             name: pack.name,
           );
+          if (persistedId != savedId) await _save(selection);
+          return selection;
         }
       }
       await prefs.remove(_prefsKeyId);
