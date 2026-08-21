@@ -12,15 +12,13 @@ concurrency:
   group: rolling-builds
   cancel-in-progress: true
 
-env:
-  DATA_VERSION: '4.1'
-
 jobs:
   prepare:
     name: Prepare release metadata
     runs-on: ubuntu-latest
     outputs:
       asset-prefix: ${{ steps.metadata.outputs.asset-prefix }}
+      release-title: ${{ steps.metadata.outputs.release-title }}
       rolling-tag: ${{ steps.metadata.outputs.rolling-tag }}
     steps:
       - name: Checkout
@@ -34,8 +32,8 @@ jobs:
           app_version="$(sed -n 's/^version:[[:space:]]*\([^+[:space:]]*\).*/\1/p' pubspec.yaml)"
           test -n "${app_version}"
           [[ "${app_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]
-          [[ "${DATA_VERSION}" =~ ^[0-9]+(\.[0-9]+)*$ ]]
-          echo "asset-prefix=Love-v${app_version}-d${DATA_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "asset-prefix=Love-v${app_version}" >> "${GITHUB_OUTPUT}"
+          echo "release-title=Love v${app_version}" >> "${GITHUB_OUTPUT}"
           echo "rolling-tag=rolling-$(date -u +%Y%m%d)" >> "${GITHUB_OUTPUT}"
 
   build-android:
@@ -81,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          asset="${ASSET_PREFIX}.android.apk"
+          asset="${ASSET_PREFIX}-android.apk"
           cp build/app/outputs/flutter-apk/app-release.apk "${asset}"
           sha256sum "${asset}" > "${asset}.sha256"
 
@@ -89,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: android-release
-          path: Love-v*-d*.android.apk*
+          path: Love-v*-android.apk*
           if-no-files-found: error
 
   build-linux:
@@ -134,7 +132,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          asset="${ASSET_PREFIX}.linux-x64.tar.gz"
+          asset="${ASSET_PREFIX}-linux.tar.gz"
           tar -C build/linux/x64/release/bundle -czf "${asset}" .
           sha256sum "${asset}" > "${asset}.sha256"
 
@@ -142,7 +140,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: linux-release
-          path: Love-v*-d*.linux-x64.tar.gz*
+          path: Love-v*-linux.tar.gz*
           if-no-files-found: error
 
   build-macos:
@@ -182,7 +180,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          asset="${ASSET_PREFIX}.macos.zip"
+          asset="${ASSET_PREFIX}-macos.zip"
           ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/Love.app "${asset}"
           shasum -a 256 "${asset}" > "${asset}.sha256"
 
@@ -190,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: macos-release
-          path: Love-v*-d*.macos.zip*
+          path: Love-v*-macos.zip*
           if-no-files-found: error
 
   build-windows:
@@ -231,7 +229,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $asset = "$env:ASSET_PREFIX.windows-x64.zip"
+          $asset = "$env:ASSET_PREFIX-windows.zip"
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath $asset -Force
           $hash = (Get-FileHash $asset -Algorithm SHA256).Hash.ToLower()
           "$hash  $asset" | Out-File -Encoding ascii "$asset.sha256"
@@ -240,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: windows-release
-          path: Love-v*-d*.windows-x64.zip*
+          path: Love-v*-windows.zip*
           if-no-files-found: error
 
   release:
@@ -281,8 +279,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.prepare.outputs.rolling-tag }}
-          name: Rolling Release ${{ needs.prepare.outputs.rolling-tag }}
+          name: ${{ needs.prepare.outputs.release-title }}
           prerelease: false
           make_latest: true
           overwrite_files: true
-          files: release-assets/Love-v*-d*.*
+          files: release-assets/Love-v*-*.*
