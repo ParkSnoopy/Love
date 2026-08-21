@@ -157,7 +157,7 @@ def parse_chapter_html(
         chapter_items.append(("verse", numbers[0], numbers[-1], text))
     if min(verse_starts) != 1:
         raise ValueError(f"{expected_book_code}.{expected_chapter} begins after verse 1.")
-    return chapter_items
+    return normalize_chapter_items(chapter_items)
 
 
 def load_books(template_path: Path) -> list[ET.Element]:
@@ -178,11 +178,27 @@ def chapter_url(version_id: str, version_code: str, book_code: str, chapter: int
     return f"https://www.bible.com/ko/bible/{version_id}/{book_code}.{chapter}.{version_code.upper()}"
 
 
-def fetch(url: str, timeout: int) -> str:
+def fetch(url: str, timeout: int, retries: int, retry_delay: float) -> str:
     request = Request(url, headers={"User-Agent": "Love corpus builder/1.0"})
-    with urlopen(request, timeout=timeout) as response:
-        charset = response.headers.get_content_charset() or "utf-8"
-        return response.read().decode(charset)
+    for attempt in range(retries + 1):
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                charset = response.headers.get_content_charset() or "utf-8"
+                return response.read().decode(charset)
+        except HTTPError as error:
+            retryable = error.code == 429 or 500 <= error.code < 600
+            if not retryable or attempt == retries:
+                raise
+        except (URLError, TimeoutError):
+            if attempt == retries:
+                raise
+        delay = retry_delay * (attempt + 1)
+        print(
+            f"Request failed; retrying {attempt + 1}/{retries} in {delay:g}s: {url}",
+            file=sys.stderr,
+        )
+        time.sleep(delay)
+    raise AssertionError("Retry loop completed without returning or raising.")
 
 
 def load_state(path: Path) -> dict[str, object]:
@@ -201,6 +217,22 @@ def write_state(path: Path, state: dict[str, object]) -> None:
     temporary.replace(path)
 
 
+def normalize_chapter_items(
+    items: list[tuple[str, int | None, int | None, str]],
+) -> list[tuple[str, int | None, int | None, str]]:
+    headings = [item for item in items if item[0] == "heading"]
+    verses: dict[tuple[int, int], list[str]] = {}
+    for kind, start, end, text in items:
+        if kind == "verse":
+            if start is None or end is None:
+                raise ValueError("Verse is missing its number range.")
+            verses.setdefault((start, end), []).append(text)
+    return headings + [
+        ("verse", start, end, " ".join(texts))
+        for (start, end), texts in sorted(verses.items())
+    ]
+
+
 def decode_chapter_items(serialized: list[dict[str, object]]) -> list[tuple[str, int | None, int | None, str]]:
     decoded: list[tuple[str, int | None, int | None, str]] = []
     for item in serialized:
@@ -210,7 +242,7 @@ def decode_chapter_items(serialized: list[dict[str, object]]) -> list[tuple[str,
             decoded.append(("heading", None, None, text))
         else:
             decoded.append(("verse", int(item["number"]), int(item["end-number"]), text))
-    return decoded
+    return normalize_chapter_items(decoded)
 
 
 def encode_chapter_items(items: list[tuple[str, int | None, int | None, str]]) -> list[dict[str, object]]:
@@ -310,7 +342,11 @@ def crawl(args: argparse.Namespace) -> None:
         url = chapter_url(version_id, version_code, book_code, chapter_number)
         print(f"Fetching {url}", file=sys.stderr)
         try:
-            verses = parse_chapter_html(fetch(url, args.timeout), book_code, chapter_number)
+            verses = parse_chapter_html(
+                fetch(url, args.timeout, args.retries, args.retry_delay),
+                book_code,
+                chapter_number,
+            )
         except (HTTPError, URLError, TimeoutError, ValueError) as error:
             raise RuntimeError(f"Stopped at {key}: {error}") from error
         replace_chapter(chapter, verses)
@@ -354,7 +390,7 @@ def crawl_compare(args: argparse.Namespace) -> None:
         print(f"Fetching {url}", file=sys.stderr)
         try:
             parsed = parse_compare_html(
-                fetch(url, args.timeout),
+                fetch(url, args.timeout, args.retries, args.retry_delay),
                 {
                     primary_id: (book_code, chapter_number),
                     parallel_id: (book_code, chapter_number),
@@ -385,7 +421,8 @@ def self_test() -> None:
     <article>
       <span class="heading">세상의 시작</span>
       <span class="verse" data-usfm="GEN.1.1+GEN.1.2"><span class="label">1-2</span>태초에 <em>말씀</em>이 계셨다.</span>
-      <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은 참빛이다.</span>
+      <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은</span>
+      <span class="verse" data-usfm="GEN.1.3">참빛이다.</span>
     </article>
     """
     verses = parse_chapter_html(fixture, BIBLE_COM_BOOK_CODES["Gen"], 1)
@@ -423,6 +460,8 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
     parser.add_argument("--delay", type=float, default=1.0)
     parser.add_argument("--timeout", type=int, default=30)
+    parser.add_argument("--retries", type=int, default=5)
+    parser.add_argument("--retry-delay", type=float, default=5.0)
     parser.add_argument("--reset", action="store_true")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
@@ -432,6 +471,8 @@ def arguments() -> argparse.Namespace:
         parser.error("--version is required unless --self-test is used")
     if args.delay < 0:
         parser.error("--delay must be non-negative")
+    if args.retries < 0 or args.retry_delay < 0:
+        parser.error("--retries and --retry-delay must be non-negative")
     if not args.template.is_file() or not args.schema.is_file():
         parser.error("--template and --schema must name existing files")
     for option, value in (("--version", args.version), ("--parallel-version", args.parallel_version)):
