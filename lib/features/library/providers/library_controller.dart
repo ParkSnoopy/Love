@@ -35,38 +35,31 @@ final activeBibleSelectionProvider =
 class ActiveBibleSelectionController
     extends AsyncNotifier<ActiveBibleSelection?> {
   static const _prefsKeyId = 'active_bible_id';
-  static const _prefsKeyFile = 'active_bible_file';
-  static const _prefsKeyName = 'active_bible_name';
+  static const _legacyPrefsKeyFile = 'active_bible_file';
+  static const _legacyPrefsKeyName = 'active_bible_name';
 
   @override
   Future<ActiveBibleSelection?> build() async {
     final prefs = await AppPreferences.getInstance();
     final savedId = prefs.getString(_prefsKeyId);
-    final savedFile = prefs.getString(_prefsKeyFile);
-    final savedName = prefs.getString(_prefsKeyName);
-
-    if (savedId != null && savedFile != null) {
-      const repo = ManifestRepository();
-      final packs = await repo.loadBiblePacksFromAsset();
-      final existsInManifest = packs.any(
-        (p) => p.id == savedId || p.file == savedFile,
-      );
-      if (existsInManifest || await _looksInstalled(savedFile, type: 'bible')) {
-        String name = savedName ?? savedId;
-        if (savedName == null) {
-          final match = packs.where(
-            (p) => p.id == savedId || p.file == savedFile,
-          );
-          if (match.isNotEmpty) {
-            name = match.first.name;
-          }
-        }
-        return ActiveBibleSelection(id: savedId, file: savedFile, name: name);
-      }
-    }
-
     const repo = ManifestRepository();
     final packs = await repo.loadBiblePacksFromAsset();
+
+    if (savedId != null) {
+      final matches = packs.where((pack) => pack.id == savedId);
+      if (matches.isNotEmpty) {
+        final pack = matches.first;
+        if (await _looksInstalled(pack.file, type: pack.type)) {
+          return ActiveBibleSelection(
+            id: pack.id,
+            file: pack.file,
+            name: pack.name,
+          );
+        }
+      }
+      await prefs.remove(_prefsKeyId);
+    }
+
     for (final p in packs) {
       if (p.type == 'bible' && await _looksInstalled(p.file, type: p.type)) {
         final picked = ActiveBibleSelection(
@@ -82,12 +75,20 @@ class ActiveBibleSelectionController
     return null;
   }
 
-  Future<void> select({
-    required String id,
-    required String file,
-    required String name,
-  }) async {
-    final picked = ActiveBibleSelection(id: id, file: file, name: name);
+  Future<void> select(String id) async {
+    const repo = ManifestRepository();
+    final packs = await repo.loadBiblePacksFromAsset();
+    final matches = packs.where(
+      (pack) => pack.id == id && pack.type == 'bible',
+    );
+    if (matches.isEmpty)
+      throw StateError('Bible pack is not in the manifest: $id');
+    final pack = matches.first;
+    final picked = ActiveBibleSelection(
+      id: pack.id,
+      file: pack.file,
+      name: pack.name,
+    );
     state = AsyncData(picked);
     await _save(picked);
   }
@@ -122,8 +123,8 @@ class ActiveBibleSelectionController
   Future<void> _save(ActiveBibleSelection picked) async {
     final prefs = await AppPreferences.getInstance();
     await prefs.setString(_prefsKeyId, picked.id);
-    await prefs.setString(_prefsKeyFile, picked.file);
-    await prefs.setString(_prefsKeyName, picked.name);
+    await prefs.remove(_legacyPrefsKeyFile);
+    await prefs.remove(_legacyPrefsKeyName);
   }
 }
 

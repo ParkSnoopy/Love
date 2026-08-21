@@ -517,11 +517,7 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
                             if (pack.type == 'bible') {
                               await ref
                                   .read(activeBibleSelectionProvider.notifier)
-                                  .select(
-                                    id: pack.id,
-                                    file: pack.file,
-                                    name: pack.name,
-                                  );
+                                  .select(pack.id);
                               await ref.read(activeDbPathProvider.future);
                             } else if (pack.type == 'commentary') {
                               await ref

@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:Love/app/app_preferences.dart';
 import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/data/storage/db_path_provider.dart';
+import 'package:Love/features/library/providers/library_controller.dart';
 import 'package:Love/features/reader/providers/reader_controller.dart';
 
 void main() {
@@ -145,6 +146,32 @@ void main() {
         // It should clamp to Genesis max chapter (50)
         expect(state.bookId, equals(1));
         expect(state.chapter, equals(50));
+      },
+    );
+
+    test(
+      'removes stale Bible metadata and persists only a manifest ID',
+      () async {
+        AppPreferences.useMemoryStoreForTesting({
+          'active_bible_id': 'kor_korkr4',
+          'active_bible_file': 'kor_korkr4.sqlite',
+          'active_bible_name': '개역개정',
+        });
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        final selection = await container.read(
+          activeBibleSelectionProvider.future,
+        );
+        expect(selection!.id, isNot('kor_korkr4'));
+
+        await container
+            .read(activeBibleSelectionProvider.notifier)
+            .select('eng_niv');
+        final prefs = await AppPreferences.getInstance();
+        expect(prefs.getString('active_bible_id'), 'eng_niv');
+        expect(prefs.getString('active_bible_file'), isNull);
+        expect(prefs.getString('active_bible_name'), isNull);
       },
     );
   });

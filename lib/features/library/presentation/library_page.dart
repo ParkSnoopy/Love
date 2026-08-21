@@ -641,170 +641,154 @@ class _BibleSelectionSheetState extends ConsumerState<BibleSelectionSheet> {
     final l10n = context.l10n;
     final activeBible = ref.watch(activeBibleSelectionProvider).asData?.value;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+    return FractionallySizedBox(
+      heightFactor: 0.75,
+      alignment: Alignment.bottomCenter,
+      child: Material(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(2),
               ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.t('selectBibleTranslation'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: l10n.t('searchByPack'),
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = '';
-                                _searchController.clear();
-                              });
-                            },
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.t('selectBibleTranslation'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: l10n.t('searchByPack'),
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                              _searchController.clear();
+                            });
+                          },
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onChanged: (val) {
-                    setState(() {
-                      _searchQuery = val.trim().toLowerCase();
-                    });
-                  },
                 ),
+                onChanged: (val) {
+                  setState(() {
+                    _searchQuery = val.trim().toLowerCase();
+                  });
+                },
               ),
-              Expanded(
-                child: FutureBuilder<List<BiblePack>>(
-                  future: const ManifestRepository().loadBiblePacksFromAsset(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final bibles = snapshot.data!
-                        .where((p) => p.type == 'bible')
-                        .where((p) {
-                          if (_searchQuery.isEmpty) return true;
-                          return p.name.toLowerCase().contains(_searchQuery) ||
-                              p.shortName.toLowerCase().contains(
-                                _searchQuery,
-                              ) ||
-                              p.language.toLowerCase().contains(_searchQuery) ||
-                              p.source.toLowerCase().contains(_searchQuery);
-                        })
-                        .toList();
+            ),
+            Expanded(
+              child: FutureBuilder<List<BiblePack>>(
+                future: const ManifestRepository().loadBiblePacksFromAsset(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final bibles = snapshot.data!
+                      .where((p) => p.type == 'bible')
+                      .where((p) {
+                        if (_searchQuery.isEmpty) return true;
+                        return p.name.toLowerCase().contains(_searchQuery) ||
+                            p.shortName.toLowerCase().contains(_searchQuery) ||
+                            p.language.toLowerCase().contains(_searchQuery) ||
+                            p.source.toLowerCase().contains(_searchQuery);
+                      })
+                      .toList();
 
-                    if (bibles.isEmpty) {
-                      return Center(child: Text(l10n.t('noTranslationsFound')));
-                    }
+                  if (bibles.isEmpty) {
+                    return Center(child: Text(l10n.t('noTranslationsFound')));
+                  }
 
-                    final grouped = <String, List<BiblePack>>{};
-                    for (final pack in bibles) {
-                      grouped.putIfAbsent(pack.language, () => []).add(pack);
-                    }
-                    final languages = grouped.keys.toList()
-                      ..sort((a, b) {
-                        if (a == 'Korean') return -1;
-                        if (b == 'Korean') return 1;
-                        return a.compareTo(b);
-                      });
+                  final grouped = <String, List<BiblePack>>{};
+                  for (final pack in bibles) {
+                    grouped.putIfAbsent(pack.language, () => []).add(pack);
+                  }
+                  final languages = grouped.keys.toList()
+                    ..sort((a, b) {
+                      if (a == 'Korean') return -1;
+                      if (b == 'Korean') return 1;
+                      return a.compareTo(b);
+                    });
 
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: languages.length,
-                      itemBuilder: (context, index) {
-                        final language = languages[index];
-                        final packs = grouped[language]!;
-                        final hasSelected = packs.any(
-                          (p) => activeBible?.id == p.id,
-                        );
-                        return ExpansionTile(
-                          initiallyExpanded:
-                              hasSelected || _searchQuery.isNotEmpty,
-                          title: Text(
-                            language,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            '${packs.length} ${l10n.t('versions')}',
-                          ),
-                          children: [
-                            for (final p in packs)
-                              ListTile(
-                                selected: activeBible?.id == p.id,
-                                contentPadding: const EdgeInsets.only(
-                                  left: 32,
-                                  right: 16,
+                  return ListView.builder(
+                    itemCount: languages.length,
+                    itemBuilder: (context, index) {
+                      final language = languages[index];
+                      final packs = grouped[language]!;
+                      final hasSelected = packs.any(
+                        (p) => activeBible?.id == p.id,
+                      );
+                      return ExpansionTile(
+                        initiallyExpanded:
+                            hasSelected || _searchQuery.isNotEmpty,
+                        title: Text(
+                          language,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text('${packs.length} ${l10n.t('versions')}'),
+                        children: [
+                          for (final p in packs)
+                            ListTile(
+                              selected: activeBible?.id == p.id,
+                              contentPadding: const EdgeInsets.only(
+                                left: 32,
+                                right: 16,
+                              ),
+                              title: Text(
+                                p.shortName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                title: Text(
-                                  p.shortName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(p.name),
-                                trailing: activeBible?.id == p.id
-                                    ? Icon(
-                                        Icons.check_circle,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      )
-                                    : null,
-                                onTap: () async {
+                              ),
+                              subtitle: Text(p.name),
+                              trailing: activeBible?.id == p.id
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    )
+                                  : null,
+                              onTap: () {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) async {
+                                  if (!context.mounted) return;
                                   await ref
                                       .read(
                                         activeBibleSelectionProvider.notifier,
                                       )
-                                      .select(
-                                        id: p.id,
-                                        file: p.file,
-                                        name: p.name,
-                                      );
-                                  if (context.mounted) {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                              ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
+                                      .select(p.id);
+                                  if (context.mounted) Navigator.pop(context);
+                                });
+                              },
+                            ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
