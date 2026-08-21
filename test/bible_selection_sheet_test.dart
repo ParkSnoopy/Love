@@ -67,7 +67,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Korean'));
     await tester.pumpAndSettle();
-    await tester.drag(find.byType(ListView), const Offset(0, -100));
+    await tester.dragUntilVisible(
+      find.text('읽기 쉬운 성경').first,
+      find.byType(ListView),
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('읽기 쉬운 성경').first);
     await tester.pumpAndSettle();

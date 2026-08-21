@@ -224,15 +224,21 @@ def compile_commentary(source: Path, output: Path) -> tuple[str, str]:
 
 
 def manifest_entry(slug: str, label: str, data_type: str, source: Path) -> dict[str, str]:
-    language = next(
-        (language for prefix, language in LANGUAGES.items() if source.stem.startswith(prefix)),
+    language_match = next(
+        (
+            (prefix, language)
+            for prefix, language in LANGUAGES.items()
+            if source.stem.startswith(f"{prefix}_")
+        ),
         None,
     )
-    if language is None:
+    if language_match is None:
         raise ValueError(f"Unsupported corpus language: {slug}")
+    language_prefix, language = language_match
+    short_name = slug.removeprefix(f"{language_prefix}_").upper()
     return {
         "id": slug,
-        "shortname": label,
+        "shortname": short_name,
         "name": label,
         "language": language,
         "type": data_type,

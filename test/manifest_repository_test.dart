@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:Love/app/app_theme.dart';
@@ -107,6 +110,27 @@ void main() {
         );
       },
     );
+
+    test('generated short names omit the language code', () {
+      final manifest =
+          jsonDecode(File('assets/data/manifest.json').readAsStringSync())
+              as List<dynamic>;
+
+      for (final rawEntry in manifest) {
+        final entry = rawEntry as Map<String, dynamic>;
+        final id = entry['id'] as String;
+        final file = entry['file'] as String;
+        final stem = file.substring(0, file.length - '.sqlite'.length);
+        final separator = stem.indexOf('_');
+        expect(separator, greaterThan(0), reason: file);
+        final languagePrefix = stem.substring(0, separator);
+        final prefixedId = '${languagePrefix}_';
+        final shortId = id.startsWith(prefixedId)
+            ? id.substring(prefixedId.length)
+            : id;
+        expect(entry['shortname'], shortId.toUpperCase(), reason: id);
+      }
+    });
   });
 
   test('light theme uses warm editorial palette', () {

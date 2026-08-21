@@ -1,7 +1,7 @@
 [
   {
     "id": "zho_rcuvss",
-    "shortname": "和合本修订版",
+    "shortname": "RCUVSS",
     "name": "和合本修订版",
     "language": "Chinese",
     "type": "bible",
@@ -10,7 +10,7 @@
   },
   {
     "id": "zho_ccb",
-    "shortname": "当代译本",
+    "shortname": "CCB",
     "name": "当代译本",
     "language": "Chinese",
     "type": "bible",
@@ -19,7 +19,7 @@
   },
   {
     "id": "eng_niv",
-    "shortname": "New International Version",
+    "shortname": "NIV",
     "name": "New International Version",
     "language": "English",
     "type": "bible",
@@ -28,7 +28,7 @@
   },
   {
     "id": "eng_nlt",
-    "shortname": "New Living Translation",
+    "shortname": "NLT",
     "name": "New Living Translation",
     "language": "English",
     "type": "bible",
@@ -37,7 +37,7 @@
   },
   {
     "id": "jpn_jcb",
-    "shortname": "リビングバイブル",
+    "shortname": "JCB",
     "name": "リビングバイブル",
     "language": "Japanese",
     "type": "bible",
@@ -46,7 +46,7 @@
   },
   {
     "id": "jpn_shinkyoudoyaku",
-    "shortname": "新共同訳",
+    "shortname": "SHINKYOUDOYAKU",
     "name": "新共同訳",
     "language": "Japanese",
     "type": "bible",
@@ -55,7 +55,7 @@
   },
   {
     "id": "kor_korkrv",
-    "shortname": "개역개정판",
+    "shortname": "KORKRV",
     "name": "개역개정판",
     "language": "Korean",
     "type": "bible",
@@ -64,7 +64,7 @@
   },
   {
     "id": "kor_krv",
-    "shortname": "개역한글",
+    "shortname": "KRV",
     "name": "개역한글",
     "language": "Korean",
     "type": "bible",
@@ -73,7 +73,7 @@
   },
   {
     "id": "kor_rnksv",
-    "shortname": "새번역",
+    "shortname": "RNKSV",
     "name": "새번역",
     "language": "Korean",
     "type": "bible",
@@ -82,7 +82,7 @@
   },
   {
     "id": "kor_wrm",
-    "shortname": "우리말 성경",
+    "shortname": "WRM",
     "name": "우리말 성경",
     "language": "Korean",
     "type": "bible",
@@ -91,7 +91,7 @@
   },
   {
     "id": "kor_koerv",
-    "shortname": "읽기 쉬운 성경",
+    "shortname": "KOERV",
     "name": "읽기 쉬운 성경",
     "language": "Korean",
     "type": "bible",
@@ -100,7 +100,7 @@
   },
   {
     "id": "kor_klb",
-    "shortname": "한국인의 성경",
+    "shortname": "KLB",
     "name": "한국인의 성경",
     "language": "Korean",
     "type": "bible",
@@ -109,7 +109,7 @@
   },
   {
     "id": "adam-clarke",
-    "shortname": "Adam Clarke Bible Commentary",
+    "shortname": "ADAM-CLARKE",
     "name": "Adam Clarke Bible Commentary",
     "language": "English",
     "type": "commentary",
@@ -118,7 +118,7 @@
   },
   {
     "id": "keil-delitzsch",
-    "shortname": "Carl Friedrich Keil and Franz Delitzsch Old Testament Commentary",
+    "shortname": "KEIL-DELITZSCH",
     "name": "Carl Friedrich Keil and Franz Delitzsch Old Testament Commentary",
     "language": "English",
     "type": "commentary",
@@ -127,7 +127,7 @@
   },
   {
     "id": "jamieson-fausset-brown",
-    "shortname": "Jamieson-Fausset-Brown Bible Commentary",
+    "shortname": "JAMIESON-FAUSSET-BROWN",
     "name": "Jamieson-Fausset-Brown Bible Commentary",
     "language": "English",
     "type": "commentary",
@@ -136,7 +136,7 @@
   },
   {
     "id": "john-calvin",
-    "shortname": "John Calvin's Commentaries",
+    "shortname": "JOHN-CALVIN",
     "name": "John Calvin's Commentaries",
     "language": "English",
     "type": "commentary",
@@ -145,7 +145,7 @@
   },
   {
     "id": "john-gill",
-    "shortname": "John Gill Bible Commentary",
+    "shortname": "JOHN-GILL",
     "name": "John Gill Bible Commentary",
     "language": "English",
     "type": "commentary",
@@ -154,7 +154,7 @@
   },
   {
     "id": "matthew-henry",
-    "shortname": "Matthew Henry Bible Commentary",
+    "shortname": "MATTHEW-HENRY",
     "name": "Matthew Henry Bible Commentary",
     "language": "English",
     "type": "commentary",
@@ -163,7 +163,7 @@
   },
   {
     "id": "tyndale",
-    "shortname": "Tyndale Open Study Notes",
+    "shortname": "TYNDALE",
     "name": "Tyndale Open Study Notes",
     "language": "English",
     "type": "commentary",
@@ -172,7 +172,7 @@
   },
   {
     "id": "mhw",
-    "shortname": "메튜 헨리 주석 전체",
+    "shortname": "MHW",
     "name": "메튜 헨리 주석 전체",
     "language": "Korean",
     "type": "commentary",
@@ -181,7 +181,7 @@
   },
   {
     "id": "pys",
-    "shortname": "박윤선 주석",
+    "shortname": "PYS",
     "name": "박윤선 주석",
     "language": "Korean",
     "type": "commentary",
@@ -190,7 +190,7 @@
   },
   {
     "id": "hochma",
-    "shortname": "호크마 주석",
+    "shortname": "HOCHMA",
     "name": "호크마 주석",
     "language": "Korean",
     "type": "commentary",
