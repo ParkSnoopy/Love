@@ -29,6 +29,7 @@ import sys
 import time
 from typing import Iterable
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
@@ -175,30 +176,33 @@ def chapter_requests(books: Iterable[ET.Element]) -> Iterable[tuple[ET.Element, 
 
 
 def chapter_url(version_id: str, version_code: str, book_code: str, chapter: int) -> str:
-    return f"https://www.bible.com/ko/bible/{version_id}/{book_code}.{chapter}.{version_code.upper()}"
+    reference = f"{book_code}.{chapter}.{version_code.upper()}"
+    return f"https://www.bible.com/ko/bible/{version_id}/{quote(reference)}"
 
 
 def fetch(url: str, timeout: int, retries: int, retry_delay: float) -> str:
     request = Request(url, headers={"User-Agent": "Love corpus builder/1.0"})
-    for attempt in range(retries + 1):
+    attempt = 0
+    while True:
         try:
             with urlopen(request, timeout=timeout) as response:
                 charset = response.headers.get_content_charset() or "utf-8"
                 return response.read().decode(charset)
         except HTTPError as error:
             retryable = error.code == 429 or 500 <= error.code < 600
-            if not retryable or attempt == retries:
+            if not retryable or (retries >= 0 and attempt == retries):
                 raise
         except (URLError, TimeoutError):
-            if attempt == retries:
+            if retries >= 0 and attempt == retries:
                 raise
-        delay = retry_delay * (attempt + 1)
+        attempt += 1
+        delay = min(retry_delay * attempt, 60.0)
+        retry_limit = str(retries) if retries >= 0 else "indefinitely"
         print(
-            f"Request failed; retrying {attempt + 1}/{retries} in {delay:g}s: {url}",
+            f"Request failed; retrying {attempt}/{retry_limit} in {delay:g}s: {url}",
             file=sys.stderr,
         )
         time.sleep(delay)
-    raise AssertionError("Retry loop completed without returning or raising.")
 
 
 def load_state(path: Path) -> dict[str, object]:
@@ -220,17 +224,10 @@ def write_state(path: Path, state: dict[str, object]) -> None:
 def normalize_chapter_items(
     items: list[tuple[str, int | None, int | None, str]],
 ) -> list[tuple[str, int | None, int | None, str]]:
-    headings = [item for item in items if item[0] == "heading"]
-    verses: dict[tuple[int, int], list[str]] = {}
     for kind, start, end, text in items:
-        if kind == "verse":
-            if start is None or end is None:
-                raise ValueError("Verse is missing its number range.")
-            verses.setdefault((start, end), []).append(text)
-    return headings + [
-        ("verse", start, end, " ".join(texts))
-        for (start, end), texts in sorted(verses.items())
-    ]
+        if kind == "verse" and (start is None or end is None):
+            raise ValueError("Verse is missing its number range.")
+    return items
 
 
 def decode_chapter_items(serialized: list[dict[str, object]]) -> list[tuple[str, int | None, int | None, str]]:
@@ -268,6 +265,37 @@ def replace_chapter(chapter: ET.Element, items: list[tuple[str, int | None, int 
         ET.SubElement(chapter, "verse", attributes).text = text
 
 
+def canonicalize_items(
+    version_id: str,
+    osis: str,
+    chapter_number: int,
+    items: list[tuple[str, int | None, int | None, str]],
+) -> list[tuple[str, int | None, int | None, str]]:
+    if version_id != "1819" or osis != "Mal" or chapter_number < 3:
+        return items
+    if chapter_number == 4 and all(
+        kind == "heading" or (end is not None and end <= 6)
+        for kind, _, end, _ in items
+    ):
+        return items
+    selected: list[tuple[str, int | None, int | None, str]] = []
+    pending_headings: list[tuple[str, int | None, int | None, str]] = []
+    for kind, start, end, text in items:
+        if kind == "heading":
+            pending_headings.append((kind, start, end, text))
+            continue
+        if start is None or end is None:
+            raise ValueError("Verse is missing its number range.")
+        if chapter_number == 3 and end <= 18:
+            selected.extend(pending_headings)
+            selected.append((kind, start, end, text))
+        elif chapter_number == 4 and start >= 19:
+            selected.extend(pending_headings)
+            selected.append((kind, start - 18, end - 18, text))
+        pending_headings = []
+    return selected
+
+
 def build_tree(books: list[ET.Element], bible_id: str, name: str) -> ET.Element:
     root = ET.Element("bible", {"format-version": "1"})
     metadata = ET.SubElement(root, "metadata")
@@ -301,11 +329,17 @@ def parse_compare_html(
     content: str,
     versions: dict[str, tuple[str, int]],
 ) -> dict[str, list[tuple[str, int | None, int | None, str]]]:
-    markers = list(re.finditer(r'<div class="version vid(\d+)\b[^>]*>', content))
+    content = (
+        content.replace(r"\u003c", "<")
+        .replace(r"\u003e", ">")
+        .replace(r'\"', '"')
+        .replace(r"\n", "\n")
+    )
+    markers = list(re.finditer(r'<div\b(?=[^>]*\bdata-vid="(\d+)")[^>]*>', content))
     sections: dict[str, str] = {}
     for index, marker in enumerate(markers):
         version_id = marker.group(1)
-        if version_id in versions:
+        if version_id in versions and version_id not in sections:
             end = markers[index + 1].start() if index + 1 < len(markers) else len(content)
             sections[version_id] = content[marker.end():end]
     if sections.keys() != versions.keys():
@@ -382,27 +416,54 @@ def crawl_compare(args: argparse.Namespace) -> None:
         chapter_number = int(primary_chapter.attrib["number"])
         key = f"{osis}.{chapter_number}"
         if key in completed:
-            replace_chapter(primary_chapter, decode_chapter_items(completed[key][primary_id]))
+            replace_chapter(
+                primary_chapter,
+                canonicalize_items(
+                    primary_id,
+                    osis,
+                    chapter_number,
+                    decode_chapter_items(completed[key][primary_id]),
+                ),
+            )
             replace_chapter(parallel_chapter, decode_chapter_items(completed[key][parallel_id]))
             continue
 
-        url = f"{chapter_url(primary_id, primary_code, book_code, chapter_number)}?parallel={parallel_id}"
-        print(f"Fetching {url}", file=sys.stderr)
         try:
-            parsed = parse_compare_html(
-                fetch(url, args.timeout, args.retries, args.retry_delay),
-                {
-                    primary_id: (book_code, chapter_number),
-                    parallel_id: (book_code, chapter_number),
-                },
-            )
+            if primary_id == "1819" and osis == "Mal" and chapter_number == 4:
+                primary_url = chapter_url(primary_id, primary_code, book_code, 3)
+                parallel_url = chapter_url(parallel_id, parallel_code, book_code, 4)
+                print(f"Fetching {primary_url}", file=sys.stderr)
+                primary_items = parse_chapter_html(
+                    fetch(primary_url, args.timeout, args.retries, args.retry_delay),
+                    book_code,
+                    3,
+                )
+                print(f"Fetching {parallel_url}", file=sys.stderr)
+                parallel_items = parse_chapter_html(
+                    fetch(parallel_url, args.timeout, args.retries, args.retry_delay),
+                    book_code,
+                    4,
+                )
+            else:
+                url = f"{chapter_url(primary_id, primary_code, book_code, chapter_number)}?parallel={parallel_id}"
+                print(f"Fetching {url}", file=sys.stderr)
+                parsed = parse_compare_html(
+                    fetch(url, args.timeout, args.retries, args.retry_delay),
+                    {
+                        primary_id: (book_code, chapter_number),
+                        parallel_id: (book_code, chapter_number),
+                    },
+                )
+                primary_items = parsed[primary_id]
+                parallel_items = parsed[parallel_id]
         except (HTTPError, URLError, TimeoutError, ValueError) as error:
             raise RuntimeError(f"Stopped at {key}: {error}") from error
-        replace_chapter(primary_chapter, parsed[primary_id])
-        replace_chapter(parallel_chapter, parsed[parallel_id])
+        primary_items = canonicalize_items(primary_id, osis, chapter_number, primary_items)
+        replace_chapter(primary_chapter, primary_items)
+        replace_chapter(parallel_chapter, parallel_items)
         completed[key] = {
-            primary_id: encode_chapter_items(parsed[primary_id]),
-            parallel_id: encode_chapter_items(parsed[parallel_id]),
+            primary_id: encode_chapter_items(primary_items),
+            parallel_id: encode_chapter_items(parallel_items),
         }
         write_state(state_path, state)
         time.sleep(args.delay)
@@ -419,20 +480,32 @@ def crawl_compare(args: argparse.Namespace) -> None:
 def self_test() -> None:
     fixture = """
     <article>
-      <span class="heading">세상의 시작</span>
       <span class="verse" data-usfm="GEN.1.1+GEN.1.2"><span class="label">1-2</span>태초에 <em>말씀</em>이 계셨다.</span>
-      <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은</span>
-      <span class="verse" data-usfm="GEN.1.3">참빛이다.</span>
+      <span class="heading">세상의 시작</span>
+      <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은 참빛이다.</span>
     </article>
     """
     verses = parse_chapter_html(fixture, BIBLE_COM_BOOK_CODES["Gen"], 1)
     expected = [
-        ("heading", None, None, "세상의 시작"),
         ("verse", 1, 2, "태초에 말씀이 계셨다."),
+        ("heading", None, None, "세상의 시작"),
         ("verse", 3, 3, "그 빛은 참빛이다."),
     ]
     if verses != expected:
         raise AssertionError(f"Parser output differs: {verses!r}")
+    malachi = [
+        ("verse", 18, 18, "마지막 구절"),
+        ("heading", None, None, "여호와의 날"),
+        ("verse", 19, 19, "첫 구절"),
+        ("verse", 24, 24, "마지막 구절"),
+    ]
+    expected_malachi = [
+        ("heading", None, None, "여호와의 날"),
+        ("verse", 1, 1, "첫 구절"),
+        ("verse", 6, 6, "마지막 구절"),
+    ]
+    if canonicalize_items("1819", "Mal", 4, malachi) != expected_malachi:
+        raise AssertionError("Japanese Malachi final chapter mapping failed.")
     if chapter_url("86", "KLB", BIBLE_COM_BOOK_CODES["Exod"], 1).endswith("/EXO.1.KLB") is False:
         raise AssertionError("Bible.com book-code mapping did not translate Exod to EXO.")
     books = load_books(DEFAULT_TEMPLATE)
@@ -460,7 +533,7 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
     parser.add_argument("--delay", type=float, default=1.0)
     parser.add_argument("--timeout", type=int, default=30)
-    parser.add_argument("--retries", type=int, default=5)
+    parser.add_argument("--retries", type=int, default=-1)
     parser.add_argument("--retry-delay", type=float, default=5.0)
     parser.add_argument("--reset", action="store_true")
     parser.add_argument("--self-test", action="store_true")
@@ -471,8 +544,8 @@ def arguments() -> argparse.Namespace:
         parser.error("--version is required unless --self-test is used")
     if args.delay < 0:
         parser.error("--delay must be non-negative")
-    if args.retries < 0 or args.retry_delay < 0:
-        parser.error("--retries and --retry-delay must be non-negative")
+    if args.retries < -1 or args.retry_delay < 0:
+        parser.error("--retries must be -1 or greater and --retry-delay must be non-negative")
     if not args.template.is_file() or not args.schema.is_file():
         parser.error("--template and --schema must name existing files")
     for option, value in (("--version", args.version), ("--parallel-version", args.parallel_version)):
