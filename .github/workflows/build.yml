@@ -12,12 +12,18 @@ concurrency:
   group: rolling-builds
   cancel-in-progress: true
 
+env:
+  DATA_VERSION: '5.0'
+
 jobs:
   prepare:
     name: Prepare release metadata
     runs-on: ubuntu-latest
     outputs:
       asset-prefix: ${{ steps.metadata.outputs.asset-prefix }}
+      data-asset: ${{ steps.metadata.outputs.data-asset }}
+      data-exists: ${{ steps.metadata.outputs.data-exists }}
+      data-tag: ${{ steps.metadata.outputs.data-tag }}
       release-title: ${{ steps.metadata.outputs.release-title }}
       rolling-tag: ${{ steps.metadata.outputs.rolling-tag }}
     steps:
@@ -26,23 +32,103 @@ jobs:
 
       - name: Read release versions
         id: metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           app_version="$(sed -n 's/^version:[[:space:]]*\([^+[:space:]]*\).*/\1/p' pubspec.yaml)"
           test -n "${app_version}"
           [[ "${app_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]
+          [[ "${DATA_VERSION}" =~ ^[0-9]+(\.[0-9]+)*$ ]]
+          data_tag="d${DATA_VERSION}"
+          data_asset="data.zip"
+          status="$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/tags/${data_tag}")"
+          case "${status}" in
+            200)
+              asset_names="$(gh api "/repos/${GITHUB_REPOSITORY}/releases/tags/${data_tag}" \
+                --jq '.assets[].name')"
+              if grep -Fxq "${data_asset}" <<< "${asset_names}"; then
+                data_exists=true
+              else
+                data_exists=false
+              fi
+              ;;
+            404) data_exists=false ;;
+            *) echo "Data release lookup failed with HTTP ${status}" >&2; exit 1 ;;
+          esac
           echo "asset-prefix=Love-v${app_version}" >> "${GITHUB_OUTPUT}"
+          echo "data-asset=${data_asset}" >> "${GITHUB_OUTPUT}"
+          echo "data-exists=${data_exists}" >> "${GITHUB_OUTPUT}"
+          echo "data-tag=${data_tag}" >> "${GITHUB_OUTPUT}"
           echo "release-title=Love v${app_version}" >> "${GITHUB_OUTPUT}"
           echo "rolling-tag=rolling-$(date -u +%Y%m%d)" >> "${GITHUB_OUTPUT}"
 
+  build-data:
+    name: Build data release
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout data source
+        if: needs.prepare.outputs.data-exists != 'true'
+        uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - name: Checkout Git LFS data
+        if: needs.prepare.outputs.data-exists != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs checkout
+
+      - name: Install data build dependencies
+        if: needs.prepare.outputs.data-exists != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-utils zip
+
+      - name: Build data archive
+        if: needs.prepare.outputs.data-exists != 'true'
+        env:
+          DATA_ASSET: ${{ needs.prepare.outputs.data-asset }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/compile_corpus.py
+          test -f assets/data.zip
+          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSerifCJK.ttc
+          zip -q "${DATA_ASSET}" \
+            assets/data.zip \
+            assets/fonts/NotoSansCJK-VF.ttf.ttc \
+            assets/fonts/NotoSerifCJK.ttc
+
+      - name: Publish data release
+        if: needs.prepare.outputs.data-exists != 'true'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.data-tag }}
+          name: Data ${{ needs.prepare.outputs.data-tag }}
+          prerelease: false
+          make_latest: false
+          overwrite_files: false
+          files: ${{ needs.prepare.outputs.data-asset }}
+
   build-android:
     name: Android APK
-    needs: prepare
+    needs: [prepare, build-data]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          lfs: false
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -57,11 +143,17 @@ jobs:
           cache: true
 
       - name: Restore assets archive
+        env:
+          DATA_ASSET: ${{ needs.prepare.outputs.data-asset }}
+          DATA_TAG: ${{ needs.prepare.outputs.data-tag }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
-          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          gh release download "${DATA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${DATA_ASSET}" \
+            --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
           test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
@@ -92,11 +184,13 @@ jobs:
 
   build-linux:
     name: Linux release bundle
-    needs: prepare
+    needs: [prepare, build-data]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          lfs: false
 
       - name: Install Linux build dependencies
         run: |
@@ -110,11 +204,17 @@ jobs:
           cache: true
 
       - name: Restore assets archive
+        env:
+          DATA_ASSET: ${{ needs.prepare.outputs.data-asset }}
+          DATA_TAG: ${{ needs.prepare.outputs.data-tag }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
-          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          gh release download "${DATA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${DATA_ASSET}" \
+            --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
           test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
@@ -145,11 +245,13 @@ jobs:
 
   build-macos:
     name: macOS release bundle
-    needs: prepare
+    needs: [prepare, build-data]
     runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          lfs: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -158,11 +260,17 @@ jobs:
           cache: true
 
       - name: Restore assets archive
+        env:
+          DATA_ASSET: ${{ needs.prepare.outputs.data-asset }}
+          DATA_TAG: ${{ needs.prepare.outputs.data-tag }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          asset_archive_url="$(sed -n $'1{s/\r$//;p;}' .assets-uri)"
-          curl -fL "${asset_archive_url}" -o "${RUNNER_TEMP}/love-assets.zip"
+          gh release download "${DATA_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${DATA_ASSET}" \
+            --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
           test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
@@ -193,11 +301,13 @@ jobs:
 
   build-windows:
     name: Windows release bundle
-    needs: prepare
+    needs: [prepare, build-data]
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          lfs: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -206,12 +316,18 @@ jobs:
           cache: true
 
       - name: Restore assets archive
+        env:
+          DATA_ASSET: ${{ needs.prepare.outputs.data-asset }}
+          DATA_TAG: ${{ needs.prepare.outputs.data-tag }}
+          GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $assetArchiveUrl = (Get-Content .assets-uri | Select-Object -First 1).Trim()
           $archivePath = Join-Path $env:RUNNER_TEMP 'love-assets.zip'
-          Invoke-WebRequest -Uri $assetArchiveUrl -OutFile $archivePath
+          gh release download $env:DATA_TAG `
+            --repo $env:GITHUB_REPOSITORY `
+            --pattern $env:DATA_ASSET `
+            --output $archivePath
           Expand-Archive -Path $archivePath -DestinationPath . -Force
           if (!(Test-Path 'assets/data.zip')) { throw 'Missing assets/data.zip' }
           if (!(Test-Path 'assets/fonts/NotoSansCJK-VF.ttf.ttc')) { throw 'Missing assets/fonts/NotoSansCJK-VF.ttf.ttc' }

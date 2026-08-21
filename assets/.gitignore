@@ -3,6 +3,3 @@ data/**/*.sqlite
 data/**/*.sqlite3
 data/**/*.db
 *.zip
-
-# Fonts
-fonts/
