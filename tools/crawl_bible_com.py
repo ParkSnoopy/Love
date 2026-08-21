@@ -75,6 +75,7 @@ class VersePageParser(HTMLParser):
         attributes = dict(attrs)
         reference = attributes.get("data-usfm")
         class_name = attributes.get("class") or ""
+        class_names = class_name.split()
         if (
             reference
             and "verse" in class_name
@@ -90,8 +91,11 @@ class VersePageParser(HTMLParser):
             is_ignored = (
                 tag in {"sup", "button"}
                 or "label" in class_name
-                or class_name.endswith("__fr")
-                or class_name.endswith("__ft")
+                or "note" in class_names
+                or any(name.endswith("__note") for name in class_names)
+                or "fr" in class_names
+                or "ft" in class_names
+                or any(name.endswith("__fr") or name.endswith("__ft") for name in class_names)
             )
             self._ignored_tags.append(is_ignored)
             if is_ignored:
@@ -480,7 +484,7 @@ def crawl_compare(args: argparse.Namespace) -> None:
 def self_test() -> None:
     fixture = """
     <article>
-      <span class="verse" data-usfm="GEN.1.1+GEN.1.2"><span class="label">1-2</span>태초에 <em>말씀</em>이 계셨다.</span>
+      <span class="verse" data-usfm="GEN.1.1+GEN.1.2"><span class="label">1-2</span>태초에 <em>말씀</em><span class="note"><span class="label">#</span><span class="body"><span class="ft">Or </span>word</span></span>이 계셨다.</span>
       <span class="heading">세상의 시작</span>
       <span class="verse" data-usfm="GEN.1.3"><span class="label">3</span>그 빛은 참빛이다.</span>
     </article>
