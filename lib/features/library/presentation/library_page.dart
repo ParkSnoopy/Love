@@ -753,12 +753,12 @@ class _BibleSelectionSheetState extends ConsumerState<BibleSelectionSheet> {
                                 right: 16,
                               ),
                               title: Text(
-                                p.shortName,
+                                p.name,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text(p.name),
+                              subtitle: Text(p.shortName),
                               trailing: activeBible?.id == p.id
                                   ? Icon(
                                       Icons.check_circle,
@@ -905,10 +905,10 @@ class _CommentarySelectionSheetState
                         return ListTile(
                           selected: isSelected,
                           title: Text(
-                            p.shortName,
+                            p.name,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('${p.language} • ${p.name}'),
+                          subtitle: Text('${p.shortName} • ${p.language}'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

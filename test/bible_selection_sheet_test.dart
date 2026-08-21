@@ -73,6 +73,15 @@ void main() {
       const Offset(0, -100),
     );
     await tester.pumpAndSettle();
+    final translationTile = tester.widget<ListTile>(
+      find.widgetWithText(ListTile, '읽기 쉬운 성경').first,
+    );
+    final title = translationTile.title! as Text;
+    final subtitle = translationTile.subtitle! as Text;
+    expect(title.data, '읽기 쉬운 성경');
+    expect(title.style?.fontWeight, FontWeight.bold);
+    expect(subtitle.data, 'KOERV');
+
     await tester.tap(find.text('읽기 쉬운 성경').first);
     await tester.pumpAndSettle();
 

@@ -1342,9 +1342,22 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.swap_horiz),
-                            label: Text(
-                              '${l10n.t('switchToCommentary')}: ${option.pack.shortName}',
-                              overflow: TextOverflow.ellipsis,
+                            label: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${l10n.t('switchToCommentary')}: ${option.pack.name}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  option.pack.shortName,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ],
                             ),
                             onPressed: () async {
                               await ref
@@ -1699,8 +1712,11 @@ class CommentarySelectionSheet extends ConsumerWidget {
                   itemBuilder: (context, idx) {
                     final p = packs[idx];
                     return ListTile(
-                      title: Text(p.shortName),
-                      subtitle: Text('${p.language} - ${p.name}'),
+                      title: Text(
+                        p.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('${p.shortName} • ${p.language}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.info_outline),
                         tooltip: context.l10n.t('viewIntro'),
