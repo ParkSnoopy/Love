@@ -62,6 +62,29 @@ void main() {
       },
     );
 
+    test('commentary corpus preserves restored introductions', () {
+      const expectedIntroductionCounts = {
+        'eng_adam-clarke.xml': 57,
+        'eng_jamieson-fausset-brown.xml': 66,
+        'eng_john-gill.xml': 66,
+        'eng_keil-delitzsch.xml': 39,
+        'eng_matthew-henry.xml': 65,
+        'eng_tyndale.xml': 65,
+        'kor_pys.xml': 1,
+      };
+
+      for (final entry in expectedIntroductionCounts.entries) {
+        final contents = File(
+          'assets/data/commentary/${entry.key}',
+        ).readAsStringSync();
+        expect(
+          RegExp('<chapter number="0">').allMatches(contents).length,
+          entry.value,
+          reason: '${entry.key} lost restored introduction content',
+        );
+      }
+    });
+
     test('accept Bible chapter headings in every language', () {
       final result = Process.runSync('xmllint', [
         '--noout',

@@ -188,7 +188,12 @@ def compile_commentary(source: Path, output: Path) -> tuple[str, str]:
     connection = create_database(output, slug, label)
     try:
         for book in root.findall("./books/book"):
-            book_id = CANONICAL_BOOK_IDS.get(book.attrib["osis"], 0)
+            source_book_id = int(book.attrib["id"])
+            book_id = (
+                source_book_id
+                if source_book_id > 0
+                else CANONICAL_BOOK_IDS.get(book.attrib["osis"], 0)
+            )
             connection.execute(
                 "INSERT OR IGNORE INTO books VALUES (?, ?, ?, ?, ?)",
                 (

@@ -6,7 +6,7 @@ import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/features/reader/data/reader_repository.dart';
 
 void main() {
-  group('Commentary Database Tests (Korean Crawled Databases)', () {
+  group('Commentary Database Tests', () {
     const repository = ReaderRepository();
     final tempExtractDir = Directory('test/temp_extracted');
 
@@ -33,6 +33,14 @@ void main() {
       await extractor.extractFile(
         targetZipPath: 'data/commentary/kor_pys.sqlite',
         destinationPath: p.join(tempExtractDir.path, 'kor_pys.sqlite'),
+        zipFilePath: 'assets/data.zip',
+      );
+      await extractor.extractFile(
+        targetZipPath: 'data/commentary/eng_matthew-henry.sqlite',
+        destinationPath: p.join(
+          tempExtractDir.path,
+          'eng_matthew-henry.sqlite',
+        ),
         zipFilePath: 'assets/data.zip',
       );
     });
@@ -175,12 +183,30 @@ void main() {
       );
     });
 
-    test('Introductions are empty for crawled Korean databases', () {
-      final dbFile = File(p.join(tempExtractDir.path, 'kor_hochma.sqlite'));
+    test('Loads the restored Park Yun Sun general introduction', () {
+      final dbFile = File(p.join(tempExtractDir.path, 'kor_pys.sqlite'));
       final intros = repository.loadCommentaryIntroductions(
         dbPath: dbFile.path,
       );
-      expect(intros, isEmpty);
+
+      expect(intros, hasLength(1));
+      expect(intros.single.bookId, 0);
+      expect(intros.single.title, contains('박윤선 주석'));
+      expect(intros.single.text, contains('내용이 없는 장'));
+    });
+
+    test('Loads a restored English book introduction', () {
+      final dbFile = File(
+        p.join(tempExtractDir.path, 'eng_matthew-henry.sqlite'),
+      );
+      final intro = repository.loadCommentaryBookIntroduction(
+        dbPath: dbFile.path,
+        bookId: 1,
+      );
+
+      expect(intro, isNotNull);
+      expect(intro!.title, contains('Genesis'));
+      expect(intro.text, contains('An Exposition'));
     });
 
     test('Loads only non-empty description for requested book', () {

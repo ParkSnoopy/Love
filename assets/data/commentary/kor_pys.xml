@@ -7,6 +7,18 @@
   <books>
     <book id="0" osis="INTRO" testament="INTRO" chapters="0">
       <name>일반 서론/소개</name>
+      <chapter number="0">
+        <entry>
+          <reference book="INTRO" chapter="0" verses="1" />
+          <body># 박윤선 주석을 읽을 때에 내용이 없는 장
+
+박윤선 주석은 성경의 모든 장에 대한 내용을 가지지 있지 않는 듯 합니다.
+
+적어도 제가 찾을 수 있는 한 그렇습니다. 그래서 작업할 때에, 내용이 없거나  적어도 제가 가지고 있지 않은 장에 대해서는  아무런 내용 없이 그냥  "."으로만 처리했습니다. 혹시 후에라도  해당 내용을 발견하거나 얻게 되면 작업을 쉽게 할 수 있도록 하기 위해서 입니다.
+
+참고하세요!</body>
+        </entry>
+      </chapter>
     </book>
     <book id="1" osis="Gen" testament="OT" chapters="50">
       <name>창세기</name>
