@@ -20,11 +20,6 @@
     <xs:sequence>
       <xs:element name="id" type="xs:string"/>
       <xs:element name="name" type="xs:string"/>
-      <xs:element name="english-name" type="xs:string" minOccurs="0"/>
-      <xs:element name="language" type="xs:string" minOccurs="0"/>
-      <xs:element name="website" type="xs:anyURI" minOccurs="0"/>
-      <xs:element name="license-url" type="xs:anyURI" minOccurs="0"/>
-      <xs:element name="source-api" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -36,7 +31,6 @@
 
   <xs:complexType name="CommentaryBook">
     <xs:sequence>
-      <xs:element name="english-name" type="xs:string"/>
       <xs:element name="name" type="xs:string"/>
       <xs:element name="chapter" type="CommentaryChapter" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>

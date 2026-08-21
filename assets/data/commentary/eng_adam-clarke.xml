@@ -3,15 +3,9 @@
   <metadata>
     <id>adam-clarke</id>
     <name>Adam Clarke Bible Commentary</name>
-    <english-name>Adam Clarke Bible Commentary</english-name>
-    <language>eng</language>
-    <website>https://en.wikipedia.org/wiki/Adam_Clarke</website>
-    <license-url>https://creativecommons.org/publicdomain/mark/1.0/</license-url>
-    <source-api>/api/c/adam-clarke/books.json</source-api>
   </metadata>
   <books>
     <book id="1" osis="GEN" chapters="50">
-      <english-name>Genesis</english-name>
       <name>Genesis</name>
       <chapter number="10">
         <entry><reference book="GEN" chapter="10" verses="0"/><body>The generations of the sons of Noah, Gen 10:1. Japheth and his descendants, Gen 10:2-4. The isles of the Gentiles, or Europe, peopled by the Japhethites, Gen 10:5. Ham and his posterity, Gen 10:6-20. Nimrod, one of his descendants, a mighty hunter, Gen 10:8, Gen 10:9, founds the first kingdom, Gen 10:10. Nineveh and other cities founded, Gen 10:11, Gen 10:12. The Canaanites in their nine grand branches or families, Gen 10:15-18. Their territories, Gen 10:19. Shem and his posterity, Gen 10:21-31. The earth divided in the days of Peleg, Gen 10:25. The territories of the Shemites, Gen 10:30. The whole earth peopled by the descendants of Noah&apos;s three sons, Gen 10:32.</body></entry>
@@ -2302,7 +2296,6 @@ Though what is left undone should not cause us to lose sight of what is done, ye
       </chapter>
     </book>
     <book id="2" osis="EXO" chapters="40">
-      <english-name>Exodus</english-name>
       <name>Exodus</name>
       <chapter number="10">
         <entry><reference book="EXO" chapter="10" verses="0"/><body>Moses is again sent to Pharaoh, and expostulates with him on his refusal to let the Hebrews go, Exo 10:1-3. The eighth plague, viz., of locusts, is threatened, Exo 10:4. The extent and oppressive nature of this plague, Exo 10:5, Exo 10:6. Pharaoh&apos;s servants counsel him to dismiss the Hebrews, Exo 10:7. He calls for Moses and Aaron, and inquires who they are of the Hebrews who wish to go, Exo 10:8. Moses having answered that the whole people, with their flocks and herds must go and hold a feast to the Lord, Exo 10:9, Pharaoh is enraged, and having granted permission only to the men, drives Moses and Aaron from his presence, Exo 10:10, Exo 10:11. Moses is commanded to stretch out his hand and bring the locusts, Exo 10:12. He does so, and an east wind is sent, which, blowing all that day and night, brings the locusts the next morning, Exo 10:13. The devastation occasioned by these insects, Exo 10:14, Exo 10:15. Pharaoh is humbled, acknowledges his sin, and begs Moses to intercede with Jehovah for him, Exo 10:16, Exo 10:17. Moses does so, and at his request a strong west wind is sent, which carries all the locusts to the Red Sea, Exo 10:18, Exo 10:19. Pharaoh&apos;s heart is again hardened, Exo 10:20. Moses is commanded to bring the ninth plague of extraordinary darkness over all the land of Egypt, Exo 10:21. The nature, duration, and effects of this, Exo 10:22, Exo 10:23. Pharaoh, again humbled, consents to let the people go, provided they leave their cattle behind, Exo 10:24. Moses insists on having all their cattle, because of the sacrifices which they must make to the Lord, Exo 10:25, Exo 10:26. Pharaoh, again hardened, refuses, Exo 10:27. Orders Moses from his presence, and threatens him with death should he ever return, Exo 10:28. Moses departs with the promise of returning no more, Exo 10:29.</body></entry>
@@ -4275,7 +4268,6 @@ See the observations at the conclusion of the next chapter. See Clarke at Exo 10
       </chapter>
     </book>
     <book id="3" osis="LEV" chapters="27">
-      <english-name>Leviticus</english-name>
       <name>Leviticus</name>
       <chapter number="10">
         <entry><reference book="LEV" chapter="10" verses="0"/><body>Nadab and Abihu offer strange fire before the Lord, and are destroyed, Lev 10:1-5. Aaron and his family forbidden to mourn for them, Lev 10:6, Lev 10:7. He and his family are forbidden the use of wine, Lev 10:8-11. Directions to Aaron and his sons concerning the eating of the meat-offerings, etc., Lev 10:12-15. Moses chides Aaron for not having eaten the sin-offering, Lev 10:16-18. Aaron excuses himself, and Moses is satisfied, Lev 10:19, Lev 10:20. 
@@ -5194,7 +5186,6 @@ The most remarkable circumstance in this chapter is the manifestation of the pre
       </chapter>
     </book>
     <book id="4" osis="NUM" chapters="36">
-      <english-name>Numbers</english-name>
       <name>Numbers</name>
       <chapter number="10">
         <entry><reference book="NUM" chapter="10" verses="0"/><body>Moses is commanded to make a second set of tables, Deu 10:1, Deu 10:2. He makes an ark, prepares the two tables, God writes on them the ten commandments, and Moses lays them up in the ark, Deu 10:3-5. The Israelites journey from Beeroth to Mosera, where Aaron dies, Deu 10:6; and from thence to Gudgodah and Jotbath, Deu 10:7. At that time God separated the tribe of Levi for the service of the sanctuary, Deu 10:8, Deu 10:9. How long Moses stayed the second time in the mount, Deu 10:10, Deu 10:11. What God requires of the Israelites, Deu 10:12-15. Their heart must be circumcised, Deu 10:16. God&apos;s character and conduct, Deu 10:17, Deu 10:18. They are commanded to love the stranger, Deu 10:19; to fear, love, and serve God, Deu 10:20, because he had done such great things for them and their fathers, Deu 10:21, Deu 10:22.</body></entry>
@@ -5343,7 +5334,6 @@ The Forty-Third, called מסעי masey, begins Num 33:1, and ends Num 36:13.</bo
       </chapter>
     </book>
     <book id="6" osis="JOS" chapters="24">
-      <english-name>Joshua</english-name>
       <name>Joshua</name>
       <chapter number="10">
         <entry><reference book="JOS" chapter="10" verses="0"/><body>Adoni-zedec, king of Jerusalem, hearing of the capture of Ai, and that the Gibeonites had made peace with Israel, calls to his assistance four other kings to fight against Gibeon, Jos 10:1-4. They join forces, and encamp against Gibeon, Jos 10:5. The Gibeonites send to Joshua for succor, Jos 10:6, who immediately marches to their relief, receives encouragement from God, and falls suddenly on the confederate forces, Jos 10:7-9, and defeats them; they fly, and multitudes of them are slain by a miraculous shower of hail-stones, Jos 10:10, Jos 10:11. Joshua, finding that the day began to fail, prayed that the sun and moon might stand still, that they might have time to pursue and utterly destroy these confederate forces, Jos 10:12. The sun and moon stand still, and make that day as long as two, Jos 10:13, Jos 10:14. Joshua and the people return to their camp at Gilgal, Jos 10:15. The five kings having taken shelter in a cave at Makkedah, Joshua commanded the people to roll great stones against the mouth of the cave, and set a watch to keep it, while Israel were pursuing their enemies, Jos 10:16-19. The Israelites return to Makkedah, bring forth the five kings, then slay and hang them on five trees, Jos 10:20-27. The Israelites take and destroy Makkedah, Jos 10:28, and Libnah, Jos 10:29, Jos 10:30, and Lachish, Jos 10:31, Jos 10:32, and defeat Horam king of Gezer, Jos 10:33, and take Eglon, Jos 10:34, Jos 10:35, and Hebron, Jos 10:36, Jos 10:37, and Debir, Jos 10:38, Jos 10:39, and all the country of the hills, south, vale, and springs, and the whole country from Kadesh-Barnea to Gibeon, Jos 10:40-42. They return to Gilgal, Jos 10:43. 
@@ -6328,7 +6318,6 @@ On what we meet with in this chapter, we may make the following observations.
       </chapter>
     </book>
     <book id="8" osis="RUT" chapters="4">
-      <english-name>Ruth</english-name>
       <name>Ruth</name>
       <chapter number="1">
         <entry><reference book="RUT" chapter="1" verses="0"/><body>Elimelech, his wife Naomi, and their two sons, Mahlon and Chilion, flee from a famine in the land of Israel, and go to sojourn in Moab, Rut 1:1, Rut 1:2. Here his two sons marry; and, in the space of ten years, both their father and they die, Rut 1:3-6. Naomi sets out on her return to her own country, accompanied by her daughters-in-law Orpah and Ruth; whom she endeavors to persuade to return to their own people, Rut 1:7-13. Orpah returns, but Ruth accompanies her mother-in-law, Rut 1:14-18. They arrive at Beth-lehem in the time of the barley harvest, Rut 1:19-22.</body></entry>
@@ -6502,7 +6491,6 @@ We have already seen that Archbishop Usher places the event mentioned here in A.
       </chapter>
     </book>
     <book id="9" osis="1SA" chapters="31">
-      <english-name>1 Samuel</english-name>
       <name>1 Samuel</name>
       <chapter number="10">
         <entry><reference book="1SA" chapter="10" verses="0"/><body>Samuel anoints Saul captain of the Lord&apos;s inheritance, Sa1 10:1. Instructs him concerning his return home, whom he should meet, and what he should do, Sa1 10:2-8. Saul meets a company of prophets, the Spirit of the Lord comes on him, and he prophesies among them, Sa1 10:9-13. He meets his uncle, and converses with him, Sa1 10:14-16. Samuel calls the people together to Mizpeh, and upbraids them for having rejected the Lord as their king, Sa1 10:17-19. Lots are cast to find out the person proper to be appointed king; Saul is chosen, Sa1 10:20-24. Samuel shows the manner of the king, and writes it in a book, Sa1 10:25. Saul goes to Gibeah; and certain persons refuse to acknowledge him as king, Sa1 10:26, Sa1 10:27. 
@@ -7764,7 +7752,6 @@ And on whom is all the desire of Israel? - Saul understood this as implying that
       </chapter>
     </book>
     <book id="10" osis="2SA" chapters="24">
-      <english-name>2 Samuel</english-name>
       <name>2 Samuel</name>
       <chapter number="10">
         <entry><reference book="2SA" chapter="10" verses="0"/><body>The king of Ammon being dead, David sends ambassadors to comfort his son Hanun, Sa2 10:1, Sa2 10:2. Hanun, misled by his courtiers, treats the messengers of David with great indignity, Sa2 10:3-5. The Ammonites, justly dreading David&apos;s resentment, send, and hire the Syrians to make war upon him, Sa2 10:6. Joab and Abishai meet them at the city of Medeba, and defeat them, Sa2 10:7-14. The Syrians collect another army, but are defeated by David with great slaughter, and make with him a separate peace, Sa2 10:15-19. 
@@ -8585,7 +8572,6 @@ And thou shalt eat bread at my table - This was kindness, (the giving up the lan
       </chapter>
     </book>
     <book id="11" osis="1KI" chapters="22">
-      <english-name>1 Kings</english-name>
       <name>1 Kings</name>
       <chapter number="10">
         <entry><reference book="1KI" chapter="10" verses="0"/><body>The queen of Sheba visits Solomon, and brings rich presents; and tries him by hard questions, which he readily solves, Kg1 10:1-3. She expresses great surprise at his wisdom, his buildings, his court, etc.; and praises God for placing him on the Jewish throne, Kg1 10:4-9. She gives him rich presents, Kg1 10:10. What the navy of Hiram brought from Ophir, Kg1 10:11, Kg1 10:12. The queen of Sheba returns, Kg1 10:13. Solomon&apos;s annual revenue, Kg1 10:14, Kg1 10:15. He makes two hundred targets and three hundred shields of gold, Kg1 10:16, Kg1 10:17. His magnificent ivory throne, Kg1 10:18-20. His drinking vessels all of gold, Kg1 10:21. What the navy of Tharshish brought every three years to Solomon, Kg1 10:22. His great riches, numerous chariots, and horsemen, Kg1 10:23-27. He brings chariots and horses out of Egypt, Kg1 10:28, Kg1 10:29. 
@@ -9642,7 +9628,6 @@ To illustrate and prove his positions he has given a map on a large scale, &quot
       </chapter>
     </book>
     <book id="12" osis="2KI" chapters="25">
-      <english-name>2 Kings</english-name>
       <name>2 Kings</name>
       <chapter number="10">
         <entry><reference book="2KI" chapter="10" verses="0"/><body>Jehu sends an ironical letter to the elders of Samaria, telling them to choose one of the best of their master&apos;s sons, and put him on the throne; to which they return a submissive answer, Kg2 10:1-6. He writes a second letter, and orders them to send him the heads of Ahab&apos;s seventy sons; they do so, and they are laid in two heaps at the gate of Jezreel, Kg2 10:7, Kg2 10:8. Jehu shows them to the people, and excuses himself, and states that all is done according to the word of the Lord, Kg2 10:9, Kg2 10:10. He destroys all the kindred of Ahab that remained in Jezreel, Kg2 10:11. He also destroys forty-two men, the brethren of Ahaziah, king of Judah, Kg2 10:12-14. He meets with Jehonadab, and takes him with him in his chariot, Kg2 10:15, Kg2 10:16. He comes to Samaria, and destroys all that were of the kindred of Ahab there, Kg2 10:17. He pretends a great zeal for the worship of Baal, and gathers all his priests together, under the pretense of a grand sacrifice, and slays them all, Kg2 10:18-25. He burns Baal&apos;s images, and makes his temple a draught house, Kg2 10:26-28. But he does not depart from the sins of Jeroboam, and does not prosper, Kg2 10:29-31. Hazael vexes Israel, Kg2 10:32, Kg2 10:33. Jehu dies, having reigned over Israel, in Samaria, twenty-eight years, Kg2 10:34-36. 
@@ -10616,7 +10601,6 @@ They shall not say, This is Jezebel - As she could not be buried, she could have
       </chapter>
     </book>
     <book id="13" osis="1CH" chapters="29">
-      <english-name>1 Chronicles</english-name>
       <name>1 Chronicles</name>
       <chapter number="10">
         <entry><reference book="1CH" chapter="10" verses="0"/><body>A fatal battle between the Israelites and Philistines in Gilboa, in which Saul is mortally wounded, and has three sons slain, Ch1 10:1-6. The Israelites being totally routed, the Philistines, coming to strip the dead, find Saul and has three sons among the slain; they cut off Saul&apos;s head, and send it and his armor about the country to the idol temples; and then fix them up in the house of Dagon, Ch1 10:7-10. The men of Jabesh-gilead come by night, and take away the bodies of Saul and has three sons, and bury them in Jabesh, Ch1 10:11, Ch1 10:12. The reason of Saul&apos;s tragical death; the kingdom is transferred to David, Ch1 10:13, Ch1 10:14.</body></entry>
@@ -11160,7 +11144,6 @@ Ch1 9:35, and the following verses, are a repetition of what we find in Ch1 8:29
       </chapter>
     </book>
     <book id="14" osis="2CH" chapters="36">
-      <english-name>2 Chronicles</english-name>
       <name>2 Chronicles</name>
       <chapter number="10">
         <entry><reference book="2CH" chapter="10" verses="0"/><body>The people apply to Rehoboam to ease them of their burdens, Ch2 10:1-4. Rejecting the advice of the aged counsellors, and following that of the young men, he gives them an ungracious answer, Ch2 10:5-14. The people are discouraged, and ten tribes revolt, Ch2 10:15-17. They stone Hadoram, who went to collect the tribute; and Rehoboam but barely escapes, Ch2 10:18, Ch2 10:19.</body></entry>
@@ -11847,7 +11830,6 @@ A talent is three thousand shekels; therefore six hundred shekels are one-fifth,
       </chapter>
     </book>
     <book id="15" osis="EZR" chapters="10">
-      <english-name>Ezra</english-name>
       <name>Ezra</name>
       <chapter number="10">
         <entry><reference book="EZR" chapter="10" verses="0"/><body>The people are greatly afflicted by Ezra&apos;s prayer, Ezr 10:1. Shechaniah proposes that all who have taken strange wives should put them away, and the children they had by them; and make a covenant to serve God, Ezr 10:2-4. Ezra is encouraged; and make a proclamation to collect the people, to find who had transgressed, Ezr 10:5-8. They come together on the twentieth day of the ninth month, Ezr 10:9. Ezra exhorts them to put away their strange wives, Ezr 10:10. The people agree to it, and require time, Ezr 10:11-14. This being granted, the business is completed by the first of the first month, Ezr 10:15-17. Some of the priests had taken strange wives; their names, and the names of all who were in the same trespass, vv. 18-44.</body></entry>
@@ -12075,7 +12057,6 @@ We cannot stand before thee because of this - The parallel place, as noted in th
       </chapter>
     </book>
     <book id="16" osis="NEH" chapters="13">
-      <english-name>Nehemiah</english-name>
       <name>Nehemiah</name>
       <chapter number="10">
         <entry><reference book="NEH" chapter="10" verses="0"/><body>The names of those who sealed the covenant, vv. 1-27. All solemnly promise not to have affinity with the people of the land, Neh 10:28-30; to observe the Sabbaths, Neh 10:31; to provide for the sanctuary according to the law, Neh 10:32-36; and to pay the regular tithes for the support of the priests, Levites, and other officers of the temple, Neh 10:37-39.</body></entry>
@@ -12502,7 +12483,6 @@ This was not mixing the Church with the state, or the state with the Church: bot
       </chapter>
     </book>
     <book id="17" osis="EST" chapters="10">
-      <english-name>Esther</english-name>
       <name>Esther</name>
       <chapter number="10">
         <entry><reference book="EST" chapter="10" verses="0"/><body>Ahasuerus lays a tribute on his dominions, Est 10:1. Mordecai&apos;s advancement under him, Est 10:2. His character, Est 10:3.</body></entry>
@@ -12786,7 +12766,6 @@ The Targum says, And by the word of Esther all these things relative to Purim we
       </chapter>
     </book>
     <book id="18" osis="JOB" chapters="42">
-      <english-name>Job</english-name>
       <name>Job</name>
       <chapter number="10">
         <entry><reference book="JOB" chapter="10" verses="0"/><body>Observations on wisdom and folly, Ecc 10:1-3. Concerning right conduct towards rulers, Ecc 10:4. Merit depressed, and worthlessness exalted, Ecc 10:5-7. Of him who digs a pit and removes a landmark, Ecc 10:8, Ecc 10:9. The use of wisdom and experience, Ecc 10:10. Of the babbler and the fool, Ecc 10:11-15. The infant king, Ecc 10:16. The well-regulated court, Ecc 10:17. Of slothfulness, Ecc 10:18. Of feasting, Ecc 10:19. Speak not evil of the king, Ecc 10:20. 
@@ -13656,7 +13635,6 @@ So closely does the Arabic translator copy the Syriac, that in the Polyglots one
       </chapter>
     </book>
     <book id="22" osis="SNG" chapters="8">
-      <english-name>Song of Songs</english-name>
       <name>Song of Songs</name>
       <chapter number="1">
         <entry><reference book="SNG" chapter="1" verses="0"/><body>The bride&apos;s love to her spouse, Sol 1:1-5. She conffieuses her unworthiness; desires to be directed to the flock, Sol 1:6, Sol 1:7; and she is directed to the shepherds&apos; tents, Sol 1:8. The bridegroom describes his bride, and shows how he will provide for her, and how comfortably they are accommodated, Sol 1:9-17. 
@@ -13692,7 +13670,6 @@ So closely does the Arabic translator copy the Syriac, that in the Polyglots one
       </chapter>
     </book>
     <book id="23" osis="ISA" chapters="66">
-      <english-name>Isaiah</english-name>
       <name>Isaiah</name>
       <chapter number="10">
         <entry><reference book="ISA" chapter="10" verses="0"/><body>The Jews, about to be carried into captivity, are here warned against the superstition and idolatry of that country to which they were going. Chaldea was greatly addicted to astrology, and therefore the prophet begins with warning them against it, Jer 10:1, Jer 10:2. He then exposes the absurdity of idolatry in short but elegant satire; in the midst of which he turns, in a beautiful apostrophe, to the one true God, whose adorable attributes repeatedly strike in view, as he goes along, and lead him to contrast his infinite perfections with those despicable inanities which the blinded nations fear, Jer 10:3-16. The prophet again denounces the Divine judgments, Jer 10:17, Jer 10:18; upon which Jerusalem laments her fate, and supplicates the Divine compassion in her favor, Jer 10:19-25. 
@@ -14526,7 +14503,6 @@ One of my old Hebrew MSS. after the twenty-first verse repeats the twenty-third:
       </chapter>
     </book>
     <book id="25" osis="LAM" chapters="5">
-      <english-name>Lamentations</english-name>
       <name>Lamentations</name>
       <chapter number="1">
         <entry><reference book="LAM" chapter="1" verses="0"/><body>The prophet begins with lamenting the dismal reverse of fortune that befell his country, confessing at the same time that her calamities were the just consequence of her sins, Lam 1:1-6. Jerusalem herself is then personified and brought forward to continue the sad complaint, and to solicit the mercy of God, vv. 7-22.
@@ -14843,7 +14819,6 @@ The poem is a monument of the people&apos;s iniquity and rebellion; of the displ
       </chapter>
     </book>
     <book id="26" osis="EZK" chapters="48">
-      <english-name>Ezekiel</english-name>
       <name>Ezekiel</name>
       <chapter number="10">
         <entry><reference book="EZK" chapter="10" verses="0"/><body>The same august vision which appeared to the prophet at first, is repeated here; and coals of fire are scattered over the city to intimate that it was to be burned. The symbol of the Divine presence is likewise represented as removing farther and farther from the temple, to signify that God&apos;s protection was about to be withdrawn from it, vv. 1-22. It may not be improper to remark, that whatever is particularly intended by the cherubim, wheels, firmament, throne, etc., described in this and the first chapter, the prophet several times informs us (Eze 1:28; Eze 3:25; Eze 8:4; Eze 10:4, Eze 10:18), that his vision was a manifestation or similitude of the Glory of Jehovah; or, in other words, consisted of a set of hieroglyphics by which this glory was in some measure represented. It is also worthy of observation, that the faces of the living creatures, of which we have an account in the fourth chapter of the Apocalypse, are precisely the same with those of Ezekiel&apos;s cherubim; and we nay readily collect, as Mr. Mede remarks, the quarter of the heavens in which each cherub was situated in reference to the other three, from the consideration that as Ezekiel saw the vision proceeding from the North, (see Eze 1:4, Eze 1:10), the human face of the cherubim was towards him, or the south; on his right hand, or the east, was the face of a lion; on his left hand, or the west, the face of an ox; and towards the north, the face of an eagle. 
@@ -16351,7 +16326,6 @@ It really seems that at this time the Jews had incorporated every species of ido
       </chapter>
     </book>
     <book id="27" osis="DAN" chapters="12">
-      <english-name>Daniel</english-name>
       <name>Daniel</name>
       <chapter number="10">
         <entry><reference book="DAN" chapter="10" verses="0"/><body>This and the two following chapters give an account of Daniel&apos;s last vision, wherein the succession of the Persian and Grecian monarchies is described, together with the wars that should take place between Syria and Egypt under the latter monarchy. The last part of the vision (from Dan 11:36) seems to relate chiefly to the persecutions of the Church in the times of Antichrist, till it be purified from all its pollutions; after which will follow that glorious kingdom of the saints spoken of in the seventh and eighth chapters. This chapter begins with an account of Daniel&apos;s fasting and humiliation, Dan 10:1-3. Then we have a description of the Divine person who appeared to the prophet, not unlike him who appeared to the apostle in the isle of Patmos, vv. 4-21. See Rev 1:10-16. 
@@ -17172,7 +17146,6 @@ I have thus set down almost all the variations mentioned by Kennicott and De Ros
       </chapter>
     </book>
     <book id="28" osis="HOS" chapters="14">
-      <english-name>Hosea</english-name>
       <name>Hosea</name>
       <chapter number="10">
         <entry><reference book="HOS" chapter="10" verses="0"/><body>This chapter treats of the same subject, but elegantly varied. It begins with comparing Israel to a fruitful vine but corrupted by too much prosperity, Hos 10:1. It next reproves and threatens them for their idolatry, Hos 10:2; anarchy, Hos 10:3; and breach of covenant, Hos 10:4. Their idolatry is then enlarged on; and its fatal consequences declared in terms full of sublimity and pathos, Hos 10:5-8. God is now introduced complaining of their excessive guilt; and threatening them with captivity in terms that bear a manifest allusion to their favourite idolatry, the worshiping the similitude of a calf or heifer, Hos 10:9-11. Upon which the prophet, in a beautiful allegory suggested by the preceding metaphors, exhorts them to repentance; and warns them of the dreadful consequences of their evil courses, if obstinately persisted in, Hos 10:12-15. 
@@ -17604,7 +17577,6 @@ And they shall be wanderers among the nations - And where they have wandered to,
       </chapter>
     </book>
     <book id="30" osis="AMO" chapters="9">
-      <english-name>Amos</english-name>
       <name>Amos</name>
       <chapter number="1">
         <entry><reference book="AMO" chapter="1" verses="0"/><body>This chapter denounces judgments against the nations bordering on Palestine, enemies to the Jews, viz., the Syrians, Amo 1:1-5; Philistines, Amo 1:6-8; Tyrians, Amo 1:9, Amo 1:10; Edomites, Amo 1:11, Amo 1:12; and Ammonites, Amo 1:13-15. The same judgments were predicted by other prophets, and fulfilled, partly by the kings of Assyria, and partly by those of Babylon; though, like many other prophecies, they had their accomplishment by degrees, and at different periods. The prophecy against the Syrians, whose capital was Damascus, was fulfilled by Tiglath-pileser, king of Assyria; see Kg2 16:9. The prophecy against Gaza of the Philistines was accomplished by Hezekiah, Kg2 18:8; by Pharaoh, Jer 47:1; and by Alexander the Great; see Quintius Curtius, lib. 4. c. 6. The prophecy against Ashdod was fulfilled by Uzziah, Ch2 26:6; and that against Ashkelon by Pharaoh, Jer 47:5. All Syria was also subdued by Pharaoh-necho; and again by Nebuchadnezzar, who also took Tyre, as did afterwards Alexander. Nebuchadnezzar also subdued the Edomites, Jer 25:9, Jer 25:21; Jer 27:3, Jer 27:6. Judas Maccabeus routed the remains of them, 1 Maccabees 5:3; and Hyrcanus brought them under entire subjection. The Ammonites were likewise conquered by Nebuchadnezzar. The earthquake, which the prophet takes for his era, is perhaps referred to in Zac 14:5, and also in Isa 5:25. Josephus ascribes it to Uzziah&apos;s invasion of the priestly office; see Ch2 26:16. 
@@ -17914,7 +17886,6 @@ And they shall no more be pulled up - Most certainly this prophecy has never yet
       </chapter>
     </book>
     <book id="31" osis="OBA" chapters="1">
-      <english-name>Obadiah</english-name>
       <name>Obadiah</name>
       <chapter number="1">
         <entry><reference book="OBA" chapter="1" verses="1"/><body>We have heard a rumor - See Jer 49:14, where the same expressions are found. The prophet shows that the enemies of Idumea had confederated against it, and that Jehovah is now summoning them to march directly against it.</body></entry>
@@ -17957,7 +17928,6 @@ But if we take the whole as referring to the times of the Gospel, which I believ
       </chapter>
     </book>
     <book id="32" osis="JON" chapters="4">
-      <english-name>Jonah</english-name>
       <name>Jonah</name>
       <chapter number="1">
         <entry><reference book="JON" chapter="1" verses="0"/><body>Jonah, sent to Nineveh, flees to Tarshish, Jon 1:1-3. He is overtaken by a great tempest, Jon 1:4-14; thrown into the sea, Jon 1:15, Jon 1:16; and swallowed by a fish, in the belly of which he is miraculously preserved alive three days and three nights, Jon 1:17. 
@@ -18076,7 +18046,6 @@ In conclusion: while I have done the best I could to illustrate the very difficu
       </chapter>
     </book>
     <book id="33" osis="MIC" chapters="7">
-      <english-name>Micah</english-name>
       <name>Micah</name>
       <chapter number="1">
         <entry><reference book="MIC" chapter="1" verses="0"/><body>The prophet begins with calling the attention of all people to the awful descent of Jehovah, coming to execute his judgments against the kingdoms of Israel and Judah, Mic 1:1-5; first against Samaria, whose fate the prophet laments on the dress of mourners, and with the doleful cries of the fox or ostrich, Mic 1:6-8; and then against Jerusalem, which is threatened with the invasion of Sennacherib. Other cities of Judah are likewise threatened; and their danger represented to be so great as to oblige them to have recourse for protection even to their enemies the Philistines, from whom they desired at first to conceal their situation. But all resources are declared to be vain; Israel and Judah must go into captivity, Mic 1:9-16. 
@@ -18333,7 +18302,6 @@ And thou wilt do us that good, which, from the most ancient days, thou hast prom
       </chapter>
     </book>
     <book id="34" osis="NAM" chapters="3">
-      <english-name>Nahum</english-name>
       <name>Nahum</name>
       <chapter number="1">
         <entry><reference book="NAM" chapter="1" verses="0"/><body>This chapter opens the prophecy against the Assyrians and their metropolis with a very magnificent description of the infinite justice, tender compassion, and uncontrollable power of God, Nah 1:1-8. To this succeeds an address to the Assyrians; with a lively picture of their sudden overthrow, because of their evil device against Jerusalem, Nah 1:9-11. Then appears Jehovah himself, proclaiming deliverance to his people from the Assyrian yoke, and the destruction of the Assyrian idols, Nah 1:12-14; upon which the prophet, with great emphasis, directs the attention of Judah to the approach of the messenger who brings such glad tidings; and exultingly bids his people to celebrate their solemn feasts, and perform their vows, as a merciful Providence would not suffer these enemies of the Jewish state to prevail against them, Nah 1:15. 
@@ -18433,7 +18401,6 @@ Bp. Newton makes some good remarks on the fall and total ruin of Nineveh.
       </chapter>
     </book>
     <book id="35" osis="HAB" chapters="3">
-      <english-name>Habakkuk</english-name>
       <name>Habakkuk</name>
       <chapter number="1">
         <entry><reference book="HAB" chapter="1" verses="1"/><body>The burden - המשא hammassa signifies not only the burdensome prophecy, but the prophecy or revelation itself which God presented to the mind of Habakkuk, and which he saw-clearly perceived, in the light of prophecy and then faithfully declared, as this book shows. The word signifies an oracle or revelation in general; but chiefly, one relative to future calamities.</body></entry>
@@ -18622,7 +18589,6 @@ Neginoth, נגינות which we translate stringed instruments, means such as we
       </chapter>
     </book>
     <book id="36" osis="ZEP" chapters="3">
-      <english-name>Zephaniah</english-name>
       <name>Zephaniah</name>
       <chapter number="1">
         <entry><reference book="ZEP" chapter="1" verses="1"/><body>The word of the Lord which came unto Zephaniah - Though this prophet has given us so large a list of his ancestors, yet little concerning him is known, because we know nothing certain relative to the persons of the family whose names are here introduced. We have one chronological note which is of more value for the correct understanding of his prophecy than the other could have been, how circumstantially soever it had been delivered; viz., that he prophesied in the days of Josiah, son of Amon, king of Judah; and from the description which he gives of the disorders which prevailed in Judea in his time, it is evident that he must have prophesied before the reformation made by Josiah, which was in the eighteenth year of his reign. And as he predicts the destruction of Nineveh, Zep 2:13, which, as Calmet remarks, could not have taken place before the sixteenth of Josiah, allowing with Berosus twenty-one years for the reign of Nabopolassar over the Chaldeans; we must, therefore, place this prophecy about the beginning of the reign of Josiah, or from b.c. 640 to b.c. 609. But see the chronological notes.</body></entry>
@@ -18729,7 +18695,6 @@ Before your eyes - Some read before Their eyes; that is, the eyes of all people.
       </chapter>
     </book>
     <book id="37" osis="HAG" chapters="2">
-      <english-name>Haggai</english-name>
       <name>Haggai</name>
       <chapter number="1">
         <entry><reference book="HAG" chapter="1" verses="1"/><body>In the sixth month - Called Elul by the Hebrews. It was the sixth month of the ecclesiastical year, and the last of the civil year, and answered to a part of our September.
@@ -18782,7 +18747,6 @@ I think, however, that we have lived to see the spirit of this prophecy fulfille
       </chapter>
     </book>
     <book id="38" osis="ZEC" chapters="14">
-      <english-name>Zechariah</english-name>
       <name>Zechariah</name>
       <chapter number="10">
         <entry><reference book="ZEC" chapter="10" verses="0"/><body>The promise of prosperity and plenty in the close of the preceding chapter leads the prophet to suggest, next, the means of obtaining them; supplication to Jehovah, and not to idols, whose worship had already proved a fertile source of calamities, Zac 10:1-3. The rest of the chapter (like the preceding) promises to the Jews a restoration to their own land under rulers and governors, victory over their enemies, and much increase and prosperity; and this in a manner so miraculous, that it is described, Zac 10:4-12, by allusions to the deliverance from Egypt. 
@@ -19231,7 +19195,6 @@ And new wine the maids - Who shall prepare the wine from an abundant vintage.</b
       </chapter>
     </book>
     <book id="41" osis="MRK" chapters="16">
-      <english-name>Mark</english-name>
       <name>Mark</name>
       <chapter number="10">
         <entry><reference book="MRK" chapter="10" verses="0"/><body>
@@ -20006,7 +19969,6 @@ Next: Mark Chapter 10</body></entry>
       </chapter>
     </book>
     <book id="42" osis="LUK" chapters="24">
-      <english-name>Luke</english-name>
       <name>Luke</name>
       <chapter number="10">
         <entry><reference book="LUK" chapter="10" verses="0"/><body>Christ appoints seventy disciples to go before him, two by two, to preach, heal, etc., Luk 10:1-12. Pronounces woes on Chorazin and Capernaum, Luk 10:13-16. The seventy return, and give account of their mission, Luk 10:17-20. Christ rejoices that the things which were hidden from the wise and prudent had been revealed unto babes, and shows the great privileges of the Gospel, Luk 10:21-24. A lawyer inquires how he shall inherit eternal life, and is answered, Luk 10:25-29. The story of the good Samaritan, Luk 10:30-37. The account of Martha and Mary, Luk 10:38-42. 
@@ -21650,7 +21612,6 @@ That the power of the keys, or of binding and loosing, belonged equally to all t
       </chapter>
     </book>
     <book id="43" osis="JHN" chapters="21">
-      <english-name>John</english-name>
       <name>John</name>
       <chapter number="10">
         <entry><reference book="JHN" chapter="10" verses="0"/><body>Christ speaks the parable of the sheepfold, Joh 10:1-6. Proclaims himself the door of the sheepfold, Joh 10:7-10, and the good shepherd who lays down his life for the sheep, Joh 10:11-18. The Jews are again divided, and some revile and some vindicate our Lord, Joh 10:19-21. His discourse with the Jews at the temple, on the feast of dedication, Joh 10:22-29. Having asserted that he was one with the Father, the Jews attempt to stone him, Joh 10:30, Joh 10:31. He vindicates his conduct, and appeals to his works, Joh 10:32-38. They strive to apprehend him; he escapes, and retires beyond Jordan, Joh 10:39, Joh 10:40. Many resort to and believe on him there, Joh 10:41, Joh 10:42. 
@@ -23574,7 +23535,6 @@ In a word, salvation shall be taken away from the Jews, because they reject it; 
       </chapter>
     </book>
     <book id="44" osis="ACT" chapters="28">
-      <english-name>Acts</english-name>
       <name>Acts</name>
       <chapter number="10">
         <entry><reference book="ACT" chapter="10" verses="1"/><body>There was a certain man in Caesarea - This was Caesarea of Palestine, called also Strato&apos;s Tower, as has been already noted, and the residence of the Roman procurator.
@@ -26272,7 +26232,6 @@ The whole history of St. Paul proves him to be one of the greatest of men; and h
       </chapter>
     </book>
     <book id="45" osis="ROM" chapters="16">
-      <english-name>Romans</english-name>
       <name>Romans</name>
       <chapter number="10">
         <entry><reference book="ROM" chapter="10" verses="0"/><body>The apostle expresses his earnest desire for the salvation of the Jews, Rom 10:1. Having a zeal for God, but not according to knowledge, they sought salvation by works, and not by faith in Christ, Rom 10:2-4. The righteousness which is of the law described, Rom 10:5. That which is by faith described also, Rom 10:6-10. He that believes and calls on the name of the Lord shall be saved, Rom 10:11-13. What is necessary to salvation, believing, hearing, preaching, a Divine mission, the Gospel, and obedience to its precepts, Rom 10:14-16. Faith comes by hearing, Rom 10:17. The universal spread of the Gospel predicted by the prophets, Rom 10:18-20. The ingratitude and disobedience of the Israelites, Rom 10:21. 
@@ -27698,7 +27657,6 @@ From thus carefully considering the apostle&apos;s discourse, and taking in his 
       </chapter>
     </book>
     <book id="46" osis="1CO" chapters="16">
-      <english-name>1 Corinthians</english-name>
       <name>1 Corinthians</name>
       <chapter number="10">
         <entry><reference book="1CO" chapter="10" verses="0"/><body>Peculiar circumstances in the Jewish history were typical of the greatest mysteries of the Gospel; particularly their passing through the Red Sea, and being overshadowed with the miraculous cloud, Co1 10:1, Co1 10:2. The manna with which they were fed, Co1 10:3. And rock out of which they drank, Co1 10:4. The punishments inflicted on them for their disobedience are warnings to us, Co1 10:5. We should not lust as they did, Co1 10:6. Nor commit idolatry, Co1 10:7. Nor fornication as they did; in consequence of which twenty-three thousand of them were destroyed, Co1 10:8. Nor tempt Christ as they did, Co1 10:9. Nor murmur, Co1 10:10. All these transgressions and their punishments are recorded as warnings to us, that we may not fall away from the grace of God, Co1 10:11, Co1 10:12. God never suffers any to be tempted above their strength, Co1 10:13. Idolatry must be detested, Co1 10:14. And the sacrament of the Lord&apos;s Supper properly considered and taken, that God may not be provoked to punish us, Co1 10:15-22. There are some things which may be legally done which are not expedient; and we should endeavor so to act as to edify each other, Co1 10:23, Co1 10:24. The question concerning eating things offered to idols considered, and finally settled, Co1 10:25-30. We should do all things to the glory of God, avoid whatsoever might be the means of stumbling another, and seek the profit of others in spiritual matters rather than our own gratification, Co1 10:31-33. 
@@ -29232,7 +29190,6 @@ Boxing, Co1 9:26, Co1 9:27 : So fight I, not as one that beateth the air; οὑ
       </chapter>
     </book>
     <book id="47" osis="2CO" chapters="13">
-      <english-name>2 Corinthians</english-name>
       <name>2 Corinthians</name>
       <chapter number="10">
         <entry><reference book="2CO" chapter="10" verses="0"/><body>The apostle vindicates himself against the aspersions cast on his person by the false apostle; and takes occasion to mention his spiritual might and authority, Co2 10:1-6. He shows them the impropriety of judging after the outward appearance, Co2 10:7. Again refers to his apostolical authority, and informs them that when he again comes among them he will show himself in his deeds as powerful as his letters intimated, Co2 10:8-11. He shows that these false teachers sat down in other men&apos;s labors, having neither authority nor influence from God to break up new ground, while he and the apostles in general had the regions assigned to them through which they were to sow the seed of life; and that he never entered into any place where the work was made ready to his hand by others, Co2 10:12-16. He concludes with intimating that the glorying of those false apostles was bad; that they had nothing but self-commendation; and that they who glory should glory in the Lord, Co2 10:17, Co2 10:18. 
@@ -30088,7 +30045,6 @@ A Few farther observations may be necessary on the conclusion of this chapter.
       </chapter>
     </book>
     <book id="48" osis="GAL" chapters="6">
-      <english-name>Galatians</english-name>
       <name>Galatians</name>
       <chapter number="1">
         <entry><reference book="GAL" chapter="1" verses="0"/><body>St. Paul shows that he was especially called of God to be an apostle, Gal 1:1. Directs his epistle to the Churches through the regions of Galatia, Gal 1:2. Commends them to the grace of Christ, who gave himself for their sins, Gal 1:3-5. Marvels that they had so soon turned away from the grace of the Gospel of Christ, to what falsely pretended to be another gospel, Gal 1:6, Gal 1:7. Pronounces him accursed who shall preach any other doctrine than that which he had delivered to them, Gal 1:8, Gal 1:9. Shows his own uprightness, and that he received his doctrine from God, Gal 1:10-12. Gives an account of his conversion and call to the apostleship, Gal 1:13-17. How three years after his conversion he went up to Jerusalem, and afterwards went through the regions of Syria and Cilicia, preaching the faith of Christ to the great joy of the Christian Churches in Judea, Gal 1:18-24. 
@@ -30476,7 +30432,6 @@ Finished the correction for a new edition, Dec. 14th, 1831. - A. C.</body></entr
       </chapter>
     </book>
     <book id="49" osis="EPH" chapters="6">
-      <english-name>Ephesians</english-name>
       <name>Ephesians</name>
       <chapter number="1">
         <entry><reference book="EPH" chapter="1" verses="0"/><body>The apostle&apos;s salutation to the Church, Eph 1:1, Eph 1:2. He blesses God for calling the Gentiles to the adoption of children by Jesus Christ, by whose sacrificial death both they and the Jews find redemption, Eph 1:3-7. He shows that it was through the great abundance of God&apos;s wisdom and goodness that the Gentiles were called into a state of salvation, and that they should receive the Holy Spirit as the earnest of their inheritance, Eph 1:8-15. He praises God for their conversion, and prays that they may be farther enlightened, that they may see the glory of Christ, and partake of the blessings procured by his passion and exaltation, Eph 1:16-23. 
@@ -31041,7 +30996,6 @@ Finished the correction for a new edition, Dec. 15th, 1831.</body></entry>
       </chapter>
     </book>
     <book id="50" osis="PHP" chapters="4">
-      <english-name>Philippians</english-name>
       <name>Philippians</name>
       <chapter number="1">
         <entry><reference book="PHP" chapter="1" verses="0"/><body>Paul, in conjunction with Timothy, addresses himself to the saints at Philippi, and gives them his apostolical benediction, Phi 1:1, Phi 1:2. Thanks God for their conversion and union, and expresses his persuasion that God will continue his work among them, Phi 1:3-6. Tells them of his strong affection for them, and prays that they may be filed with the salvation of God, Phi 1:7-11. Shows them how much his persecution had contributed to the success of the Gospel, Phi 1:12-14. Informs that there were some at Rome who preached the Gospel from unworthy motives; yet he was convinced that this, which was designed to injure him, should turn to his advantage, Phi 1:15-19. Mentions his uncertainty whether he should be liberated or martyred, and his perfect readiness to meet either; yet, on the whole, expresses a hope that he should again visit them, Phi 1:20-26. Exhorts them to a holy life, and comforts them under their tribulations, Phi 1:27-30. 
@@ -31328,7 +31282,6 @@ Finished correction for the press, Dec. 16th, 1831. - A. C.</body></entry>
       </chapter>
     </book>
     <book id="51" osis="COL" chapters="4">
-      <english-name>Colossians</english-name>
       <name>Colossians</name>
       <chapter number="1">
         <entry><reference book="COL" chapter="1" verses="0"/><body>The salutation of Paul and Timothy to the Church at Colosse, Col 1:1, Col 1:2. They give thanks to God for the good estate of that Church, and the wonderful progress of the Gospel in every place, Col 1:3-6; having received particulars of their state from Epaphroditus, which not only excited their gratitude, but led them to pray to God that they might walk worthy of the Gospel; and they give thanks to Him who had made them meet for an inheritance among the saints in light, Col 1:7-12. This state is described as a deliverance from the power of darkness, and being brought into the kingdom of God&apos;s dear Son, Col 1:13, Col 1:14. The glorious character of Jesus Christ, and what He has done for mankind, Col 1:15-20. The salvation which the Colossians had received, and of which the apostle had been the minister and dispenser, Col 1:21-26. The sum and substance of the apostle&apos;s preaching, and the manner in which he executed his ministry, Col 1:27-29. 
@@ -31612,7 +31565,6 @@ The common subscription has the consent of the greater number of the most recent
       </chapter>
     </book>
     <book id="52" osis="1TH" chapters="5">
-      <english-name>1 Thessalonians</english-name>
       <name>1 Thessalonians</name>
       <chapter number="1">
         <entry><reference book="1TH" chapter="1" verses="0"/><body>The inscription by Paul, Silvanus, and Timotheus, to the Church of the Thessalonians, Th1 1:1. St. Paul gives thanks to God for their good estate, and prays for their continuance in the faith, Th1 1:2-4. Shows how the Gospel came to them, and the blessed effects it produced in their life and conversation, Th1 1:5-7, How it became published from them through Macedonia and Achaia, and how their faith was everywhere celebrated, Th1 1:8. He shows farther, that the Thessalonians had turned from idolatry, become worshippers of the true God, and were waiting for the revelation of Christ, Th1 1:9, Th1 1:10. 
@@ -31837,7 +31789,6 @@ Finished correcting for a new edition, on the shortest day of 1831. - A. C.</bod
       </chapter>
     </book>
     <book id="53" osis="2TH" chapters="3">
-      <english-name>2 Thessalonians</english-name>
       <name>2 Thessalonians</name>
       <chapter number="1">
         <entry><reference book="2TH" chapter="1" verses="0"/><body>The salutation of St. Paul and his companions, Th2 1:1, Th2 1:2. The apostle gives thanks to God for their faith, love, and union; and for their patience under persecutions, Th2 1:3, Th2 1:4. Speaks of the coming of our Lord Jesus Christ, the punishment of the ungodly, and the glorification of the righteous, Th2 1:5-10. Prays that God may count them worthy of their calling, that the name of Jesus may be glorified in them, Th2 1:11, Th2 1:12. 
@@ -32004,7 +31955,6 @@ Finished correcting this epistle for a new edition, the shortest day in 1831. - 
       </chapter>
     </book>
     <book id="54" osis="1TI" chapters="6">
-      <english-name>1 Timothy</english-name>
       <name>1 Timothy</name>
       <chapter number="1">
         <entry><reference book="1TI" chapter="1" verses="0"/><body>Paul&apos;s salutation to Timothy, Ti1 1:1, Ti1 1:2. For what purpose he had left him at Ephesus, Ti1 1:3. What the false apostles taught in opposition to the truth, Ti1 1:4-7. The true use of the law, Ti1 1:8-11. He thanks God for his own conversion, and describes his former state, Ti1 1:12-17. Exhorts Timothy to hold fast faith and a good conscience, and speaks of Hymeneus and Alexander who had made shipwreck of their faith, Ti1 1:18-20. 
@@ -32527,7 +32477,6 @@ Finished correcting for a new edition, Dec. 22d, 1831. - A.C.</body></entry>
       </chapter>
     </book>
     <book id="55" osis="2TI" chapters="4">
-      <english-name>2 Timothy</english-name>
       <name>2 Timothy</name>
       <chapter number="1">
         <entry><reference book="2TI" chapter="1" verses="0"/><body>Paul&apos;s address to Timothy, and declaration of his affection for him, Ti2 1:1-4. His account of the piety of Timothy&apos;s mother and grandmother, and the religious education they had given their son, Ti2 1:5. He exhorts him to stir up the gift of God that is in him, and not to be ashamed of the testimony of the Lord, Ti2 1:6-8. How God has saved them that believe; and how Christ has brought life and immortality to light by the Gospel, Ti2 1:9, Ti2 1:10. The apostle&apos;s call to preach it, and the persecutions which he had been obliged in consequence to endure, Ti2 1:11, Ti2 1:12. Timothy is exhorted to hold fast the form of sound words, Ti2 1:13, Ti2 1:14. And is informed of the apostasy of several in Asia: and particularly of Phygellus and Hermogenes, Ti2 1:15. And of the great kindness of Onesiphorus to the apostle in his imprisonment, Ti2 1:16-18. 
@@ -32809,7 +32758,6 @@ The reader has already been apprized that this is most probably the last epistle
       </chapter>
     </book>
     <book id="56" osis="TIT" chapters="3">
-      <english-name>Titus</english-name>
       <name>Titus</name>
       <chapter number="1">
         <entry><reference book="TIT" chapter="1" verses="0"/><body>The apostle&apos;s statement of his character, his hope, and his function, Tit 1:1-3. His address to Titus, and the end for which he left him in Crete, Tit 1:4, Tit 1:5. The qualifications requisite in those who should be appointed elders and bishops in the Church of God, Tit 1:6-9. Of false teachers, Tit 1:10, Tit 1:11. The character of the Cretans, and how they were to be dealt with, Tit 1:12-14. Of the pure, the impure, and false professors of religion, Tit 1:15, Tit 1:16. 
@@ -33054,7 +33002,6 @@ There is not one of these subscriptions of any authority, and some of them are p
       </chapter>
     </book>
     <book id="57" osis="PHM" chapters="1">
-      <english-name>Philemon</english-name>
       <name>Philemon</name>
       <chapter number="1">
         <entry><reference book="PHM" chapter="1" verses="0"/><body>Paul&apos;s salutation to Philemon, and the Church at his house, Plm 1:1-3. He extols his faith, love, and Christian charity, Plm 1:4-7. Entreats forgiveness for his servant Onesimus, Plm 1:8-14. Urges motives to induce Philemon to forgive him, Plm 1:15-17. Promises to repair any wrong he had done to his master, Plm 1:18, Plm 1:19. Expresses his confidence that Philemon will comply with his request, Plm 1:20, Plm 1:21. Directs Philemon to prepare him a lodging, Plm 1:22. Salutations and apostolical benediction, Plm 1:23-25. 
@@ -33166,7 +33113,6 @@ Finished correcting for a new edition, Dec. 23, 1831.</body></entry>
       </chapter>
     </book>
     <book id="58" osis="HEB" chapters="13">
-      <english-name>Hebrews</english-name>
       <name>Hebrews</name>
       <chapter number="10">
         <entry><reference book="HEB" chapter="10" verses="0"/><body>The insufficiency of the legal sacrifices to take away sin, Heb 10:1-4. The purpose and will of God, as declared by the Psalmist, relative to the salvation of the world by the incarnation of Christ; and our sanctification through that will, Heb 10:5-10. Comparison between the priesthood of Christ and that of the Jews, Heb 10:11-14. The new covenant which God promised to make, and the blessings of it, Heb 10:15-17. The access which genuine believers have to the holiest by the blood of Jesus, Heb 10:18-20. Having a High Priest over the Church of God, we should have faith, walk uprightly, hold fast our profession, exhort and help each other, and maintain Christian communion, Heb 10:21-25. The danger and awful consequences of final apostasy, Heb 10:26-31. In order to our perseverance, we should often reflect on past mercies, and the support afforded us in temptations and afflictions; and not cast away our confidence, for we shall receive the promise if we patiently fulfill the will of God, Heb 10:32-37. The just by faith shall live; but the soul that draws back shall die, Heb 10:38. The apostle&apos;s confidence in the believing Hebrews, Heb 10:39. 
@@ -34442,7 +34388,6 @@ On the word conscience, which occurs so often in this chapter, and in other part
       </chapter>
     </book>
     <book id="59" osis="JAS" chapters="5">
-      <english-name>James</english-name>
       <name>James</name>
       <chapter number="1">
         <entry><reference book="JAS" chapter="1" verses="0"/><body>He addresses the dispersed of the twelve tribes, Jam 1:1. Shows that they should rejoice under the cross, because of the spiritual good which they may derive from it, especially in the increase and perfecting of their patience, Jam 1:2-4. They are exhorted to ask wisdom of God, who gives liberally to all, Jam 1:5. But they must ask in faith, and not with a doubting mind, Jam 1:6-8. Directions to the rich and the poor, Jam 1:9-11. The blessedness of the man that endures trials, Jam 1:12. How men are tempted and drawn away from God, Jam 1:13-15. God is the Father of lights, and all good proceeds from him, Jam 1:16-18. Cautions against hasty words and wrong tempers, Jam 1:19-21. We should be doers of the word, and not hearers merely, lest we resemble those who, beholding their natural face in a glass, when it is removed forget what manner of persons they were, Jam 1:22-24. We should look into the perfect law of liberty, and continue therein, Jam 1:25. The nature and properties of pure religion, Jam 1:26, Jam 1:27. 
@@ -34898,7 +34843,6 @@ In the Manuscripts: Of James. - Codex Vaticanus, B. The Epistle of James. - Code
       </chapter>
     </book>
     <book id="60" osis="1PE" chapters="5">
-      <english-name>1 Peter</english-name>
       <name>1 Peter</name>
       <chapter number="1">
         <entry><reference book="1PE" chapter="1" verses="0"/><body>Of the persons to whom this epistle was directed, and their spiritual state, Pe1 1:1, Pe1 1:2. He describes their privileges, and thanks God for the grace by which they were preserved faithful in trials and difficulties, Pe1 1:3-5. The spiritual benefit they were to receive out of their afflictions, Pe1 1:6, Pe1 1:7. Their love to Christ, Pe1 1:8. And the salvation they received through believing, Pe1 1:9. This salvation was predicted by the prophets, who only saw it afar off and had only a foretaste of it, Pe1 1:10-12. They should take encouragement, and be obedient and holy, Pe1 1:13-16. Thy should pray, and deeply consider the price at which they were purchased, that their faith and hope might be in God, Pe1 1:17-21. As their souls had been purified by obeying the truth through the Spirit, they should love each other with a pure and fervent love, Pe1 1:22, Pe1 1:23. The frailty of man, and the unchangeableness of God, Pe1 1:24, Pe1 1:25. 
@@ -35325,7 +35269,6 @@ Finished correcting this epistle for a new edition, Dec. 31, 1831, - A. C.</body
       </chapter>
     </book>
     <book id="61" osis="2PE" chapters="3">
-      <english-name>2 Peter</english-name>
       <name>2 Peter</name>
       <chapter number="1">
         <entry><reference book="2PE" chapter="1" verses="0"/><body>The apostolical address, and the persons to whom the epistle was sent described by the state into which God had called, and in which he had placed, them, Pe2 1:1-4. What graces they should possess in order to be fruitful in the knowledge of God, Pe2 1:5-8. The miserable state of those who either have not these graces, or have fallen from them, Pe2 1:9. Believers should give diligence to make their calling and election sure, Pe2 1:10, Pe2 1:11. The apostle&apos;s intimations of his speedy dissolution, and his wish to confirm and establish those Churches in the true faith, Pe2 1:12-15. The certainty of the Gospel, and the convincing evidence which the apostle had of its truth from being present at the transfiguration, by which the word of prophecy was made more sure, Pe2 1:16-19. How the prophecies came, and their nature, Pe2 1:20, Pe2 1:21. 
@@ -35567,7 +35510,6 @@ We have now passed over all the canonical writings of Peter that are extant; and
       </chapter>
     </book>
     <book id="62" osis="1JN" chapters="5">
-      <english-name>1 John</english-name>
       <name>1 John</name>
       <chapter number="1">
         <entry><reference book="1JN" chapter="1" verses="0"/><body>The testimony of the apostle concerning the reality of the person and doctrine of Christ; and the end for which he bears this testimony, Jo1 1:1-4. God is light, and none can have fellowship with him who do not walk in the light; those who walk in the light are cleansed from all unrighteousness by the blood of Christ, Jo1 1:5-7. No man can say that he has not sinned; but God is faithful and just to cleanse from all unrighteousness them who confess their sins, Jo1 1:8-10. 
@@ -35896,7 +35838,6 @@ For other matters relative to the epistle itself see the preface: and for its he
       </chapter>
     </book>
     <book id="63" osis="2JN" chapters="1">
-      <english-name>2 John</english-name>
       <name>2 John</name>
       <chapter number="1">
         <entry><reference book="2JN" chapter="1" verses="0"/><body>The apostle&apos;s address to a Christian matron and her children, Jo2 1:1-3. He rejoices to find that certain of her family had received, and continued to adorn, the truth; and he exhorts them to continue to love one another according to the commandment of Christ, Jo2 1:4-6, And particularly cautions them against deceivers, and to so watch, that they might not lose the benefit of what they had received, Jo2 1:7, Jo2 1:8. The necessity of abiding in the doctrine of Christ, Jo2 1:9. He cautions them against receiving, or in any way forwarding, those who did not bring the true doctrine of Christ, Jo2 1:10, Jo2 1:11. Excuses himself from writing more largely, and purposes to pay her and family a visit shortly, Jo2 1:12, Jo2 1:13. 
@@ -35945,7 +35886,6 @@ On this model the conduct of all Christians should be formed, relative to the te
       </chapter>
     </book>
     <book id="64" osis="3JN" chapters="1">
-      <english-name>3 John</english-name>
       <name>3 John</name>
       <chapter number="1">
         <entry><reference book="3JN" chapter="1" verses="0"/><body>The apostle&apos;s address to Caius, and his good wishes for his prosperity in body and soul, Jo3 1:1, Jo3 1:2. He commends him for his steadiness in the truth, and his general hospitality, especially to the itinerant evangelists, Jo3 1:3-8. Speaks of the bad conduct of Diotrephes; his abuse of his power in the Church; and his slander of the apostles, Jo3 1:9, Jo3 1:10. Exhorts Caius to avoid his example, and to follow what is good, Jo3 1:11. Commends Demetrius, Jo3 1:12. Excuses himself from writing more fully, and proposes to pay him a visit shortly, Jo3 1:13, Jo3 1:14.
@@ -36014,7 +35954,6 @@ This and the preceding epistle both read over in reference to a new edition, Jan
       </chapter>
     </book>
     <book id="65" osis="JUD" chapters="1">
-      <english-name>Jude</english-name>
       <name>Jude</name>
       <chapter number="1">
         <entry><reference book="JUD" chapter="1" verses="0"/><body>The address and apostolical benediction, Jde 1:1, Jde 1:2. The reasons which induced Jude to write this epistle, to excite the Christians to contend for the true faith, and to beware of false teachers, lest, falling from their steadfastness, they should be destroyed after the example of backsliding Israel, the apostate angels, and the inhabitants of Sodom and Gomorrha, Jde 1:3-7. Of the false teachers, Jde 1:8. Of Michael disputing about the body of Moses, Jde 1:9. The false teachers particularly described: they are like brute beasts, going the way of Cain, run after the error of Balaam, and shall perish, as did Korah in his gainsaying, Jde 1:10, Jde 1:11. Are impure, unsteady, fierce, shameless, etc., 12, 13. How Enoch prophesied of such, Jde 1:14, Jde 1:15. They are farther described as murmurers and complainers, Jde 1:16. We should remember the cautions given unto us by the apostles who foretold of these men, Jde 1:17-19. We should build up ourselves on our most holy faith, Jde 1:20, Jde 1:21. How the Church of Christ should treat such, Jde 1:22, Jde 1:23. The apostle&apos;s farewell, and his doxology to God, Jde 1:24, Jde 1:25. 
@@ -36137,7 +36076,6 @@ Finished for a new impression, January 4th, 1832. - A. C.</body></entry>
       </chapter>
     </book>
     <book id="66" osis="REV" chapters="22">
-      <english-name>Revelation</english-name>
       <name>Revelation</name>
       <chapter number="10">
         <entry><reference book="REV" chapter="10" verses="0"/><body>The description of a mighty angel with a little book in his hand, Rev 10:1, Rev 10:2. The seven thunders, Rev 10:3, Rev 10:4. The angel swears that there shalt be time no longer, Rev 10:5-7. John is commanded to take the little book and eat it; he does so, and receives a commission to prophesy to many peoples, Rev 10:8-11. 

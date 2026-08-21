@@ -3,15 +3,9 @@
   <metadata>
     <id>tyndale</id>
     <name>Tyndale Open Study Notes</name>
-    <english-name>Tyndale Open Study Notes</english-name>
-    <language>eng</language>
-    <website>https://tyndaleopenresources.com/</website>
-    <license-url>https://creativecommons.org/licenses/by-sa/4.0/</license-url>
-    <source-api>/api/c/tyndale/books.json</source-api>
   </metadata>
   <books>
     <book id="-1" osis="Ezek" chapters="48">
-      <english-name>Ezek</english-name>
       <name>Ezek</name>
       <chapter number="10">
         <entry><reference book="Ezek" chapter="10" verses="1"/><body>10:1-22 The Temple provided an earthly residence where the Lord’s glory could dwell among his people. This central blessing of the covenant could only be maintained if the people were holy. In the face of their defilement, the Lord abandoned his house, leaving it and the surrounding city vulnerable to the impending assault of the Babylonians.10:1-2 Almost the same vision of fearsome glory that Ezekiel had seen earlier in Babylonia (ch 1) now appeared to him in the Jerusalem Temple. In a building filled with heavenly symbols, Ezekiel clearly perceived that the living creatures he had seen earlier were cherubim, the enforcers of divine judgment (Gen 3:24). • The burning coals that the priestly figure was instructed to gather showed that the defiled Jerusalem was to be burned by fire, as the city of Sodom had been (see 16:46-50). The implication of the Lord’s abandoning his city was later worked out in history: Several years after this vision, Nebuchadnezzar burned the city of Jerusalem and filled it with corpses.</body></entry>
@@ -567,7 +561,6 @@
       </chapter>
     </book>
     <book id="-1" osis="Nah" chapters="3">
-      <english-name>Nah</english-name>
       <name>Nah</name>
       <chapter number="1">
         <entry><reference book="Nah" chapter="1" verses="1"/><body>1:1 message . . . vision: This opening, similar to that of other prophetic books (cp. Obad 1:1; Hab 1:1; Mal 1:1), identifies Nahum as a prophet, one who uttered messages from God. • Nineveh became the capital of the Assyrian Empire sometime shortly after 705 BC and remained so until its destruction in 612 BC. • The name Nahum means “comfort” or “encouragement.” An important theme of his prophecy is that God will bring encouragement to his people through Nineveh’s downfall (Nah 1:12-15; see Isa 40:1).</body></entry>
@@ -613,7 +606,6 @@
       </chapter>
     </book>
     <book id="-1" osis="Phil" chapters="4">
-      <english-name>Phil</english-name>
       <name>Phil</name>
       <chapter number="1">
         <entry><reference book="Phil" chapter="1" verses="1"/><body>1:1-2 Paul introduces his letter by listing the names of the senders and recipients of the letter, then giving an invocation of grace and peace.1:1 Timothy was one of Paul’s most trusted co-workers and messengers. He is listed as co-sender, as he is for five other letters (2 Cor, Col, 1 Thes, 2 Thes, Phlm). • slaves of Christ Jesus: As those who belong entirely to Christ, they were completely devoted to his service (see Phil 2:20-21). • God’s holy people have been made holy in God’s sight by Christ’s redeeming work (see Eph 1:4, 7; 5:25-27; Col 1:22), and they are being sanctified by the transforming work of the Holy Spirit in their lives (cp. Phil 4:21). • Philippi was a Roman colony in the province of Macedonia. The church in Philippi was the first Christian community in Greece (see Acts 16:11-40). • In the early church, church leaders provided spiritual leadership, while deacons attended to practical matters (see 1 Tim 3:1-13). There were no professional pastors or priests as there are today (cp. 1 Cor 14:26-31).</body></entry>
@@ -704,7 +696,6 @@
       </chapter>
     </book>
     <book id="-1" osis="Phlm" chapters="1">
-      <english-name>Phlm</english-name>
       <name>Phlm</name>
       <chapter number="1">
         <entry><reference book="Phlm" chapter="1" verses="1"/><body>1:1-3 Paul usually begins with a short introduction followed by greetings and the invocation of grace and peace.1:1 Paul, a prisoner: It is traditionally thought that Paul was writing from prison in Rome, but it is also possible that he was writing earlier from Ephesus, much closer to Philemon’s home in Colosse (see Philemon Book Introduction, “Date and Place of Writing”). • Timothy was one of Paul’s closest co-workers (see “Timothy” Profile). • co-worker: Philemon was active in ministry for Christ.</body></entry>
@@ -729,7 +720,6 @@
       </chapter>
     </book>
     <book id="1" osis="GEN" chapters="50">
-      <english-name>Genesis</english-name>
       <name>Genesis</name>
       <chapter number="10">
         <entry><reference book="GEN" chapter="10" verses="1"/><body>10:1–11:9 The fifth account (10:1) in Genesis (see study note on 2:4) unites the Table of Nations (10:2-32) and the Babel story (11:1-9) around the theme of scattering the nations (10:5, 18; 11:4, 8-9). The Table of Nations precedes the Babel story even though the Babel incident caused the geopolitical situation reflected in the Table of Nations. By reversing the order, Genesis links the repopulation of the earth with the blessing conferred upon Noah and his sons (see 9:1 and study note) and shows that Abram’s call (12:1-3) was God’s solution to the problem of human estrangement from God as reflected in the Babel story (11:1-9).10:1 Many children were born . . . after the great flood: This fulfilled the renewed creation mandate (9:1, 9; cp. 1:28).</body></entry>
@@ -1516,7 +1506,6 @@
       </chapter>
     </book>
     <book id="2" osis="EXO" chapters="39">
-      <english-name>Exodus</english-name>
       <name>Exodus</name>
       <chapter number="10">
         <entry><reference book="EXO" chapter="10" verses="1"/><body>10:1-20 The eighth plague was the plague of locusts (10:4). Evidently enough time had elapsed between this plague and the previous one that the wheat and emmer wheat had sprouted (see 9:32). The Egyptian god Osiris was especially revered as the god who descended into the underworld and brought plant life back in the spring. This second, climactic attack on the plant life demonstrated that even Osiris was helpless before the Lord. There is no eternal life in sprouting plants.</body></entry>
@@ -2012,7 +2001,6 @@
       </chapter>
     </book>
     <book id="3" osis="LEV" chapters="27">
-      <english-name>Leviticus</english-name>
       <name>Leviticus</name>
       <chapter number="10">
         <entry><reference book="LEV" chapter="10" verses="1"/><body>10:1-20 A fire was to burn constantly on the bronze altar (6:9) to supply coals for burning incense (16:12). Perhaps careless from drinking wine (10:8-11), Nadab and Abihu took coals from another source. This violation of God’s instruction resulted in their deaths.10:1 Aaron’s two older sons, Nadab and Abihu (Exod 6:23), had accompanied Moses and the seventy elders on Mount Sinai (Exod 24:1, 9) and had witnessed the great theophany (appearance of God) there. They died without male heirs (see also Exod 28:1; Num 3:2-4; 26:60-61; 1 Chr 6:3; 24:1-2). • The incense burners were fire pans or trays that held hot coals. Incense was sprinkled on them (Exod 30:34-38; see also Lev 16:12-13; 2 Chr 26:19; Rev 8:3-4). • The wrong kind of fire (Hebrew ’esh zarah, “strange fire”) could mean “foreign,” and thus “unauthorized” (see Exod 30:9) or even “pagan” (as in Ps 44:20; 81:9). Apparently, Nadab and Abihu used fire from a source not approved by God (Num 3:4; 26:61), possibly even a pagan source. It is also possible that they offered incense not prepared according to God’s specifications (Exod 30:34-38), although the text does not mention that. They did not enter God’s presence on his terms but on their own.</body></entry>
@@ -2408,7 +2396,6 @@
       </chapter>
     </book>
     <book id="4" osis="NUM" chapters="36">
-      <english-name>Numbers</english-name>
       <name>Numbers</name>
       <chapter number="10">
         <entry><reference book="NUM" chapter="10" verses="1"/><body>10:1-10 Israel needed signals that were loud and clear so that the tribes could receive instructions. Two silver trumpets provided a simple, effective means to signal all the tribes to move. • These trumpets were not the ram’s horns (Hebrew shopar) mentioned frequently in the Old Testament (e.g., Josh 6:4-6); they were fashioned by Israelite craftsmen from hammered silver brought out of Egypt.</body></entry>
@@ -2879,7 +2866,6 @@
       </chapter>
     </book>
     <book id="5" osis="DEU" chapters="34">
-      <english-name>Deuteronomy</english-name>
       <name>Deuteronomy</name>
       <chapter number="10">
         <entry><reference book="DEU" chapter="10" verses="1"/><body>10:1 The Ark was a gold-plated wooden chest that contained the stone tablets; it was kept in the Most Holy Place in the Tabernacle or Temple (Exod 25:10). Later, a pot of manna and Aaron’s flowering rod were also placed in the Ark (Heb 9:4). The Ark was the throne upon which the invisible Lord sat on earth among his people (see study notes on Exod 25:22 and Lev 16:2).</body></entry>
@@ -3396,7 +3382,6 @@
       </chapter>
     </book>
     <book id="6" osis="JOS" chapters="24">
-      <english-name>Joshua</english-name>
       <name>Joshua</name>
       <chapter number="10">
         <entry><reference book="JOS" chapter="10" verses="1"/><body>7:1–12:24 This second major section of the book includes a record of Joshua’s southern and northern campaigns against two coalitions of Canaanite kings. Joshua’s victories enabled Israel to settle the hill country from Galilee in the north to the Negev in the south.10:1-43 Gibeon and its neighboring cities occupied a plateau north of Jerusalem (see study note on 7:2). With Gibeon now allied to Israel, control of the plateau and of the central hill country in the vicinity of Gibeon belonged to Israel. Throughout history, whoever has controlled the plateau has, in general, also controlled the hill country. The Canaanite kings had to conquer Gibeon or their cause was lost.10:1 Adoni-zedek means “master of righteousness” or “my master is righteous.” An earlier king of Jerusalem named Melchizedek (“king of righteousness” or “my king is righteous”) had been “a priest of God Most High” and a friend of Abraham (Gen 14:18-20). However, Adoni-zedek was not a friend to Joshua or a believer in the Lord.</body></entry>
@@ -3768,7 +3753,6 @@
       </chapter>
     </book>
     <book id="8" osis="RUT" chapters="4">
-      <english-name>Ruth</english-name>
       <name>Ruth</name>
       <chapter number="1">
         <entry><reference book="RUT" chapter="1" verses="1"/><body>1:1 The judges ruled from the death of Joshua (about 1376 or 1200 BC) to the beginning of Saul’s reign as king (about 1050 BC). The events in Ruth occurred around 1100 BC. • Famine in Israel’s hill country was usually caused by drought. • Bethlehem was a small town in the hill country of northern Judah. • Moab, the land southeast of Judah, sometimes received sufficient rain when Judah did not.</body></entry>
@@ -3829,7 +3813,6 @@
       </chapter>
     </book>
     <book id="9" osis="1SA" chapters="31">
-      <english-name>1 Samuel</english-name>
       <name>1 Samuel</name>
       <chapter number="10">
         <entry><reference book="1SA" chapter="10" verses="1"/><body>10:1 Samuel later repeated this process by anointing David with olive oil (16:13). • The people of Israel did not belong to the king but to the Lord. The king was to act as manager rather than owner (cp. 8:10-18).</body></entry>
@@ -4310,7 +4293,6 @@
       </chapter>
     </book>
     <book id="10" osis="2SA" chapters="24">
-      <english-name>2 Samuel</english-name>
       <name>2 Samuel</name>
       <chapter number="10">
         <entry><reference book="2SA" chapter="10" verses="1"/><body>10:1-19 Following the interlude of ch 9, the narrative returns to David’s military feats. The Ammonites were likely the dominant political power in Transjordan (the area east of the Jordan) during Saul’s reign and the early years of David’s reign.10:1-5 The king of Ammon insulted David’s ambassadors, which led to two battles between Israel and Ammon (10:6–12:31).10:1 Some time after this: King Hadadezer appears in 10:1-19 as David’s active and capable foe (10:16), yet in 8:1-18 David had defeated him (8:3) and plundered his city (8:7, 12). Either Hadadezer was still alive, had regrouped, and revolted in 10:1-19; or possibly 10:1-19 unpacks the events of 8:1-18 as a prelude to 11:1-27.</body></entry>
@@ -4713,7 +4695,6 @@
       </chapter>
     </book>
     <book id="11" osis="1KI" chapters="22">
-      <english-name>1 Kings</english-name>
       <name>1 Kings</name>
       <chapter number="10">
         <entry><reference book="1KI" chapter="10" verses="1"/><body>10:1-13 The queen of Sheba visited to test the accuracy of accounts concerning Solomon’s wisdom (10:1, 3, 6-7). She may also have sought commercial partnership (10:2, 10, 13). All of Solomon’s accomplishments resulted from his God-given wisdom, as the queen of Sheba testifies in the central speech of the narrative (10:6-9).10:1 The queen likely heard tales of Solomon’s wisdom and wealth because of his trading ventures to Ophir (10:11; see 9:26-28). Sheba, located in southwestern Arabia (modern Yemen), was a notably fertile commercial center. The trading enterprises of the ancient Sabeans encompassed great swaths of territory, including Syria, Africa, and India. • test . . . with hard questions (literally riddles): Arabian literature is famous for its riddles and proverbs. The queen tested Solomon’s wisdom and explored perplexities of her own.</body></entry>
@@ -5074,7 +5055,6 @@
       </chapter>
     </book>
     <book id="12" osis="2KI" chapters="25">
-      <english-name>2 Kings</english-name>
       <name>2 Kings</name>
       <chapter number="10">
         <entry><reference book="2KI" chapter="10" verses="1"/><body>10:1-27 The writer focuses on two important events of Jehu’s reign: his murder of all who might claim Joram’s throne (10:1-17), and his execution of the priests of Baal (10:18-27).10:1 Ahab’s sons (the term can include grandsons) may have been with Joram at Jezreel temporarily while he was recovering from his wounds (8:29) but had fled to Samaria to escape Jehu’s purge.</body></entry>
@@ -5463,7 +5443,6 @@
       </chapter>
     </book>
     <book id="13" osis="1CH" chapters="29">
-      <english-name>1 Chronicles</english-name>
       <name>1 Chronicles</name>
       <chapter number="10">
         <entry><reference book="1CH" chapter="10" verses="1"/><body>10:1-14 The narrative of Israel as a kingdom begins with the death of Saul, who failed to fulfill God’s purposes for him as king and for Israel as a nation. Saul’s death prepares the way for David, whom the Chronicler regarded as the first true king of Israel.</body></entry>
@@ -5680,7 +5659,6 @@
       </chapter>
     </book>
     <book id="14" osis="2CH" chapters="36">
-      <english-name>2 Chronicles</english-name>
       <name>2 Chronicles</name>
       <chapter number="10">
         <entry><reference book="2CH" chapter="10" verses="1"/><body>10:1 Shechem was in the heart of the territory of the northern tribes; the need for Rehoboam to go there for confirmation reflects either weak national unity or the comparative strength and influence of the northern tribes. • Rehoboam reigned from 931 to 913 BC.</body></entry>
@@ -6018,7 +5996,6 @@
       </chapter>
     </book>
     <book id="15" osis="EZR" chapters="10">
-      <english-name>Ezra</english-name>
       <name>Ezra</name>
       <chapter number="10">
         <entry><reference book="EZR" chapter="10" verses="1"/><body>10:1 Ezra’s genuine mourning in response to his people’s sin moved many of them to join him.</body></entry>
@@ -6157,7 +6134,6 @@
       </chapter>
     </book>
     <book id="16" osis="NEH" chapters="13">
-      <english-name>Nehemiah</english-name>
       <name>Nehemiah</name>
       <chapter number="10">
         <entry><reference book="NEH" chapter="10" verses="1"/><body>10:1-27 The eighty-four names included the governor: Nehemiah (10:1), and a group of priests (10:2-8; cp. 12:1-7), Levites (10:9-13; cp. 9:4-5; 12:8-9), and leaders (10:14-27; cp. 3:4-31).</body></entry>
@@ -6346,7 +6322,6 @@
       </chapter>
     </book>
     <book id="17" osis="EST" chapters="10">
-      <english-name>Esther</english-name>
       <name>Esther</name>
       <chapter number="10">
         <entry><reference book="EST" chapter="10" verses="1"/><body>10:1-2 King Xerxes imposed a tribute: Persian taxes on the provinces were heavy. This burden supported the Persian government’s free spending.</body></entry>
@@ -6465,7 +6440,6 @@
       </chapter>
     </book>
     <book id="18" osis="JOB" chapters="42">
-      <english-name>Job</english-name>
       <name>Job</name>
       <chapter number="10">
         <entry><reference book="JOB" chapter="10" verses="8"/><body>10:8-11 A succession of images describes God’s role in creating Job. • You formed me with your hands . . . made me from dust: This was how a potter made a vessel (Isa 45:9; Jer 18:1-12). Although the potter has incontestable sovereignty over the clay (Isa 45:9; Jer 18:5-12; Rom 9:20-25), Job was questioning God. • back to dust: This common motif in Job represents the temporary nature of life (Job 4:19; 7:9-10, 21; 14:1-2, 10; see Gen 3:19). • You guided my conception and formed me in the womb: The Hebrew terminology (literally You poured me out like milk and curdled me like cheese) evokes graphic images of a newborn baby still covered with the creamy substance called vernix.</body></entry>
@@ -6939,7 +6913,6 @@
       </chapter>
     </book>
     <book id="19" osis="PSA" chapters="150">
-      <english-name>Psalms</english-name>
       <name>Psalms</name>
       <chapter number="100">
         <entry><reference book="PSA" chapter="100" verses="1"/><body>Ps 100 This psalm calls all nations to come to Jerusalem to worship the Lord and acknowledge his goodness to Israel.</body></entry>
@@ -8443,7 +8416,6 @@
       </chapter>
     </book>
     <book id="20" osis="PRO" chapters="31">
-      <english-name>Proverbs</english-name>
       <name>Proverbs</name>
       <chapter number="10">
         <entry><reference book="PRO" chapter="10" verses="1"/><body>10:1–22:16 This long section is called The proverbs of Solomon. It consists mostly of brief bits of advice and observation. These sayings make heavy use of antithetical parallelism to contrast wisdom and righteousness with folly and wickedness. The arrangement of these proverbs appears to be essentially random, as in Egyptian and Mesopotamian wisdom literature. Some proverbs are repeated (see 6:10-11 and 24:33-34; 14:12 and 16:25; 18:8 and 26:22; 19:24 and 26:15; 20:16 and 27:13; 21:9 and 25:24; 22:3 and 27:12). Sometimes a group of proverbs shares a similar theme (e.g., 16:1-11).10:1 The joy or grief of godly parents reflects the degree of their child’s obedience to principles of wisdom.</body></entry>
@@ -8977,7 +8949,6 @@
       </chapter>
     </book>
     <book id="21" osis="ECC" chapters="12">
-      <english-name>Ecclesiastes</english-name>
       <name>Ecclesiastes</name>
       <chapter number="10">
         <entry><reference book="ECC" chapter="10" verses="2"/><body>10:2-3 These two proverbs show the stupidity of fools. They choose wrongly, and everything they do shows that they are foolish.</body></entry>
@@ -9134,7 +9105,6 @@
       </chapter>
     </book>
     <book id="22" osis="SNG" chapters="8">
-      <english-name>Song of Songs</english-name>
       <name>Song of Songs</name>
       <chapter number="1">
         <entry><reference book="SNG" chapter="1" verses="1"/><body>1:1 This verse is the source of the English title of the book. Formally, it is a superscription that functions as the title page of the book, providing the genre (song) and a connection with the probable author of some or all of the book (see Song of Songs Book Introduction, “Authorship”). The NLT rightly understands song of songs as a Hebrew superlative, so this song is the highest, best, or most sublime, which probably means that it is more wonderful than any other of Solomon’s 1,005 songs (see 1 Kgs 4:32).</body></entry>
@@ -9234,7 +9204,6 @@
       </chapter>
     </book>
     <book id="23" osis="ISA" chapters="66">
-      <english-name>Isaiah</english-name>
       <name>Isaiah</name>
       <chapter number="10">
         <entry><reference book="ISA" chapter="10" verses="1"/><body>10:1-4 This prophecy was directed against Judah’s leaders, who used their positions to enrich themselves at the people’s expense.10:1 What sorrow introduces a threat of divine judgment.</body></entry>
@@ -10218,7 +10187,6 @@
       </chapter>
     </book>
     <book id="24" osis="JER" chapters="52">
-      <english-name>Jeremiah</english-name>
       <name>Jeremiah</name>
       <chapter number="10">
         <entry><reference book="JER" chapter="10" verses="1"/><body>10:1-25 This poetic passage has three parts. The first is a contrast between the Lord and pagan idols (10:1-16). The second is a two-part reflection on the destruction that lay ahead for the idol worshipers (10:17-18, 19-22). The third part is a prayer for God to act with restraint in the coming judgment and not to allow the pagan nations to go unpunished (10:23-25).10:1-16 This poetic passage severely criticizes idol worship and strongly affirms the unity and majesty of the one true God. It is neither a rational discussion of divinity in nature nor a carefully crafted statement about God’s attributes; rather, it is a poem about the foolishness of worshiping idols that the worshipers themselves have made, along with vigorous affirmations of faith that boldly declare who God is.10:1 As usual, Jeremiah identified the source of his message and urged his audience not simply to hear, but to pay careful attention to the word of the Lord. In Hebrew thought, the person who does not respond has not truly heard.</body></entry>
@@ -11096,7 +11064,6 @@
       </chapter>
     </book>
     <book id="25" osis="LAM" chapters="5">
-      <english-name>Lamentations</english-name>
       <name>Lamentations</name>
       <chapter number="1">
         <entry><reference book="LAM" chapter="1" verses="1"/><body>1:1-22 Chapter 1 mourns the destruction and desolation of Jerusalem, recognizing that this was God’s well-deserved judgment on Israel’s sins.</body></entry>
@@ -11171,7 +11138,6 @@
       </chapter>
     </book>
     <book id="26" osis="EZK" chapters="48">
-      <english-name>Ezekiel</english-name>
       <name>Ezekiel</name>
       <chapter number="10">
         <entry><reference book="EZK" chapter="10" verses="1"/><body>10:1-22 The Temple provided an earthly residence where the Lord’s glory could dwell among his people. This central blessing of the covenant could only be maintained if the people were holy. In the face of their defilement, the Lord abandoned his house, leaving it and the surrounding city vulnerable to the impending assault of the Babylonians.10:1-2 Almost the same vision of fearsome glory that Ezekiel had seen earlier in Babylonia (ch 1) now appeared to him in the Jerusalem Temple. In a building filled with heavenly symbols, Ezekiel clearly perceived that the living creatures he had seen earlier were cherubim, the enforcers of divine judgment (Gen 3:24). • The burning coals that the priestly figure was instructed to gather showed that the defiled Jerusalem was to be burned by fire, as the city of Sodom had been (see 16:46-50). The implication of the Lord’s abandoning his city was later worked out in history: Several years after this vision, Nebuchadnezzar burned the city of Jerusalem and filled it with corpses.</body></entry>
@@ -11727,7 +11693,6 @@
       </chapter>
     </book>
     <book id="27" osis="DAN" chapters="12">
-      <english-name>Daniel</english-name>
       <name>Daniel</name>
       <chapter number="10">
         <entry><reference book="DAN" chapter="10" verses="1"/><body>10:1–12:13 This final vision reaches historically from 536 BC to a distant future when Daniel would be raised from the dead and receive his inheritance. All earthly kingdoms would be destroyed, the eternal kingdom of the Son of Man would arise, God’s people would finally be rescued, and death—the ultimate enemy—would be defeated.10:1 The third year of the reign of King Cyrus was 536 BC, not long after Cyrus issued his decree for the peoples and nations to return to their ancestral homes (2 Chr 36:22-23; Ezra 1:1-2). Daniel’s prayer (Dan 9:4-19) had been answered—the Exile had ended. • Belteshazzar: See 1:7.</body></entry>
@@ -11989,7 +11954,6 @@
       </chapter>
     </book>
     <book id="28" osis="HOS" chapters="14">
-      <english-name>Hosea</english-name>
       <name>Hosea</name>
       <chapter number="10">
         <entry><reference book="HOS" chapter="10" verses="1"/><body>10:1 Although Israel was God’s luxuriant, fruitful vine (see Isa 5:1-7; Jer 2:21; Ezek 17:6), she falsely attributed her prosperity to the Canaanite fertility gods, rather than to the Lord, and she spent the riches God had given her to enhance her worship of idols. • sacred pillars: Stone pillars could be acceptable memorials (Gen 35:20; Josh 24:26-27), but God prohibited the Israelites from using them in worship as the Canaanites did (Exod 23:24; Deut 16:22).</body></entry>
@@ -12158,7 +12122,6 @@
       </chapter>
     </book>
     <book id="29" osis="JOL" chapters="3">
-      <english-name>Joel</english-name>
       <name>Joel</name>
       <chapter number="1">
         <entry><reference book="JOL" chapter="1" verses="1"/><body>1:1–2:17 Joel describes the devastating locust plague that afflicted Judah and Jerusalem.1:1 TheThe word of the Lord gave this message (literally The word of the Lord came): The Lord, not the human prophet, was the ultimate source of these words. • The name Joel means “the Lord [Yahweh] is God.” Joel’s father, Pethuel, is unknown apart from this verse.</body></entry>
@@ -12221,7 +12184,6 @@
       </chapter>
     </book>
     <book id="30" osis="AMO" chapters="9">
-      <english-name>Amos</english-name>
       <name>Amos</name>
       <chapter number="1">
         <entry><reference book="AMO" chapter="1" verses="1"/><body>1:1 message (literally words): This standard way of introducing a prophetic message (Jer 1:1; see also Hag 1:12) emphasizes its form and content. • shepherd (Hebrew noqed): This word is used just one other time in the Old Testament, to describe the king of Moab as a “sheep breeder” (2 Kgs 3:4). Amos describes his vocation in Amos 7:14 using a different Hebrew word (boqer, which means “herder”; see Amos Book Introduction, “The Prophet Amos”). Amos was not a professional prophet serving the court or the Temple. • Amos received this message in visions—that is, by divine revelation (see Isa 1:1). • Amos depicts the earthquake that occurred during the reign of Uzziah (Zech 14:5) as an act of God’s judgment (Amos 3:14-15; 6:11, 14; 8:8; 9:1, 9). • Uzziah, also called Azariah (792–740 BC), was the most powerful king of Judah after the division of the kingdom. • Jeroboam II (793–753 BC), who descended from the dynasty of Jehu, took advantage of a power vacuum in the region and recovered territory earlier lost to the Arameans.</body></entry>
@@ -12360,7 +12322,6 @@
       </chapter>
     </book>
     <book id="31" osis="OBA" chapters="1">
-      <english-name>Obadiah</english-name>
       <name>Obadiah</name>
       <chapter number="1">
         <entry><reference book="OBA" chapter="1" verses="1"/><body>1:1 The word vision introduces a prophetic book (Isa 1:1; Nah 1:1); it also defines what a prophet saw or sensed as a divine word (Ezek 12:26-27; Dan 8:1). A vision that did not come from the Lord was false (Jer 14:14; 23:16), the ultimate proof being its lack of fulfillment (Ezek 12:22-24). By contrast, true visions of near or distant events do come to fruition (Ezek 12:25; Hab 2:3). Prophetic visions came in various forms (dreams, extrasensory experiences; e.g., Dan 8:2). The absence of visions is a mark of divine abandonment (Lam 2:9; Ezek 7:26; Mic 3:6). • Sovereign Lord is one of several names for the God of Israel. • Obadiah was a common Hebrew name that meant “servant of the Lord.” The prophet Obadiah is unknown apart from this book. • an ambassador was sent to the nations: In ancient warfare, allies would be contacted about joining a military coalition to punish an enemy or defend against attack. Here the Sovereign Lord calls the nations to redress Edom’s evil pride. • Let’s assemble: This is a willing coalition, though ironically, they will be punished later for their own evil deeds (Obad 1:15-16).</body></entry>
@@ -12381,7 +12342,6 @@
       </chapter>
     </book>
     <book id="32" osis="JON" chapters="4">
-      <english-name>Jonah</english-name>
       <name>Jonah</name>
       <chapter number="1">
         <entry><reference book="JON" chapter="1" verses="1"/><body>1:1–2:10 Jonah initially rejected the Lord’s commission to warn Nineveh of the judgment it had incurred because of its wickedness.1:1 Jonah son of Amittai was from Gath-hepher, a town located on the border of the tribal areas of Naphtali and Zebulun. He ministered to the northern kingdom of Israel during the reign of Jeroboam II (793–753 BC; see 2 Kgs 14:25).</body></entry>
@@ -12423,7 +12383,6 @@
       </chapter>
     </book>
     <book id="33" osis="MIC" chapters="7">
-      <english-name>Micah</english-name>
       <name>Micah</name>
       <chapter number="1">
         <entry><reference book="MIC" chapter="1" verses="1"/><body>1:1 Micah is presumably a short form of Micaiah, which means “Who is like the Lord?” • Moresheth was a fortress city located a short distance southeast of Gath in the low-lying hills of southwestern Judah. • Jotham, Ahaz, and Hezekiah (see Micah Book Introduction, “Setting”): The reigns of these three kings covered about 65 years total (about 750–686 BC). • God’s message came to Micah in visions. • Samaria and Jerusalem were the capitals of northern Israel and Judah. Sometimes these city names refer to their entire countries.</body></entry>
@@ -12517,7 +12476,6 @@
       </chapter>
     </book>
     <book id="34" osis="NAM" chapters="3">
-      <english-name>Nahum</english-name>
       <name>Nahum</name>
       <chapter number="1">
         <entry><reference book="NAM" chapter="1" verses="1"/><body>1:1 message . . . vision: This opening, similar to that of other prophetic books (cp. Obad 1:1; Hab 1:1; Mal 1:1), identifies Nahum as a prophet, one who uttered messages from God. • Nineveh became the capital of the Assyrian Empire sometime shortly after 705 BC and remained so until its destruction in 612 BC. • The name Nahum means “comfort” or “encouragement.” An important theme of his prophecy is that God will bring encouragement to his people through Nineveh’s downfall (Nah 1:12-15; see Isa 40:1).</body></entry>
@@ -12563,7 +12521,6 @@
       </chapter>
     </book>
     <book id="35" osis="HAB" chapters="3">
-      <english-name>Habakkuk</english-name>
       <name>Habakkuk</name>
       <chapter number="1">
         <entry><reference book="HAB" chapter="1" verses="1"/><body>1:1 The word message (or oracle) identifies the book as God’s revelation through his prophet (cp. Nah 1:1; Mal 1:1).</body></entry>
@@ -12610,7 +12567,6 @@
       </chapter>
     </book>
     <book id="36" osis="ZEP" chapters="3">
-      <english-name>Zephaniah</english-name>
       <name>Zephaniah</name>
       <chapter number="1">
         <entry><reference book="ZEP" chapter="1" verses="1"/><body>1:1–2:3 Zephaniah’s message from the Lord warns about worldwide judgment (1:1-6) and exhorts his readers to repent (1:7-13) before the devastation overtakes them (1:14-18) and to seek the Lord and live righteously and humbly before him in the hope that they may be spared his judgment (2:1-3).1:1 The Lord gave this message: Zephaniah was a prophet, God’s spokesman. • Hezekiah probably indicates the king of that name (see 2 Kgs 18:1–20:20).</body></entry>
@@ -12660,7 +12616,6 @@
       </chapter>
     </book>
     <book id="37" osis="HAG" chapters="2">
-      <english-name>Haggai</english-name>
       <name>Haggai</name>
       <chapter number="1">
         <entry><reference book="HAG" chapter="1" verses="1"/><body>1:1-15 The first message calls the people of Jerusalem to focus on restoring proper worship of God.1:1 This introductory statement (superscription) identifies the author, the audience, the date, and the occasion prompting the prophecy. • the second year: King Darius I (Hystaspes) ruled Persia 521–486 BC, early in the Persian Empire (539–331 BC). The messages of Haggai are among the most precisely dated prophecies in the Old Testament. • Prophet (Hebrew nabi’) designates Haggai as a representative of God who speaks with the authority of God, who sent him. • Zerubbabel led one group of Hebrews back to Palestine after the Babylonian exile and was the Persian-appointed governor of Judah at the time of Haggai’s ministry (see Ezra 2:1-2; 3:2; Neh 7:7). • Jeshua was the high priest at that time. Under his supervision, the altar was rebuilt and the second Temple was dedicated (Ezra 3:2; 5:2; 6:15).</body></entry>
@@ -12699,7 +12654,6 @@
       </chapter>
     </book>
     <book id="38" osis="ZEC" chapters="14">
-      <english-name>Zechariah</english-name>
       <name>Zechariah</name>
       <chapter number="10">
         <entry><reference book="ZEC" chapter="10" verses="1"/><body>10:1–11:3 God will strengthen his people by his power and restore them because of his compassion (10:6, 12). With its references to shepherds (10:2-3; 11:3), the passage prepares for the following allegory of the good and evil shepherds (11:4-17).10:1-3 This is a rebuke of false shepherds, human leaders who do not have their people’s good at heart.10:1 Rain was a sign of divine blessing (see Joel 2:23)—the Lord was the source of the rain, but Israel’s leaders had led the people to trust in false gods instead.</body></entry>
@@ -12884,7 +12838,6 @@
       </chapter>
     </book>
     <book id="39" osis="MAL" chapters="4">
-      <english-name>Malachi</english-name>
       <name>Malachi</name>
       <chapter number="1">
         <entry><reference book="MAL" chapter="1" verses="1"/><body>1:1 This is the message (literally An Oracle: The message) that the Lord gave to Israel: This superscription classifies the book of Malachi as an authoritative message from God and identifies the author and audience, though not the date or occasion. The word oracle imbues Malachi’s message with authority and urgency. His audience was expected to pay attention and respond.</body></entry>
@@ -12933,7 +12886,6 @@
       </chapter>
     </book>
     <book id="40" osis="MAT" chapters="28">
-      <english-name>Matthew</english-name>
       <name>Matthew</name>
       <chapter number="10">
         <entry><reference book="MAT" chapter="10" verses="1"/><body>10:1 Jesus called his twelve disciples as workers in the harvest (9:37-38). The choice of twelve is not accidental—it recalls the twelve tribes of Israel. Jesus was appointing new leaders for the new people of God under his reign as Messiah (16:18-19; 18:18; 19:28; 21:43). • gave them authority (9:6-8; 28:18): Jesus enabled the Twelve to perform ministries that the Jewish leaders could not accomplish (9:32-34; 10:5-8). The authority to cast out evil spirits (8:28) and to heal are ascribed to Jesus (4:23; 8:1–9:35) in similar terms.</body></entry>
@@ -13580,7 +13532,6 @@
       </chapter>
     </book>
     <book id="41" osis="MRK" chapters="16">
-      <english-name>Mark</english-name>
       <name>Mark</name>
       <chapter number="10">
         <entry><reference book="MRK" chapter="10" verses="1"/><body>10:1-2 The Pharisees’ question about divorce was much debated in Judaism, but it had a hostile purpose as they tried to trap Jesus (see 2:16, 18, 24; 7:5; 8:11; 12:13). John the Baptist was beheaded over his teaching that Herod Antipas’s divorce and remarriage was unlawful (6:18-19), and according to the Jewish historian Josephus, John was martyred close to Jesus’ current location east of the Jordan River, at Herod Antipas’s fortress at Machaerus (see 6:28; Josephus, Antiquities 18.5.2). If Jesus answered in agreement with John the Baptist, the Pharisees could indict him before Herod. But if Jesus said that divorce was lawful, he would be contradicting a prophet.</body></entry>
@@ -14019,7 +13970,6 @@
       </chapter>
     </book>
     <book id="42" osis="LUK" chapters="24">
-      <english-name>Luke</english-name>
       <name>Luke</name>
       <chapter number="10">
         <entry><reference book="LUK" chapter="10" verses="1"/><body>10:1-20 The Lord now chose seventy-two: The mission of the Twelve (9:1-6) represented Jesus’ ministry to Israel; this mission represented his outreach to the Gentiles. The number 72 represents the nations of the world. Genesis 10 lists 70 nations in the Hebrew text, but the Septuagint—the Greek Old Testament—lists 72. Luke, who used the Septuagint, probably wrote 72, and then a later scribe “corrected” the text to agree with the Hebrew. The point is that the Good News is for both Jews and Gentiles.</body></entry>
@@ -14744,7 +14694,6 @@
       </chapter>
     </book>
     <book id="43" osis="JHN" chapters="21">
-      <english-name>John</english-name>
       <name>John</name>
       <chapter number="10">
         <entry><reference book="JHN" chapter="10" verses="1"/><body>10:1-42 Chapter 10 continues the series of festival sermons (see study note on 5:1–10:42). Here, the setting is Hanukkah (the Festival of Dedication), the timing of which is crucial to understanding the story (see study note on 10:22).10:1-21 This illustration of a shepherd and his sheep assumes a Middle Eastern understanding of shepherding and draws on Old Testament tradition deeply embedded in first-century Jewish culture. God was the shepherd of Israel (Gen 49:24; Pss 23; 78:52-53; Isa 40:10-11). Spiritual and political leaders of Israel were also shepherds of God’s people, the flock of God (Isa 56:9-12; Jer 23:1-4; Ezek 34). Jesus’ sermon builds on the occasion of Hanukkah (see John 10:22) to address the theme of shepherds, using this festival as an opportunity to reflect on Israel’s leaders (“shepherds”) in light of Ezek 34. Jesus presents himself as the good shepherd (John 10:11-14).10:1 A wilderness shepherd would build a sheepfold, a pen with low stone walls topped by thorny branches, to hold his sheep at night and protect them from danger. • The pen had one gate (or opening in the wall) that was closed with branches. Any invasion of the pen was a threat to the flock. • A bad shepherd was like a thief and a robber. He exploited the sheep for his own interests and did not care for or nurture them. Bad shepherds took the sheep’s milk and wool for themselves and butchered the sheep without providing for the animal’s safety (Ezek 34:3; see Isa 56:11; Jer 23:1-4). This was Jesus’ most stinging indictment of the Jewish leaders.</body></entry>
@@ -15253,7 +15202,6 @@
       </chapter>
     </book>
     <book id="44" osis="ACT" chapters="28">
-      <english-name>Acts</english-name>
       <name>Acts</name>
       <chapter number="10">
         <entry><reference book="ACT" chapter="10" verses="1"/><body>10:1-8 a Roman army officer: Literally a centurion, the highest-ranking non-commissioned officer in the Roman army, in command of a century, a subdivision of roughly 100 men. Luke often describes centurions in favorable terms (10:22; 21:32; 22:25-26; 23:17, 23; 27:6, 11, 43; 28:16; Luke 7:1-10; 23:47). It was important for Luke to show that Christianity was not hostile to Roman officials or institutions and could, like Judaism, be permitted in the Roman Empire (see Acts Book Introduction, “Purposes of Acts: Politics”). • a captain of the Italian Regiment: A regiment included six centuries; a Roman legion was usually divided into ten regiments. The New Testament mentions the Italian Regiment and the Imperial Regiment (Acts 27:1).</body></entry>
@@ -15686,7 +15634,6 @@
       </chapter>
     </book>
     <book id="45" osis="ROM" chapters="16">
-      <english-name>Romans</english-name>
       <name>Romans</name>
       <chapter number="10">
         <entry><reference book="ROM" chapter="10" verses="2"/><body>10:2 Zeal denotes a passionate and commendable commitment to God and his purposes (see Num 25:6-13). But in Paul’s day Jewish zeal was misdirected because it failed to understand that Jesus Christ is the pinnacle of God’s plan. (For Paul’s own misdirected zeal before his conversion to Christ, see Acts 9:1-2; Gal 1:13-14.)</body></entry>
@@ -15978,7 +15925,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="46" osis="1CO" chapters="16">
-      <english-name>1 Corinthians</english-name>
       <name>1 Corinthians</name>
       <chapter number="10">
         <entry><reference book="1CO" chapter="10" verses="1"/><body>10:1-22 After illustrating from his own life the key principle of giving up one’s rights for the sake of others (ch 9), Paul turns back to the specific question of eating meat sacrificed to idols (8:1-13). He warns believers of God’s wrath on those who sin, especially on those who engage in idolatry.10:1-11 Even though the Israelites were God’s people and experienced his salvation and provision (see Exod 13:21-22; 14:21-29), they still came under his judgment because of their disobedience.</body></entry>
@@ -16279,7 +16225,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="47" osis="2CO" chapters="13">
-      <english-name>2 Corinthians</english-name>
       <name>2 Corinthians</name>
       <chapter number="10">
         <entry><reference book="2CO" chapter="10" verses="1"/><body>10:1–13:13 In this section, Paul defends his ministry as an apostle. • These chapters pose several problems arising from a distinct change of tone and style. Chapters 1–9 are full of joy stemming from the reconciliation of sinners with God and of the Corinthians with Paul. Yet from this point on, Paul is on the defensive. These chapters are full of harsh words, bitter recriminations, passionate irony, and rebuke. The remarkable break at 10:1 has inspired a number of explanations: (1) These chapters might be a separate letter, perhaps the “severe letter” sent earlier to Corinth (2:3-4; 7:8-9). (2) It might be that, while the majority of the church members were obedient to the appeal for reconciliation, there was still a rebellious minority to whom Paul addressed these four chapters. (3) More likely, a new situation had arisen since Titus first brought back his glowing report of restored harmony (7:5-16). In this scenario, some anti-Paul missionaries had arrived in Corinth and launched a virulent campaign against the apostolic message of good news (see 11:4, 13-15). They claimed that Paul was no real apostle or even a true Christian (10:7) and that he had no right to come to Corinth with the gospel message since it was territory that belonged to them (10:15-16). They brought an alien message (11:4) and exercised a domineering spirit. In short, they were doing Satan’s work (11:13-15). Paul, concerned upon hearing of this new situation, reasserts his apostolic authority and engages in a form of writing that is distasteful to him (11:1, 16-17; 12:1) by boasting of his weaknesses and trials. Paul’s apostolic authority is real and powerful, yet it is conditioned and controlled by the love exhibited by the crucified Jesus (10:1; 13:4-10).10:1-6 Paul states his own clear intentions and sincerity by defending himself against the suspicion that he is acting from human motives.10:1 you think I am timid in person: See 10:10. Paul could write bold letters at a distance, but they mistook his personal gentleness and kindness as weakness. However, they forgot that he had the authority of Christ (12:19; 13:3-5, 7, 10; 1 Cor 4:21).</body></entry>
@@ -16438,7 +16383,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="48" osis="GAL" chapters="6">
-      <english-name>Galatians</english-name>
       <name>Galatians</name>
       <chapter number="1">
         <entry><reference book="GAL" chapter="1" verses="1"/><body>1:1–2:21 Paul’s opponents had questioned his integrity and authority as an apostle, so he opens his letter by defending his apostleship.1:1-5 As in all his letters, Paul identifies himself and greets the recipients. This greeting is notable for (1) Paul’s strong assertion of his apostolic authority (1:1); and (2) the lack of thanks, prayer, or praise, which are replaced by rebuke (1:6-10).1:1 Paul, an apostle: Apostles were commissioned representatives having authority delegated by a sending agent, often a church body or council (e.g., 2 Cor 8:23; Phil 2:25). But Paul was not made an apostle by the Jerusalem church. Rather, he was directly commissioned by Jesus Christ himself and had Christ’s authority (Acts 9:1-15; 26:12-20; see also Rom 1:5), which gave him equal authority with the other apostles. • Paul traced his commission to God the Father, who raised Jesus from the dead. The resurrection made Paul’s commission possible.</body></entry>
@@ -16591,7 +16535,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="49" osis="EPH" chapters="6">
-      <english-name>Ephesians</english-name>
       <name>Ephesians</name>
       <chapter number="1">
         <entry><reference book="EPH" chapter="1" verses="1"/><body>1:1-2 Paul follows the normal pattern of ancient Greek letters: He begins with a few words about himself followed by greetings. He expands this pattern in a Christian way by referring to his divine calling as an apostle, by describing his recipients as God’s holy people and as faithful followers of Christ, and by his invocation of grace and peace.1:1 The frequent emphasis on the will of God (see 1:5, 9, 11; 5:17; 6:6) underscores God’s sovereignty in fulfilling his plan. • God’s holy people: Literally the holy ones, who are dedicated to God (see also 1:15, 18; 2:19; 3:8, 18; 4:12; 5:3; 6:18). • The most ancient manuscripts do not include in Ephesus, and there are no personal greetings in this letter. Many scholars believe that the letter was originally sent to be circulated to a number of churches in the area rather than to the church in Ephesus alone.</body></entry>
@@ -16731,7 +16674,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="50" osis="PHP" chapters="4">
-      <english-name>Philippians</english-name>
       <name>Philippians</name>
       <chapter number="1">
         <entry><reference book="PHP" chapter="1" verses="1"/><body>1:1-2 Paul introduces his letter by listing the names of the senders and recipients of the letter, then giving an invocation of grace and peace.1:1 Timothy was one of Paul’s most trusted co-workers and messengers. He is listed as co-sender, as he is for five other letters (2 Cor, Col, 1 Thes, 2 Thes, Phlm). • slaves of Christ Jesus: As those who belong entirely to Christ, they were completely devoted to his service (see Phil 2:20-21). • God’s holy people have been made holy in God’s sight by Christ’s redeeming work (see Eph 1:4, 7; 5:25-27; Col 1:22), and they are being sanctified by the transforming work of the Holy Spirit in their lives (cp. Phil 4:21). • Philippi was a Roman colony in the province of Macedonia. The church in Philippi was the first Christian community in Greece (see Acts 16:11-40). • In the early church, church leaders provided spiritual leadership, while deacons attended to practical matters (see 1 Tim 3:1-13). There were no professional pastors or priests as there are today (cp. 1 Cor 14:26-31).</body></entry>
@@ -16822,7 +16764,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="51" osis="COL" chapters="4">
-      <english-name>Colossians</english-name>
       <name>Colossians</name>
       <chapter number="1">
         <entry><reference book="COL" chapter="1" verses="1"/><body>1:1 Timothy was one of Paul’s closest co-workers. So close was their relationship and so significant Timothy’s ministry that Paul included him as one of the senders of this letter as well as of 2 Corinthians, Philippians, 1 and 2 Thessalonians, and Philemon.</body></entry>
@@ -16896,7 +16837,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="52" osis="1TH" chapters="5">
-      <english-name>1 Thessalonians</english-name>
       <name>1 Thessalonians</name>
       <chapter number="1">
         <entry><reference book="1TH" chapter="1" verses="1"/><body>1:1 Ancient letters began with the name of the author, the name of the recipients, and a salutation. • Paul, Silas, and Timothy were the founders of this church (Acts 17:1-9). • The greeting grace and peace summarizes the believer’s experience of the Good News.</body></entry>
@@ -16985,7 +16925,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="53" osis="2TH" chapters="3">
-      <english-name>2 Thessalonians</english-name>
       <name>2 Thessalonians</name>
       <chapter number="1">
         <entry><reference book="2TH" chapter="1" verses="1"/><body>1:1-2 Paul follows ancient letter writing customs, but instead of the normal greeting (Greek chairein) he blesses them with grace (Greek charis) and peace.</body></entry>
@@ -17035,7 +16974,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="54" osis="1TI" chapters="6">
-      <english-name>1 Timothy</english-name>
       <name>1 Timothy</name>
       <chapter number="1">
         <entry><reference book="1TI" chapter="1" verses="1"/><body>1:1-2 This opening has the standard components of a letter: sender, recipient, and greeting. Additions to the basic pattern underscore Paul’s authoritative message (see also Rom 1:1-7; 1 Cor 1:1-3; Gal 1:1-5; Titus 1:1-4).1:1 Our Savior, here used of God, applies equally to Christ Jesus (1:15; 2:3-4; see 2 Tim 1:9-10; Titus 1:3-4; 2:10, 13). • Hope is based on God in contrast to other objects such as wealth (1 Tim 4:10; 5:5; 6:17).</body></entry>
@@ -17122,7 +17060,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="55" osis="2TI" chapters="4">
-      <english-name>2 Timothy</english-name>
       <name>2 Timothy</name>
       <chapter number="1">
         <entry><reference book="2TI" chapter="1" verses="1"/><body>1:1-2 See study note on 1 Tim 1:1-2.1:1 the life he has promised: See Rom 4:13-17. This letter to Timothy celebrates Christ’s resurrection (2 Tim 2:8) and the life that results from it (1:10) as the answer to the suffering and death of the godly (3:12). Paul’s own life demonstrates this hope (4:17-18).</body></entry>
@@ -17187,7 +17124,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="56" osis="TIT" chapters="3">
-      <english-name>Titus</english-name>
       <name>Titus</name>
       <chapter number="1">
         <entry><reference book="TIT" chapter="1" verses="1"/><body>1:1-4 The opening of Titus, like that of 1 Timothy (1 Tim 1:1-2), establishes Paul’s authority for his delegate.1:1 and to teach . . . godly lives: See 2:11-14; 1 Tim 6:3.</body></entry>
@@ -17229,7 +17165,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="57" osis="PHM" chapters="1">
-      <english-name>Philemon</english-name>
       <name>Philemon</name>
       <chapter number="1">
         <entry><reference book="PHM" chapter="1" verses="1"/><body>1:1-3 Paul usually begins with a short introduction followed by greetings and the invocation of grace and peace.1:1 Paul, a prisoner: It is traditionally thought that Paul was writing from prison in Rome, but it is also possible that he was writing earlier from Ephesus, much closer to Philemon’s home in Colosse (see Philemon Book Introduction, “Date and Place of Writing”). • Timothy was one of Paul’s closest co-workers (see “Timothy” Profile). • co-worker: Philemon was active in ministry for Christ.</body></entry>
@@ -17254,7 +17189,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="58" osis="HEB" chapters="13">
-      <english-name>Hebrews</english-name>
       <name>Hebrews</name>
       <chapter number="10">
         <entry><reference book="HEB" chapter="10" verses="1"/><body>10:1 The old system under the law of Moses (literally The law), like the Tabernacle itself (8:5), was only a shadow, a dim preview of a greater reality—namely, the good things that Christ inaugurated in the new covenant. Under the old covenant, sacrifices had to be repeated again and again because they were not able to cleanse worshipers permanently or in such a way that they could come into the presence of God perpetually.</body></entry>
@@ -17526,7 +17460,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="59" osis="JAS" chapters="5">
-      <english-name>James</english-name>
       <name>James</name>
       <chapter number="1">
         <entry><reference book="JAS" chapter="1" verses="1"/><body>1:1 James: See “James, Brother of Jesus” Profile. • By identifying his readers as the “twelve tribes,” James affirms Christianity’s continuity with Israel’s heritage. The Exile had dispersed the twelve tribes, but Jewish interpreters looked forward to God reuniting them (see Psalms of Solomon 17:26-28; Testament of Benjamin 9:2; cp. Ezek 37:15-28; Matt 19:28). Christ has spiritually brought an end to Israel’s exile and reunited the tribes. • Jews scattered abroad (Greek diaspora) were living outside Palestine (John 7:35; Acts 2:5; 8:1; 11:19). • Greetings! (Greek chairein): This greeting is typical in first-century Greek letters (Acts 15:23; 23:26) and interpersonally (Matt 26:49; Luke 1:28).</body></entry>
@@ -17614,7 +17547,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="60" osis="1PE" chapters="5">
-      <english-name>1 Peter</english-name>
       <name>1 Peter</name>
       <chapter number="1">
         <entry><reference book="1PE" chapter="1" verses="1"/><body>1:1 to God’s chosen people: Peter opens his letter to suffering Christians by reminding them of the status they enjoy because of God’s act on their behalf (1:2). • living as foreigners (literally exiles of the dispersion): An exile had been uprooted from his or her homeland and taken to live in a foreign country. Peter uses the concept metaphorically to remind Christians that they are living in a world dominated by anti-Christian values and ways of life. • Pontus, Galatia, Cappadocia, Asia, and Bithynia were Roman provinces in what is now Turkey. They might be listed in the order of the route that a messenger would have followed while carrying the letter to the various churches.</body></entry>
@@ -17694,7 +17626,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="61" osis="2PE" chapters="3">
-      <english-name>2 Peter</english-name>
       <name>2 Peter</name>
       <chapter number="1">
         <entry><reference book="2PE" chapter="1" verses="1"/><body>1:1 Simon was one of the most common Jewish names in the first century. Jesus gave him the name Peter (Matt 16:17-18). Many people in the Greco-Roman world would use both their given name in their native language and also a Greek name, since Greek was the lingua franca (see study note on Acts 7:58). • a slave . . . of Jesus Christ: In the Old Testament, important leaders of God’s people are called servants of the Lord (Josh 14:7; 24:29; 2 Kgs 10:10). The title underscores Peter’s submission to Christ and suggests that he had an important role in God’s plan. • We probably refers to Jewish Christians; the recipients were mostly Gentile Christians. In the new covenant, Gentile and Jewish Christians share the same precious faith and are on an equal footing as God’s people (see Gal 3:26-29). • This is one of the few places in the New Testament where Jesus Christ is called God (see also John 1:1; 20:28; Rom 9:5; Titus 2:13; Heb 1:8; 1 Jn 5:20).</body></entry>
@@ -17743,7 +17674,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="62" osis="1JN" chapters="5">
-      <english-name>1 John</english-name>
       <name>1 John</name>
       <chapter number="1">
         <entry><reference book="1JN" chapter="1" verses="1"/><body>1:1-4 This poetic prologue reflects the message of the prologue to John’s Gospel (John 1:1-18). • The we that occurs throughout the prologue refers to John and the other apostles, and perhaps to other Christians who had seen and touched Jesus Christ. The apostles were among the eyewitnesses of Jesus and had personal fellowship with God through him. John, representing the apostles, now invites readers to join in that fellowship.1:1 We proclaim to you the one who existed from the beginning: That is, from before time began, eternally (John 8:58). When Jesus came in the flesh (John 1:14), the apostles saw him . . . and touched him. This affirmation that they actually touched the Word of life is important because Gnosticism and Docetism (early Christian heresies) denied that Christ was truly a human being (see 1 Jn 4:2-3). Jesus, the Son of God, is the personal expression of the invisible God, and the giver of eternal life (John 1:1-4).</body></entry>
@@ -17813,7 +17743,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="63" osis="2JN" chapters="1">
-      <english-name>2 John</english-name>
       <name>2 John</name>
       <chapter number="1">
         <entry><reference book="2JN" chapter="1" verses="1"/><body>1:1-3 John begins with a standard introduction for a personal letter. • John mentions truth four times in this brief introduction and once in 1:4. John wanted his readers to know and live out the truths about Jesus Christ and their relationship with him and not to be led astray by false teachers.1:1 This letter is from John, the elder: The translators have added John for clarification; John refers to himself as the elder to affirm his authority in the church. • to the chosen lady (Greek kuria) and to her children: The Greek word kuria could be the name of a specific individual; more likely, it refers to a particular local church and its believers (cp. 1:13). • whom I love in the truth: This either means “truly love” (see 1:5-6) or, more likely, it refers to love between those who profess the same truth about Christ in contrast to the lies of the false teachers (1:7; see 1 Jn 2:21-23). John emphasizes the pronoun I to contrast sharply with the lovelessness of the false teachers, who rejected the true church.</body></entry>
@@ -17830,7 +17759,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="64" osis="3JN" chapters="1">
-      <english-name>3 John</english-name>
       <name>3 John</name>
       <chapter number="1">
         <entry><reference book="3JN" chapter="1" verses="1"/><body>1:1-4 John begins his letter with a conventional greeting, which includes the identification of the author and addressee, a salutation (dear friend), a wish for the recipient’s welfare, and gratitude for some aspect of the friendship.1:1 This letter is from John, the elder: The translators have added John (see study note on 2 Jn 1:1). • There are several people named Gaius in the New Testament (see Acts 19:29; 20:4; Rom 16:23; 1 Cor 1:14); it was a popular name in the Greco-Roman world.</body></entry>
@@ -17848,7 +17776,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="65" osis="JUD" chapters="21">
-      <english-name>Jude</english-name>
       <name>Jude</name>
       <chapter number="10">
         <entry><reference book="JUD" chapter="10" verses="1"/><body>10:1-5 Each of the five minor judges (see also 12:8-15) judged Israel for a specific number of years; in this period of decline after Gideon, the formula “there was peace in the land” (3:11, 30; 5:31; 8:28) never recurs. The details given for these enigmatic figures include their places of origin and burial, and perhaps a brief genealogy or something notable about their families. Four of the five names appear in other genealogical records: Tola and Puah as clans of Issachar (Gen 46:13; Num 26:23), Elon as a descendant of Zebulun (Gen 46:14; Num 26:26), and Jair at various points (see Num 32:41; Deut 3:14; Josh 13:30; 1 Kgs 4:13). The lack of specific military exploits and the common reference to “judging” suggests that they had some kind of administrative or judicial function.10:1 Tola was the first of five minor judges; little is known about him. Of the five, only Tola was said to rescue Israel. He came after Abimelech died, when Israel was in need of rescue, though not from a foreign enemy.</body></entry>
@@ -18192,7 +18119,6 @@ A′ God shows no favoritism (2:11)</body></entry>
       </chapter>
     </book>
     <book id="66" osis="REV" chapters="22">
-      <english-name>Revelation</english-name>
       <name>Revelation</name>
       <chapter number="10">
         <entry><reference book="REV" chapter="10" verses="1"/><body>10:1–11:14 This interlude between the sixth and seventh trumpets is divided into two parts: (1) the seven thunders and the small scroll (10:1-11), and (2) the two witnesses (11:1-13). The interlude ends with the announcement that the second terror is finished (11:14).10:1 another mighty angel (see 5:2; 7:2; cp. 1:12-16): This angel appears similar to the huge bronze Colossus that stood as a symbol of human power in the harbor of Rhodes for several decades before it was toppled by an earthquake in the late 200s BC. The statue still lay broken at the time that John wrote Revelation. It was about 100 feet tall and represented the sun god, Helios. The angel was surrounded by a cloud, suggesting that he dwarfed the Rhodes statue and, by implication, all idols. The rainbow over his head is a reminder that the enthroned God is encircled by a rainbow (4:3), a biblical symbol of God’s covenant with humanity (Gen 9:8-17).</body></entry>

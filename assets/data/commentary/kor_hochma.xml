@@ -6,11 +6,9 @@
   </metadata>
   <books>
     <book id="0" osis="INTRO" testament="INTRO" chapters="0">
-      <english-name>General Intro</english-name>
       <name>일반 서론/소개</name>
     </book>
     <book id="1" osis="Gen" testament="OT" chapters="50">
-      <english-name>Genesis</english-name>
       <name>창세기</name>
       <chapter number="1">
         <entry>
@@ -2518,7 +2516,6 @@
       </chapter>
     </book>
     <book id="2" osis="Exod" testament="OT" chapters="40">
-      <english-name>Exodus</english-name>
       <name>출애굽기</name>
       <chapter number="1">
         <entry>
@@ -6906,7 +6903,6 @@
       </chapter>
     </book>
     <book id="3" osis="Lev" testament="OT" chapters="27">
-      <english-name>Leviticus</english-name>
       <name>레위기</name>
       <chapter number="1">
         <entry>
@@ -9204,7 +9200,6 @@
       </chapter>
     </book>
     <book id="4" osis="Num" testament="OT" chapters="36">
-      <english-name>Numbers</english-name>
       <name>민수기</name>
       <chapter number="1">
         <entry>
@@ -13176,7 +13171,6 @@
       </chapter>
     </book>
     <book id="5" osis="Deut" testament="OT" chapters="34">
-      <english-name>Deuteronomy</english-name>
       <name>신명기</name>
       <chapter number="1">
         <entry>
@@ -16100,7 +16094,6 @@
       </chapter>
     </book>
     <book id="6" osis="Josh" testament="OT" chapters="24">
-      <english-name>Joshua</english-name>
       <name>여호수아</name>
       <chapter number="1">
         <entry>
@@ -18136,7 +18129,6 @@
       </chapter>
     </book>
     <book id="7" osis="Judg" testament="OT" chapters="21">
-      <english-name>Judges</english-name>
       <name>사사기</name>
       <chapter number="1">
         <entry>
@@ -20422,7 +20414,6 @@
       </chapter>
     </book>
     <book id="8" osis="Ruth" testament="OT" chapters="4">
-      <english-name>Ruth</english-name>
       <name>룻기</name>
       <chapter number="1">
         <entry>
@@ -20770,7 +20761,6 @@
       </chapter>
     </book>
     <book id="9" osis="1Sam" testament="OT" chapters="31">
-      <english-name>1 Samuel</english-name>
       <name>사무엘상</name>
       <chapter number="1">
         <entry>
@@ -23624,7 +23614,6 @@
       </chapter>
     </book>
     <book id="10" osis="2Sam" testament="OT" chapters="13">
-      <english-name>2 Samuel</english-name>
       <name>사무엘하</name>
       <chapter number="1">
         <entry>
@@ -24914,227 +24903,171 @@
       </chapter>
     </book>
     <book id="11" osis="1Kgs" testament="OT" chapters="22">
-      <english-name>1 Kings</english-name>
       <name>열왕기상</name>
     </book>
     <book id="12" osis="2Kgs" testament="OT" chapters="25">
-      <english-name>2 Kings</english-name>
       <name>열왕기하</name>
     </book>
     <book id="13" osis="1Chr" testament="OT" chapters="29">
-      <english-name>1 Chronicles</english-name>
       <name>역대상</name>
     </book>
     <book id="14" osis="2Chr" testament="OT" chapters="36">
-      <english-name>2 Chronicles</english-name>
       <name>역대하</name>
     </book>
     <book id="15" osis="Ezra" testament="OT" chapters="10">
-      <english-name>Ezra</english-name>
       <name>에스라</name>
     </book>
     <book id="16" osis="Neh" testament="OT" chapters="13">
-      <english-name>Nehemiah</english-name>
       <name>느헤미야</name>
     </book>
     <book id="17" osis="Esth" testament="OT" chapters="10">
-      <english-name>Esther</english-name>
       <name>에스더</name>
     </book>
     <book id="18" osis="Job" testament="OT" chapters="42">
-      <english-name>Job</english-name>
       <name>욥기</name>
     </book>
     <book id="19" osis="Ps" testament="OT" chapters="150">
-      <english-name>Psalms</english-name>
       <name>시편</name>
     </book>
     <book id="20" osis="Prov" testament="OT" chapters="31">
-      <english-name>Proverbs</english-name>
       <name>잠언</name>
     </book>
     <book id="21" osis="Eccl" testament="OT" chapters="12">
-      <english-name>Ecclesiastes</english-name>
       <name>전도서</name>
     </book>
     <book id="22" osis="Song" testament="OT" chapters="8">
-      <english-name>Song of Songs</english-name>
       <name>아가</name>
     </book>
     <book id="23" osis="Isa" testament="OT" chapters="66">
-      <english-name>Isaiah</english-name>
       <name>이사야</name>
     </book>
     <book id="24" osis="Jer" testament="OT" chapters="52">
-      <english-name>Jeremiah</english-name>
       <name>예레미야</name>
     </book>
     <book id="25" osis="Lam" testament="OT" chapters="5">
-      <english-name>Lamentations</english-name>
       <name>예레미야애가</name>
     </book>
     <book id="26" osis="Ezek" testament="OT" chapters="48">
-      <english-name>Ezekiel</english-name>
       <name>에스겔</name>
     </book>
     <book id="27" osis="Dan" testament="OT" chapters="12">
-      <english-name>Daniel</english-name>
       <name>다니엘</name>
     </book>
     <book id="28" osis="Hos" testament="OT" chapters="14">
-      <english-name>Hosea</english-name>
       <name>호세아</name>
     </book>
     <book id="29" osis="Joel" testament="OT" chapters="3">
-      <english-name>Joel</english-name>
       <name>요엘</name>
     </book>
     <book id="30" osis="Amos" testament="OT" chapters="9">
-      <english-name>Amos</english-name>
       <name>아모스</name>
     </book>
     <book id="31" osis="Obad" testament="OT" chapters="1">
-      <english-name>Obadiah</english-name>
       <name>오바댜</name>
     </book>
     <book id="32" osis="Jonah" testament="OT" chapters="4">
-      <english-name>Jonah</english-name>
       <name>요나</name>
     </book>
     <book id="33" osis="Mic" testament="OT" chapters="7">
-      <english-name>Micah</english-name>
       <name>미가</name>
     </book>
     <book id="34" osis="Nah" testament="OT" chapters="3">
-      <english-name>Nahum</english-name>
       <name>나훔</name>
     </book>
     <book id="35" osis="Hab" testament="OT" chapters="3">
-      <english-name>Habakkuk</english-name>
       <name>하박국</name>
     </book>
     <book id="36" osis="Zeph" testament="OT" chapters="3">
-      <english-name>Zephaniah</english-name>
       <name>스바냐</name>
     </book>
     <book id="37" osis="Hag" testament="OT" chapters="2">
-      <english-name>Haggai</english-name>
       <name>학개</name>
     </book>
     <book id="38" osis="Zech" testament="OT" chapters="14">
-      <english-name>Zechariah</english-name>
       <name>스가랴</name>
     </book>
     <book id="39" osis="Mal" testament="OT" chapters="4">
-      <english-name>Malachi</english-name>
       <name>말라기</name>
     </book>
     <book id="40" osis="Matt" testament="NT" chapters="28">
-      <english-name>Matthew</english-name>
       <name>마태복음</name>
     </book>
     <book id="41" osis="Mark" testament="NT" chapters="16">
-      <english-name>Mark</english-name>
       <name>마가복음</name>
     </book>
     <book id="42" osis="Luke" testament="NT" chapters="24">
-      <english-name>Luke</english-name>
       <name>누가복음</name>
     </book>
     <book id="43" osis="John" testament="NT" chapters="21">
-      <english-name>John</english-name>
       <name>요한복음</name>
     </book>
     <book id="44" osis="Acts" testament="NT" chapters="28">
-      <english-name>Acts</english-name>
       <name>사도행전</name>
     </book>
     <book id="45" osis="Rom" testament="NT" chapters="16">
-      <english-name>Romans</english-name>
       <name>로마서</name>
     </book>
     <book id="46" osis="1Cor" testament="NT" chapters="16">
-      <english-name>1 Corinthians</english-name>
       <name>고린도전서</name>
     </book>
     <book id="47" osis="2Cor" testament="NT" chapters="13">
-      <english-name>2 Corinthians</english-name>
       <name>고린도후서</name>
     </book>
     <book id="48" osis="Gal" testament="NT" chapters="6">
-      <english-name>Galatians</english-name>
       <name>갈라디아서</name>
     </book>
     <book id="49" osis="Eph" testament="NT" chapters="6">
-      <english-name>Ephesians</english-name>
       <name>에베소서</name>
     </book>
     <book id="50" osis="Phil" testament="NT" chapters="4">
-      <english-name>Philippians</english-name>
       <name>빌립보서</name>
     </book>
     <book id="51" osis="Col" testament="NT" chapters="4">
-      <english-name>Colossians</english-name>
       <name>골로새서</name>
     </book>
     <book id="52" osis="1Thess" testament="NT" chapters="5">
-      <english-name>1 Thessalonians</english-name>
       <name>데살로니가전서</name>
     </book>
     <book id="53" osis="2Thess" testament="NT" chapters="3">
-      <english-name>2 Thessalonians</english-name>
       <name>데살로니가후서</name>
     </book>
     <book id="54" osis="1Tim" testament="NT" chapters="6">
-      <english-name>1 Timothy</english-name>
       <name>디모데전서</name>
     </book>
     <book id="55" osis="2Tim" testament="NT" chapters="4">
-      <english-name>2 Timothy</english-name>
       <name>디모데후서</name>
     </book>
     <book id="56" osis="Titus" testament="NT" chapters="3">
-      <english-name>Titus</english-name>
       <name>디도서</name>
     </book>
     <book id="57" osis="Phlm" testament="NT" chapters="1">
-      <english-name>Philemon</english-name>
       <name>빌레몬서</name>
     </book>
     <book id="58" osis="Heb" testament="NT" chapters="13">
-      <english-name>Hebrews</english-name>
       <name>히브리서</name>
     </book>
     <book id="59" osis="Jas" testament="NT" chapters="5">
-      <english-name>James</english-name>
       <name>야고보서</name>
     </book>
     <book id="60" osis="1Pet" testament="NT" chapters="5">
-      <english-name>1 Peter</english-name>
       <name>베드로전서</name>
     </book>
     <book id="61" osis="2Pet" testament="NT" chapters="3">
-      <english-name>2 Peter</english-name>
       <name>베드로후서</name>
     </book>
     <book id="62" osis="1John" testament="NT" chapters="5">
-      <english-name>1 John</english-name>
       <name>요한1서</name>
     </book>
     <book id="63" osis="2John" testament="NT" chapters="1">
-      <english-name>2 John</english-name>
       <name>요한2서</name>
     </book>
     <book id="64" osis="3John" testament="NT" chapters="1">
-      <english-name>3 John</english-name>
       <name>요한3서</name>
     </book>
     <book id="65" osis="Jude" testament="NT" chapters="1">
-      <english-name>Jude</english-name>
       <name>유다서</name>
     </book>
     <book id="66" osis="Rev" testament="NT" chapters="22">
-      <english-name>Revelation</english-name>
       <name>요한계시록</name>
     </book>
   </books>

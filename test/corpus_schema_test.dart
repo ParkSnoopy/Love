@@ -34,6 +34,34 @@ void main() {
       }
     });
 
+    test(
+      'commentary corpus contains only canonical metadata and book names',
+      () {
+        const redundantElements = [
+          'english-name',
+          'language',
+          'website',
+          'license-url',
+          'source-api',
+        ];
+
+        final documents = Directory('assets/data/commentary')
+            .listSync()
+            .whereType<File>()
+            .where((file) => file.path.endsWith('.xml'));
+        for (final document in documents) {
+          final contents = document.readAsStringSync();
+          for (final element in redundantElements) {
+            expect(
+              contents,
+              isNot(contains('<$element>')),
+              reason: '${document.path} contains redundant <$element> metadata',
+            );
+          }
+        }
+      },
+    );
+
     test('accept Bible chapter headings in every language', () {
       final result = Process.runSync('xmllint', [
         '--noout',
