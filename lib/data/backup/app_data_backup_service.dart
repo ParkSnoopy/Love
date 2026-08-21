@@ -14,7 +14,6 @@ class AppDataBackupService {
   const AppDataBackupService();
 
   static const formatVersion = AppDataBackupParser.formatVersion;
-  static const fileExtension = 'lovebackup';
   static const _requiredDatabaseTables = {
     'bookmarks',
     'highlights',
