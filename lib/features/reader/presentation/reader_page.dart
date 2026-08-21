@@ -249,17 +249,19 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
         }
 
         const repo = ReaderRepository();
+        var chapterLines = const <ChapterLine>[];
         var verses = const <VerseLine>[];
         var bookName = l10n.t('bible');
         var hasCurrentChapterCommentary = true;
         CommentaryIntroduction? bookIntroduction;
         String? loadError;
         try {
-          verses = repo.loadChapter(
+          chapterLines = repo.loadChapterLines(
             dbPath: widget.dbPath,
             bookId: rr.bookId,
             chapter: rr.chapter,
           );
+          verses = chapterLines.whereType<VerseLine>().toList(growable: false);
           bookName = repo.loadBookName(
             dbPath: widget.dbPath,
             bookId: rr.bookId,
@@ -304,12 +306,18 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
             title: InkWell(
               splashFactory: NoSplash.splashFactory,
               highlightColor: Colors.transparent,
-              onTap: () => showModalBottomSheet<void>(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => const BibleSelectionSheet(),
-              ),
+              onTap: () async {
+                final selectedId = await showModalBottomSheet<String>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const BibleSelectionSheet(),
+                );
+                if (selectedId == null || !context.mounted) return;
+                await ref
+                    .read(activeBibleSelectionProvider.notifier)
+                    .select(selectedId);
+              },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -371,7 +379,30 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                             key: const PageStorageKey<String>('reader-scroll'),
                             controller: _readerScrollController,
                             child: Column(
-                              children: verses.map((v) {
+                              children: chapterLines.map((line) {
+                                if (line is ChapterHeading) {
+                                  return Semantics(
+                                    header: true,
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        20,
+                                        16,
+                                        6,
+                                      ),
+                                      child: Text(
+                                        line.text,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                final v = line as VerseLine;
                                 final key = VerseKey(
                                   bookId: v.bookId,
                                   chapter: v.chapter,

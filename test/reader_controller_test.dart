@@ -7,6 +7,7 @@ import 'package:Love/app/app_preferences.dart';
 import 'package:Love/data/import/zip_extractor.dart';
 import 'package:Love/data/storage/db_path_provider.dart';
 import 'package:Love/features/library/providers/library_controller.dart';
+import 'package:Love/features/reader/data/reader_repository.dart';
 import 'package:Love/features/reader/providers/reader_controller.dart';
 
 void main() {
@@ -172,6 +173,73 @@ void main() {
         expect(prefs.getString('active_bible_id'), 'eng_niv');
         expect(prefs.getString('active_bible_file'), isNull);
         expect(prefs.getString('active_bible_name'), isNull);
+      },
+    );
+
+    test('generated translations include Judges chapter 16', () async {
+      const files = [
+        'eng_niv.sqlite',
+        'eng_nlt.sqlite',
+        'jpn_jcb.sqlite',
+        'jpn_shinkyoudoyaku.sqlite',
+        'kor_klb.sqlite',
+        'kor_koerv.sqlite',
+        'kor_krv.sqlite',
+        'kor_rnksv.sqlite',
+        'kor_wrm.sqlite',
+        'zho_ccb.sqlite',
+        'zho_rcuvss.sqlite',
+      ];
+      const extractor = ZipExtractor();
+      const repository = ReaderRepository();
+
+      for (final file in files) {
+        final path = p.join(tempExtractDir.path, file);
+        await extractor.extractFile(
+          targetZipPath: 'data/bible/$file',
+          destinationPath: path,
+          zipFilePath: 'assets/data.zip',
+        );
+        expect(
+          repository.loadChapter(dbPath: path, bookId: 7, chapter: 16),
+          isNotEmpty,
+          reason: '$file is missing Judges 16',
+        );
+      }
+    });
+
+    test(
+      'merges segmented verses and keeps headings in reading order',
+      () async {
+        final path = p.join(tempExtractDir.path, 'kor_koerv_heading.sqlite');
+        const extractor = ZipExtractor();
+        await extractor.extractFile(
+          targetZipPath: 'data/bible/kor_koerv.sqlite',
+          destinationPath: path,
+          zipFilePath: 'assets/data.zip',
+        );
+
+        const repository = ReaderRepository();
+        final lines = repository.loadChapterLines(
+          dbPath: path,
+          bookId: 1,
+          chapter: 29,
+        );
+        final verse14 = lines.whereType<VerseLine>().where(
+          (line) => line.verse == 14,
+        );
+        expect(verse14, hasLength(1));
+        expect(verse14.single.text, contains('라반이 그에게 말하였다'));
+        expect(verse14.single.text, contains('야곱이 라반의 집에 머문 지 한 달'));
+
+        final headingIndex = lines.indexWhere(
+          (line) => line is ChapterHeading && line.text == '라반이 야곱을 속이다',
+        );
+        final verseIndex = lines.indexWhere(
+          (line) => line is VerseLine && line.verse == 14,
+        );
+        expect(headingIndex, greaterThanOrEqualTo(0));
+        expect(headingIndex, lessThan(verseIndex));
       },
     );
   });

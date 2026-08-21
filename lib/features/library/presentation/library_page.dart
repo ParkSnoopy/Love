@@ -466,13 +466,15 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     );
   }
 
-  void _showBibleSelection(BuildContext context) {
-    showModalBottomSheet(
+  Future<void> _showBibleSelection(BuildContext context) async {
+    final selectedId = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const BibleSelectionSheet(),
     );
+    if (selectedId == null || !mounted) return;
+    await ref.read(activeBibleSelectionProvider.notifier).select(selectedId);
   }
 
   void _showCommentarySelection(BuildContext context) {
@@ -765,19 +767,7 @@ class _BibleSelectionSheetState extends ConsumerState<BibleSelectionSheet> {
                                       ).colorScheme.primary,
                                     )
                                   : null,
-                              onTap: () {
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) async {
-                                  if (!context.mounted) return;
-                                  await ref
-                                      .read(
-                                        activeBibleSelectionProvider.notifier,
-                                      )
-                                      .select(p.id);
-                                  if (context.mounted) Navigator.pop(context);
-                                });
-                              },
+                              onTap: () => Navigator.pop(context, p.id),
                             ),
                         ],
                       );

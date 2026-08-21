@@ -54,6 +54,17 @@ BIBLE_COM_BOOK_CODES = {
     "Rev": "REV",
 }
 LOCALIZED_BOOK_NAMES = {
+    "eng": (
+        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth",
+        "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah",
+        "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Songs", "Isaiah", "Jeremiah",
+        "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah",
+        "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi", "Matthew",
+        "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians",
+        "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus",
+        "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
+        "Jude", "Revelation",
+    ),
     "zho": (
         "创世纪", "出埃及记", "利未记", "民数记", "申命记", "约书亚记", "士师记", "路得记",
         "撒母耳记上", "撒母耳记下", "列王纪上", "列王纪下", "历代志上", "历代志下", "以斯拉记", "尼希米记",
@@ -199,14 +210,7 @@ def load_books(template_path: Path) -> list[ET.Element]:
 
 def localize_book_names(books: list[ET.Element], bible_id: str) -> None:
     language = bible_id.split("_", 1)[0]
-    if language == "eng":
-        for book in books:
-            english_name = book.find("english-name")
-            name = book.find("name")
-            if english_name is None or english_name.text is None or name is None:
-                raise ValueError(f"Book has no English name: {book.attrib['osis']}")
-            name.text = english_name.text
-    elif language != "kor":
+    if language != "kor":
         localized_names = LOCALIZED_BOOK_NAMES.get(language)
         if localized_names is None or len(localized_names) != len(books):
             raise ValueError(f"Unsupported or incomplete book-name localization: {language}")
@@ -223,7 +227,32 @@ def localize_book_names(books: list[ET.Element], bible_id: str) -> None:
 
 def chapter_requests(books: Iterable[ET.Element]) -> Iterable[tuple[ET.Element, ET.Element]]:
     for book in books:
-        for chapter in book.findall("chapter"):
+        chapter_count = int(book.attrib["chapters"])
+        existing_chapters = book.findall("chapter")
+        chapters_by_number = {
+            int(chapter.attrib["number"]): chapter for chapter in existing_chapters
+        }
+        if len(chapters_by_number) != len(existing_chapters):
+            raise ValueError(f"Book has duplicate chapter numbers: {book.attrib['osis']}")
+        unexpected = set(chapters_by_number) - set(range(1, chapter_count + 1))
+        if unexpected:
+            raise ValueError(
+                f"Book has out-of-range chapters: {book.attrib['osis']} {sorted(unexpected)}"
+            )
+        for chapter_number in range(1, chapter_count + 1):
+            chapter = chapters_by_number.get(chapter_number)
+            if chapter is None:
+                chapter = ET.Element("chapter", {"number": str(chapter_number)})
+                insertion_index = next(
+                    (
+                        index
+                        for index, child in enumerate(book)
+                        if child.tag == "chapter"
+                        and int(child.attrib["number"]) > chapter_number
+                    ),
+                    len(book),
+                )
+                book.insert(insertion_index, chapter)
             yield book, chapter
 
 
@@ -422,6 +451,8 @@ def crawl(args: argparse.Namespace) -> None:
         book_code = BIBLE_COM_BOOK_CODES[osis]
         chapter_number = int(chapter.attrib["number"])
         key = f"{osis}.{chapter_number}"
+        if args.reference is not None and key != args.reference:
+            continue
         if key in completed:
             replace_chapter(chapter, decode_chapter_items(completed[key]))
             continue
@@ -470,6 +501,8 @@ def crawl_compare(args: argparse.Namespace) -> None:
         book_code = BIBLE_COM_BOOK_CODES[osis]
         chapter_number = int(primary_chapter.attrib["number"])
         key = f"{osis}.{chapter_number}"
+        if args.reference is not None and key != args.reference:
+            continue
         if key in completed:
             replace_chapter(
                 primary_chapter,
@@ -564,6 +597,11 @@ def self_test() -> None:
     if chapter_url("86", "KLB", BIBLE_COM_BOOK_CODES["Exod"], 1).endswith("/EXO.1.KLB") is False:
         raise AssertionError("Bible.com book-code mapping did not translate Exod to EXO.")
     books = load_books(DEFAULT_TEMPLATE)
+    judges = next(book for book in books if book.attrib["osis"] == "Judg")
+    if [int(chapter.attrib["number"]) for _, chapter in chapter_requests([judges])] != list(
+        range(1, 22)
+    ):
+        raise AssertionError("Missing template chapters were not restored from book metadata.")
     localize_book_names(books, "eng_test")
     first_book = books[0]
     if first_book.findtext("name") != "Genesis" or first_book.find("english-name") is not None:
@@ -598,6 +636,10 @@ def arguments() -> argparse.Namespace:
     )
     parser.add_argument("--template", type=Path, default=DEFAULT_TEMPLATE)
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
+    parser.add_argument(
+        "--reference",
+        help="crawl one canonical chapter reference, for example Judg.16",
+    )
     parser.add_argument("--delay", type=float, default=1.0)
     parser.add_argument("--timeout", type=int, default=30)
     parser.add_argument("--retries", type=int, default=-1)
@@ -613,6 +655,8 @@ def arguments() -> argparse.Namespace:
         parser.error("--delay must be non-negative")
     if args.retries < -1 or args.retry_delay < 0:
         parser.error("--retries must be -1 or greater and --retry-delay must be non-negative")
+    if args.reference is not None and re.fullmatch(r"[1-3]?[A-Za-z]+\.\d+", args.reference) is None:
+        parser.error("--reference must be a canonical chapter reference such as Judg.16")
     if not args.template.is_file() or not args.schema.is_file():
         parser.error("--template and --schema must name existing files")
     for option, value in (("--version", args.version), ("--parallel-version", args.parallel_version)):

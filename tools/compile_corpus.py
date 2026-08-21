@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import shutil
 import sqlite3
+import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
@@ -18,6 +19,10 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "assets" / "data"
 OUTPUT_ZIP = ROOT / "assets" / "data.zip"
+SCHEMAS = {
+    "bible": DATA_DIR / "schema" / "bible.xml",
+    "commentary": DATA_DIR / "schema" / "commentary.xml",
+}
 CANONICAL_BOOK_IDS = {
     book.attrib["osis"]: int(book.attrib["id"])
     for book in ET.parse(DATA_DIR / "bible" / "kor_wrm.xml").findall("./books/book")
@@ -85,11 +90,24 @@ def compile_bible(source: Path, output: Path) -> tuple[str, str]:
     root = ET.parse(source).getroot()
     if root.tag != "bible":
         raise ValueError(f"Not a Bible corpus: {source}")
+    osis_order = [book.attrib["osis"] for book in root.findall("./books/book")]
+    if osis_order != list(CANONICAL_BOOK_IDS):
+        raise ValueError(f"Non-canonical Bible book order in {source}: {osis_order}")
     slug, label = metadata(root)
     connection = create_database(output, slug, label)
     try:
         for book in root.findall("./books/book"):
             book_id = CANONICAL_BOOK_IDS.get(book.attrib["osis"], 0)
+            chapter_count = int(book.attrib["chapters"])
+            chapter_numbers = [
+                int(chapter.attrib["number"])
+                for chapter in book.findall("chapter")
+            ]
+            if chapter_numbers != list(range(1, chapter_count + 1)):
+                raise ValueError(
+                    f"Incomplete or unordered chapters in {source}: "
+                    f"{book.attrib['osis']} has {chapter_numbers}"
+                )
             connection.execute(
                 "INSERT OR IGNORE INTO books VALUES (?, ?, ?, ?, ?)",
                 (
@@ -97,11 +115,18 @@ def compile_bible(source: Path, output: Path) -> tuple[str, str]:
                     book.attrib["osis"],
                     text(book.find("name"), f"book name in {source}"),
                     book.attrib["testament"],
-                    int(book.attrib["chapters"]),
+                    chapter_count,
                 ),
             )
             for chapter in book.findall("chapter"):
                 chapter_number = int(chapter.attrib["number"])
+                verses = chapter.findall("verse")
+                if not verses:
+                    raise ValueError(
+                        f"Chapter has no verses in {source}: "
+                        f"{book.attrib['osis']}.{chapter_number}"
+                    )
+                merged_verses: dict[int, tuple[int, int, str]] = {}
                 for position, item in enumerate(chapter, start=1):
                     item_text = text(item, f"chapter item in {source}")
                     if item.tag == "heading":
@@ -111,19 +136,43 @@ def compile_bible(source: Path, output: Path) -> tuple[str, str]:
                         )
                     elif item.tag == "verse":
                         end_number = item.attrib.get("end-number")
-                        connection.execute(
-                            "INSERT INTO verses VALUES (?, ?, ?, ?, ?, ?)",
-                            (
-                                book_id,
-                                chapter_number,
-                                int(item.attrib["number"]),
-                                int(end_number) if end_number is not None else None,
+                        verse_number = int(item.attrib["number"])
+                        end_verse = int(end_number) if end_number is not None else verse_number
+                        if end_verse < verse_number:
+                            raise ValueError(
+                                f"Descending verse range in {source}: "
+                                f"{book.attrib['osis']}.{chapter_number}."
+                                f"{item.attrib['number']}-{end_number}"
+                            )
+                        existing = merged_verses.get(verse_number)
+                        if existing is None:
+                            merged_verses[verse_number] = (end_verse, position, item_text)
+                        else:
+                            merged_verses[verse_number] = (
+                                max(existing[0], end_verse),
                                 position,
-                                item_text,
-                            ),
-                        )
+                                f"{existing[2]} {item_text}",
+                            )
                     else:
                         raise ValueError(f"Unexpected Bible chapter item: {item.tag}")
+                for verse_number, (end_verse, position, verse_text) in merged_verses.items():
+                    connection.execute(
+                        "INSERT INTO verses VALUES (?, ?, ?, ?, ?, ?)",
+                        (
+                            book_id,
+                            chapter_number,
+                            verse_number,
+                            end_verse if end_verse != verse_number else None,
+                            position,
+                            verse_text,
+                        ),
+                    )
+        connection.execute(
+            "CREATE UNIQUE INDEX idx_bible_verse ON verses(book_id, chapter, verse)"
+        )
+        connection.execute(
+            "CREATE UNIQUE INDEX idx_bible_heading ON headings(book_id, chapter, position)"
+        )
         connection.commit()
         connection.execute("VACUUM")
     finally:
@@ -192,6 +241,16 @@ def manifest_entry(slug: str, label: str, data_type: str, source: Path) -> dict[
     }
 
 
+def validate_source(source: Path, data_type: str) -> None:
+    result = subprocess.run(
+        ["xmllint", "--noout", "--schema", str(SCHEMAS[data_type]), str(source)],
+        text=True,
+        capture_output=True,
+    )
+    if result.returncode:
+        raise ValueError(f"Schema validation failed for {source}: {result.stderr.strip()}")
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="love-data-", dir=ROOT) as temporary:
         staging = Path(temporary) / "data"
@@ -200,6 +259,7 @@ def main() -> None:
             destination = staging / data_type
             destination.mkdir(parents=True)
             for source in sorted((DATA_DIR / data_type).glob("*.xml")):
+                validate_source(source, data_type)
                 output = destination / f"{source.stem}.sqlite"
                 slug, label = compiler(source, output)
                 entries.append(manifest_entry(slug, label, data_type, source))

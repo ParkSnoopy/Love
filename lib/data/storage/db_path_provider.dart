@@ -6,14 +6,42 @@ import '../import/zip_extractor.dart';
 import 'app_storage.dart';
 import 'db_asset_paths.dart';
 
-bool _isDatabaseValid(String path) {
+bool _isDatabaseValid(String path, {required String type}) {
   try {
     final db = sqlite3.open(path, mode: OpenMode.readOnly);
     try {
       final rows = db.select(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='verses'",
+        "SELECT name FROM sqlite_master WHERE type='table' "
+        "AND name IN ('books', 'verses', 'headings')",
       );
-      return rows.isNotEmpty;
+      if (rows.length != 3) return false;
+      if (type != 'bible') return true;
+
+      final missingChapters = db.select('''
+        WITH RECURSIVE expected(book_id, chapter, max_chapter) AS (
+          SELECT book_id, 1, chapters FROM books
+          UNION ALL
+          SELECT book_id, chapter + 1, max_chapter
+          FROM expected
+          WHERE chapter < max_chapter
+        )
+        SELECT 1
+        FROM expected
+        WHERE NOT EXISTS (
+          SELECT 1 FROM verses
+          WHERE verses.book_id = expected.book_id
+            AND verses.chapter = expected.chapter
+        )
+        LIMIT 1
+      ''');
+      if (missingChapters.isNotEmpty) return false;
+      final duplicateVerses = db.select('''
+        SELECT 1 FROM verses
+        GROUP BY book_id, chapter, verse
+        HAVING COUNT(*) > 1
+        LIMIT 1
+      ''');
+      return duplicateVerses.isEmpty;
     } finally {
       db.close();
     }
@@ -31,7 +59,9 @@ Future<String?> _resolveDbPath({
     manifestFile: manifestFile,
     type: type,
   )) {
-    if (File(path).existsSync()) return path;
+    if (File(path).existsSync() && _isDatabaseValid(path, type: type)) {
+      return path;
+    }
   }
 
   // 2. Try app data directory
@@ -44,7 +74,7 @@ Future<String?> _resolveDbPath({
   final targetFile = File(targetPath);
 
   if (targetFile.existsSync()) {
-    if (_isDatabaseValid(targetPath)) {
+    if (_isDatabaseValid(targetPath, type: type)) {
       return targetPath;
     } else {
       try {
@@ -60,6 +90,10 @@ Future<String?> _resolveDbPath({
       targetZipPath: dbZipPath(manifestFile: manifestFile, type: type),
       destinationPath: targetPath,
     );
+    if (!_isDatabaseValid(targetPath, type: type)) {
+      targetFile.deleteSync();
+      throw StateError('Extracted database failed validation: $manifestFile');
+    }
     return targetPath;
   } catch (_) {
     return null;

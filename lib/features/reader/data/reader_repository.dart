@@ -4,17 +4,30 @@ import '../../../data/import/zip_extractor.dart';
 import '../../../data/storage/app_storage.dart';
 import '../../../data/storage/db_asset_paths.dart';
 
-class VerseLine {
+abstract class ChapterLine {
+  const ChapterLine({required this.position});
+
+  final int position;
+}
+
+class VerseLine extends ChapterLine {
   const VerseLine({
     required this.bookId,
     required this.chapter,
     required this.verse,
     required this.text,
+    required super.position,
   });
 
   final int bookId;
   final int chapter;
   final int verse;
+  final String text;
+}
+
+class ChapterHeading extends ChapterLine {
+  const ChapterHeading({required this.text, required super.position});
+
   final String text;
 }
 
@@ -40,7 +53,10 @@ class ReaderRepository {
   String loadBookName({required String dbPath, required int bookId}) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final rows = db.select('SELECT name FROM books WHERE book_id = ? LIMIT 1', [bookId]);
+      final rows = db.select(
+        'SELECT name FROM books WHERE book_id = ? LIMIT 1',
+        [bookId],
+      );
       if (rows.isEmpty) return 'Book$bookId';
       final row = rows.first;
       final name = (row['name'] as String?)?.trim();
@@ -91,22 +107,54 @@ class ReaderRepository {
     required int bookId,
     required int chapter,
   }) {
+    return loadChapterLines(
+      dbPath: dbPath,
+      bookId: bookId,
+      chapter: chapter,
+    ).whereType<VerseLine>().toList(growable: false);
+  }
+
+  List<ChapterLine> loadChapterLines({
+    required String dbPath,
+    required int bookId,
+    required int chapter,
+  }) {
     final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
     try {
-      final rows = db.select(
-        'SELECT book_id, chapter, verse, text FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse ASC',
+      final verseRows = db.select(
+        'SELECT book_id, chapter, verse, position, text FROM verses '
+        'WHERE book_id = ? AND chapter = ? ORDER BY position ASC',
         [bookId, chapter],
       );
-      return rows
-          .map(
-            (r) => VerseLine(
-              bookId: (r['book_id'] as int?) ?? 0,
-              chapter: (r['chapter'] as int?) ?? 0,
-              verse: (r['verse'] as int?) ?? 0,
-              text: (r['text'] as String?) ?? '',
-            ),
-          )
-          .toList(growable: false);
+      final headingRows = db.select(
+        'SELECT position, text FROM headings '
+        'WHERE book_id = ? AND chapter = ? ORDER BY position ASC',
+        [bookId, chapter],
+      );
+      final mergedVerses = <int, VerseLine>{};
+      for (final row in verseRows) {
+        final verse = (row['verse'] as int?) ?? 0;
+        final position = (row['position'] as int?) ?? 0;
+        final text = (row['text'] as String?) ?? '';
+        final existing = mergedVerses[verse];
+        mergedVerses[verse] = VerseLine(
+          bookId: (row['book_id'] as int?) ?? 0,
+          chapter: (row['chapter'] as int?) ?? 0,
+          verse: verse,
+          position: position,
+          text: existing == null ? text : '${existing.text} $text',
+        );
+      }
+      final lines = <ChapterLine>[
+        ...mergedVerses.values,
+        ...headingRows.map(
+          (row) => ChapterHeading(
+            position: (row['position'] as int?) ?? 0,
+            text: (row['text'] as String?) ?? '',
+          ),
+        ),
+      ]..sort((left, right) => left.position.compareTo(right.position));
+      return List.unmodifiable(lines);
     } finally {
       db.close();
     }
