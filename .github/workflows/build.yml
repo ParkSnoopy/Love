@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DATA_VERSION: '5.0'
+  DATA_VERSION: '5.1'
 
 jobs:
   prepare:
@@ -102,11 +102,11 @@ jobs:
           set -euo pipefail
           python3 tools/compile_corpus.py
           test -f assets/data.zip
-          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSansCJK.ttc
           test -f assets/fonts/NotoSerifCJK.ttc
           zip -q "${DATA_ASSET}" \
             assets/data.zip \
-            assets/fonts/NotoSansCJK-VF.ttf.ttc \
+            assets/fonts/NotoSansCJK.ttc \
             assets/fonts/NotoSerifCJK.ttc
 
       - name: Publish data release
@@ -168,7 +168,7 @@ jobs:
             --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
-          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSansCJK.ttc
           test -f assets/fonts/NotoSerifCJK.ttc
 
       - name: Flutter pub get
@@ -234,7 +234,7 @@ jobs:
             --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
-          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSansCJK.ttc
           test -f assets/fonts/NotoSerifCJK.ttc
 
       - name: Flutter pub get
@@ -290,7 +290,7 @@ jobs:
             --output "${RUNNER_TEMP}/love-assets.zip"
           unzip -q -o "${RUNNER_TEMP}/love-assets.zip" -d .
           test -f assets/data.zip
-          test -f assets/fonts/NotoSansCJK-VF.ttf.ttc
+          test -f assets/fonts/NotoSansCJK.ttc
           test -f assets/fonts/NotoSerifCJK.ttc
 
       - name: Flutter pub get
@@ -347,7 +347,7 @@ jobs:
             --output $archivePath
           Expand-Archive -Path $archivePath -DestinationPath . -Force
           if (!(Test-Path 'assets/data.zip')) { throw 'Missing assets/data.zip' }
-          if (!(Test-Path 'assets/fonts/NotoSansCJK-VF.ttf.ttc')) { throw 'Missing assets/fonts/NotoSansCJK-VF.ttf.ttc' }
+          if (!(Test-Path 'assets/fonts/NotoSansCJK.ttc')) { throw 'Missing assets/fonts/NotoSansCJK.ttc' }
           if (!(Test-Path 'assets/fonts/NotoSerifCJK.ttc')) { throw 'Missing assets/fonts/NotoSerifCJK.ttc' }
 
       - name: Flutter pub get
