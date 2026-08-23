@@ -300,16 +300,16 @@ class _SearchContentViewState extends ConsumerState<_SearchContentView> {
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final resultTextStyle =
         Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         ) ??
         TextStyle(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         );
 
     return Scaffold(

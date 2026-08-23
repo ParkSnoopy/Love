@@ -150,6 +150,7 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
   @override
   Widget build(BuildContext context) {
     final rrAsync = ref.watch(readerRefProvider);
+    final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
 
     ref.listen<bool>(commentaryVisibilityProvider, (prev, next) {
       if (!next) {
@@ -522,6 +523,9 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                           textAlign: TextAlign.justify,
                                           TextSpan(
                                             style: TextStyle(
+                                              fontFamily: readerSettings
+                                                  .fontWeight
+                                                  .fontFamilyFor(fontType),
                                               fontSize: readerSettings.fontSize,
                                               height:
                                                   readerSettings.lineSpacing,
@@ -529,7 +533,10 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                               fontWeight:
                                                   matchingHighlight.id != -1
                                                   ? FontWeight.bold
-                                                  : readerSettings.fontWeight,
+                                                  : readerSettings.fontWeight
+                                                        .flutterWeightFor(
+                                                          fontType,
+                                                        ),
                                             ),
                                             children: [
                                               if (isBookmarked)
@@ -593,8 +600,14 @@ class _ReaderContentViewState extends ConsumerState<_ReaderContentView> {
                                                 .textTheme
                                                 .bodyMedium
                                                 ?.copyWith(
-                                                  fontWeight:
-                                                      readerSettings.fontWeight,
+                                                  fontFamily: readerSettings
+                                                      .fontWeight
+                                                      .fontFamilyFor(fontType),
+                                                  fontWeight: readerSettings
+                                                      .fontWeight
+                                                      .flutterWeightFor(
+                                                        fontType,
+                                                      ),
                                                 ),
                                           ),
                                         ),
@@ -1414,16 +1427,16 @@ class _CommentaryPaneState extends ConsumerState<CommentaryPane> {
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final baseTextStyle =
         theme.textTheme.bodyMedium?.copyWith(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         ) ??
         TextStyle(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           fontSize: readerSettings.fontSize,
           height: readerSettings.lineSpacing,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         );
     final activeCommentary = ref
         .watch(activeCommentarySelectionProvider)

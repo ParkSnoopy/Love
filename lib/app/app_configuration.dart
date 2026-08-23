@@ -18,7 +18,7 @@ abstract final class AppConfiguration {
   static const readerFontSizeDefault = 18.0;
   static const readerLineSpacingDefault = 1.5;
   static const uiScaleDefault = 1.0;
-  static const readerFontWeightDefault = 3;
+  static const readerFontWeightDefault = 'normal';
   static const readerBookIdDefault = 1;
   static const readerChapterDefault = 1;
 

@@ -71,6 +71,8 @@ flutter:
   assets:
     - assets/data.zip
     - assets/data/manifest.json
+    - assets/fonts/NotoSansCJK.ttc
+    - assets/fonts/NotoSerifCJK.ttc
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -82,15 +84,6 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  fonts:
-    - family: NotoSansCJK
-      fonts:
-        - asset: assets/fonts/NotoSansCJK-VF.ttf.ttc
-    - family: NotoSerifCJK
-      fonts:
-        - asset: assets/fonts/NotoSerifCJK.ttc
 
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

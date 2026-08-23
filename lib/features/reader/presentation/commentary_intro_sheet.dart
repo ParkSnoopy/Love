@@ -281,16 +281,16 @@ class _CommentaryIntroViewerPage extends ConsumerWidget {
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final baseTextStyle =
         theme.textTheme.bodyMedium?.copyWith(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           height: readerSettings.lineSpacing,
           fontSize: readerSettings.fontSize,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         ) ??
         TextStyle(
-          fontFamily: fontFamilyForType(fontType),
+          fontFamily: readerSettings.fontWeight.fontFamilyFor(fontType),
           height: readerSettings.lineSpacing,
           fontSize: readerSettings.fontSize,
-          fontWeight: readerSettings.fontWeight,
+          fontWeight: readerSettings.fontWeight.flutterWeightFor(fontType),
         );
 
     return Scaffold(

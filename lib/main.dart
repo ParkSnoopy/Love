@@ -43,6 +43,7 @@ Future<void> main() async {
     appDataPath: appDataDirectory.path,
     appVersion: appVersion,
   );
+  await ensureReaderFontWeightLoaded(ReaderFontWeight.normal);
   runZonedGuarded(
     () => runApp(const ProviderScope(child: MyApp())),
     BugReportLog.record,

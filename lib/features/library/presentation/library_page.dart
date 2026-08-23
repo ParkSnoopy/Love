@@ -34,6 +34,7 @@ class SettingPage extends ConsumerStatefulWidget {
 class _SettingPageState extends ConsumerState<SettingPage> {
   static const _backupChannel = MethodChannel('com.example.love/backup');
   bool _appDataOperationActive = false;
+  ReaderFontWeight? _pendingFontWeight;
 
   String _themeLabel(AppLocalizations l10n, ThemeMode mode) => switch (mode) {
     ThemeMode.system => l10n.t('system'),
@@ -45,6 +46,19 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     FontType.sans => l10n.t('sansSerif'),
     FontType.serif => l10n.t('serif'),
   };
+
+  String _fontWeightLabel(AppLocalizations l10n, ReaderFontWeight weight) =>
+      switch (weight) {
+        ReaderFontWeight.thin => l10n.t('thinWeight'),
+        ReaderFontWeight.extraLight => l10n.t('extraLight'),
+        ReaderFontWeight.light => l10n.t('lightWeight'),
+        ReaderFontWeight.demiLight => l10n.t('demiLight'),
+        ReaderFontWeight.normal => l10n.t('normalWeight'),
+        ReaderFontWeight.medium => l10n.t('mediumWeight'),
+        ReaderFontWeight.semiBold => l10n.t('semiBold'),
+        ReaderFontWeight.bold => l10n.t('boldWeight'),
+        ReaderFontWeight.black => l10n.t('blackWeight'),
+      };
 
   String _languageLabel(AppLocalizations l10n, Locale? locale) =>
       switch (locale?.languageCode) {
@@ -79,6 +93,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     final readerSettings =
         readerSettingsAsync.value ??
         const ReaderSettingsState(fontSize: 18.0, lineSpacing: 1.5);
+    final fontWeights = ReaderFontWeight.valuesFor(fontType);
+    final pendingFontWeight = _pendingFontWeight?.resolveFor(fontType);
+    final selectedFontWeight =
+        pendingFontWeight != null && fontWeights.contains(pendingFontWeight)
+        ? pendingFontWeight
+        : readerSettings.fontWeight.resolveFor(fontType);
 
     return Scaffold(
       appBar: AppBar(
@@ -187,7 +207,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         ),
                       ),
                       Text(
-                        '${readerSettings.fontWeight.value}',
+                        _fontWeightLabel(l10n, selectedFontWeight),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
@@ -196,16 +216,27 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                     ],
                   ),
                   Slider(
-                    value: readerSettings.fontWeight.value.toDouble(),
-                    min: 100,
-                    max: 900,
-                    divisions: 8,
-                    onChanged: (val) {
-                      ref
-                          .read(readerSettingsProvider.notifier)
-                          .setFontWeight(
-                            FontWeight.values[(val / 100).round() - 1],
-                          );
+                    value: fontWeights.indexOf(selectedFontWeight).toDouble(),
+                    min: 0,
+                    max: (fontWeights.length - 1).toDouble(),
+                    divisions: fontWeights.length - 1,
+                    label: _fontWeightLabel(l10n, selectedFontWeight),
+                    onChanged: (value) {
+                      setState(() {
+                        _pendingFontWeight = fontWeights[value.round()];
+                      });
+                    },
+                    onChangeEnd: (value) async {
+                      final selection = fontWeights[value.round()];
+                      try {
+                        await ref
+                            .read(readerSettingsProvider.notifier)
+                            .setFontWeight(selection);
+                      } finally {
+                        if (mounted) {
+                          setState(() => _pendingFontWeight = null);
+                        }
+                      }
                     },
                   ),
                   const Divider(height: 16),
