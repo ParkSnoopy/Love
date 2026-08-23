@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app_configuration.dart';
 import 'app_preferences.dart';
 
 final themeModeProvider = AsyncNotifierProvider<ThemeModeController, ThemeMode>(
@@ -7,12 +8,12 @@ final themeModeProvider = AsyncNotifierProvider<ThemeModeController, ThemeMode>(
 );
 
 class ThemeModeController extends AsyncNotifier<ThemeMode> {
-  static const _key = 'app_theme_mode';
+  static const _key = AppConfiguration.appThemeModeKey;
 
   @override
   Future<ThemeMode> build() async {
     final prefs = await AppPreferences.getInstance();
-    final index = prefs.getInt(_key) ?? ThemeMode.system.index;
+    final index = prefs.getInt(_key) ?? AppConfiguration.appThemeModeDefault;
     if (index >= 0 && index < ThemeMode.values.length) {
       return ThemeMode.values[index];
     }

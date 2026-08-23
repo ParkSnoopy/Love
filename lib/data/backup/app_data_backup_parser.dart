@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 
+import '../../app/app_configuration_parser.dart';
+
 class AppDataBackupException implements Exception {
   const AppDataBackupException(this.message);
 
@@ -18,13 +20,14 @@ class ParsedAppDataBackup {
     required this.userData,
   });
 
-  final Uint8List preferences;
+  final Map<String, Object?> preferences;
   final Uint8List userData;
 }
 
 class AppDataBackupParser {
   const AppDataBackupParser();
 
+  static const _configurationParser = AppConfigurationParser();
   static const formatVersion = 1;
   static const _maxBackupBytes = 64 * 1024 * 1024;
 
@@ -38,8 +41,10 @@ class AppDataBackupParser {
     final preferences = _requiredFile(archive, 'preferences.json');
     final userData = _requiredFile(archive, 'user_data.db');
     _validateMetadata(metadata);
-    _validatePreferences(preferences);
-    return ParsedAppDataBackup(preferences: preferences, userData: userData);
+    return ParsedAppDataBackup(
+      preferences: _parsePreferences(preferences),
+      userData: userData,
+    );
   }
 
   Archive _decodeArchive(Uint8List bytes) {
@@ -85,23 +90,10 @@ class AppDataBackupParser {
     }
   }
 
-  void _validatePreferences(Uint8List bytes) {
+  Map<String, Object?> _parsePreferences(Uint8List bytes) {
     try {
-      final preferences = jsonDecode(utf8.decode(bytes));
-      if (preferences is! Map<String, dynamic>) {
-        throw const AppDataBackupException('Backup settings are invalid.');
-      }
-      for (final value in preferences.values) {
-        if (value != null &&
-            value is! num &&
-            value is! bool &&
-            value is! String) {
-          throw const AppDataBackupException('Backup settings are invalid.');
-        }
-      }
-    } on AppDataBackupException {
-      rethrow;
-    } catch (_) {
+      return _configurationParser.parseBytes(bytes);
+    } on AppConfigurationParseException {
       throw const AppDataBackupException('Backup settings are invalid.');
     }
   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app_configuration.dart';
 import '../../../app/app_preferences.dart';
 import '../../../data/import/zip_extractor.dart';
 import '../../../data/storage/app_storage.dart';
@@ -34,7 +35,7 @@ final activeBibleSelectionProvider =
 
 class ActiveBibleSelectionController
     extends AsyncNotifier<ActiveBibleSelection?> {
-  static const _prefsKeyId = 'active_bible_id';
+  static const _prefsKeyId = AppConfiguration.activeBibleIdKey;
   static const _legacyPrefsKeyFile = 'active_bible_file';
   static const _legacyPrefsKeyName = 'active_bible_name';
   static const _legacyIds = {'korwrm': 'kor_wrm'};
@@ -152,9 +153,9 @@ final activeCommentarySelectionProvider =
 
 class ActiveCommentarySelectionController
     extends AsyncNotifier<ActiveCommentarySelection?> {
-  static const _prefsKeyId = 'active_commentary_id';
-  static const _prefsKeyFile = 'active_commentary_file';
-  static const _prefsKeyName = 'active_commentary_name';
+  static const _prefsKeyId = AppConfiguration.activeCommentaryIdKey;
+  static const _prefsKeyFile = AppConfiguration.activeCommentaryFileKey;
+  static const _prefsKeyName = AppConfiguration.activeCommentaryNameKey;
 
   @override
   Future<ActiveCommentarySelection?> build() async {

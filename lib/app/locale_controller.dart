@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app_configuration.dart';
 import 'app_preferences.dart';
 
 class AppLocaleController extends AsyncNotifier<Locale?> {
-  static const _key = 'app_locale_code';
+  static const _key = AppConfiguration.appLocaleCodeKey;
 
   @override
   Future<Locale?> build() async {

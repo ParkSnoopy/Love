@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app_configuration.dart';
 import 'app_preferences.dart';
 
 enum FontType { sans, serif }
@@ -15,12 +16,12 @@ final fontTypeProvider = AsyncNotifierProvider<FontTypeController, FontType>(
 );
 
 class FontTypeController extends AsyncNotifier<FontType> {
-  static const _key = 'reader_font_type';
+  static const _key = AppConfiguration.readerFontTypeKey;
 
   @override
   Future<FontType> build() async {
     final prefs = await AppPreferences.getInstance();
-    final index = prefs.getInt(_key) ?? FontType.serif.index;
+    final index = prefs.getInt(_key) ?? AppConfiguration.readerFontTypeDefault;
     if (index >= 0 && index < FontType.values.length) {
       return FontType.values[index];
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app_configuration.dart';
 import 'app_preferences.dart';
 
 class ReaderSettingsState {
@@ -17,20 +18,24 @@ class ReaderSettingsState {
 }
 
 class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
-  static const _keyFontSize = 'reader_font_size';
-  static const _keyLineSpacing = 'reader_line_spacing';
-  static const _keyUiScale = 'ui_scale';
-  static const _keyFontWeight = 'reader_font_weight';
+  static const _keyFontSize = AppConfiguration.readerFontSizeKey;
+  static const _keyLineSpacing = AppConfiguration.readerLineSpacingKey;
+  static const _keyUiScale = AppConfiguration.uiScaleKey;
+  static const _keyFontWeight = AppConfiguration.readerFontWeightKey;
 
   @override
   Future<ReaderSettingsState> build() async {
     final prefs = await AppPreferences.getInstance();
-    final fontSize = prefs.getDouble(_keyFontSize) ?? 18.0;
-    final lineSpacing = prefs.getDouble(_keyLineSpacing) ?? 1.5;
-    final uiScale = prefs.getDouble(_keyUiScale) ?? 1.0;
+    final fontSize =
+        prefs.getDouble(_keyFontSize) ?? AppConfiguration.readerFontSizeDefault;
+    final lineSpacing =
+        prefs.getDouble(_keyLineSpacing) ??
+        AppConfiguration.readerLineSpacingDefault;
+    final uiScale =
+        prefs.getDouble(_keyUiScale) ?? AppConfiguration.uiScaleDefault;
     final fontWeightIndex =
         prefs.getInt(_keyFontWeight) ??
-        FontWeight.values.indexOf(FontWeight.normal);
+        AppConfiguration.readerFontWeightDefault;
     final fontWeight =
         fontWeightIndex >= 0 && fontWeightIndex < FontWeight.values.length
         ? FontWeight.values[fontWeightIndex]
@@ -49,8 +54,10 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     state = AsyncData(
       ReaderSettingsState(
         fontSize: val,
-        lineSpacing: state.value?.lineSpacing ?? 1.5,
-        uiScale: state.value?.uiScale ?? 1.0,
+        lineSpacing:
+            state.value?.lineSpacing ??
+            AppConfiguration.readerLineSpacingDefault,
+        uiScale: state.value?.uiScale ?? AppConfiguration.uiScaleDefault,
         fontWeight: state.value?.fontWeight ?? FontWeight.normal,
       ),
     );
@@ -61,9 +68,10 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     await prefs.setDouble(_keyLineSpacing, val);
     state = AsyncData(
       ReaderSettingsState(
-        fontSize: state.value?.fontSize ?? 18.0,
+        fontSize:
+            state.value?.fontSize ?? AppConfiguration.readerFontSizeDefault,
         lineSpacing: val,
-        uiScale: state.value?.uiScale ?? 1.0,
+        uiScale: state.value?.uiScale ?? AppConfiguration.uiScaleDefault,
         fontWeight: state.value?.fontWeight ?? FontWeight.normal,
       ),
     );
@@ -74,8 +82,11 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     await prefs.setDouble(_keyUiScale, val);
     state = AsyncData(
       ReaderSettingsState(
-        fontSize: state.value?.fontSize ?? 18.0,
-        lineSpacing: state.value?.lineSpacing ?? 1.5,
+        fontSize:
+            state.value?.fontSize ?? AppConfiguration.readerFontSizeDefault,
+        lineSpacing:
+            state.value?.lineSpacing ??
+            AppConfiguration.readerLineSpacingDefault,
         uiScale: val,
         fontWeight: state.value?.fontWeight ?? FontWeight.normal,
       ),
@@ -87,9 +98,12 @@ class ReaderSettingsController extends AsyncNotifier<ReaderSettingsState> {
     await prefs.setInt(_keyFontWeight, FontWeight.values.indexOf(val));
     state = AsyncData(
       ReaderSettingsState(
-        fontSize: state.value?.fontSize ?? 18.0,
-        lineSpacing: state.value?.lineSpacing ?? 1.5,
-        uiScale: state.value?.uiScale ?? 1.0,
+        fontSize:
+            state.value?.fontSize ?? AppConfiguration.readerFontSizeDefault,
+        lineSpacing:
+            state.value?.lineSpacing ??
+            AppConfiguration.readerLineSpacingDefault,
+        uiScale: state.value?.uiScale ?? AppConfiguration.uiScaleDefault,
         fontWeight: val,
       ),
     );

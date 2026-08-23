@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app_configuration.dart';
 import '../../../app/app_preferences.dart';
 import '../data/reader_repository.dart';
 import '../../../data/storage/db_path_provider.dart';
@@ -15,15 +16,17 @@ final readerRefProvider = AsyncNotifierProvider<ReaderRefController, ReaderRef>(
 );
 
 class ReaderRefController extends AsyncNotifier<ReaderRef> {
-  static const _prefsKeyBookId = 'reader_book_id';
-  static const _prefsKeyChapter = 'reader_chapter';
+  static const _prefsKeyBookId = AppConfiguration.readerBookIdKey;
+  static const _prefsKeyChapter = AppConfiguration.readerChapterKey;
 
   @override
   Future<ReaderRef> build() async {
     final dbPath = await ref.watch(activeDbPathProvider.future);
     final prefs = await AppPreferences.getInstance();
-    var bookId = prefs.getInt(_prefsKeyBookId) ?? 1;
-    var chapter = prefs.getInt(_prefsKeyChapter) ?? 1;
+    var bookId =
+        prefs.getInt(_prefsKeyBookId) ?? AppConfiguration.readerBookIdDefault;
+    var chapter =
+        prefs.getInt(_prefsKeyChapter) ?? AppConfiguration.readerChapterDefault;
 
     // Validate and clamp to database limits
     if (dbPath != null) {

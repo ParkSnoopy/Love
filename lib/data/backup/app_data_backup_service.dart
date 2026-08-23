@@ -6,6 +6,8 @@ import 'package:archive/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
+import '../../app/app_configuration.dart';
+import '../../app/app_configuration_parser.dart';
 import 'app_data_backup_parser.dart';
 
 export 'app_data_backup_parser.dart' show AppDataBackupException;
@@ -13,6 +15,7 @@ export 'app_data_backup_parser.dart' show AppDataBackupException;
 class AppDataBackupService {
   const AppDataBackupService();
 
+  static const _configurationParser = AppConfigurationParser();
   static const formatVersion = AppDataBackupParser.formatVersion;
   static const _requiredDatabaseTables = {
     'bookmarks',
@@ -211,19 +214,21 @@ CREATE TABLE history (
 
   Future<Uint8List> _updatedPreferences(
     File currentPreferences,
-    Uint8List importedPreferences,
+    Map<String, Object?> importedPreferences,
   ) async {
-    final updated = <String, dynamic>{};
+    var current = <String, Object?>{};
     if (currentPreferences.existsSync()) {
       try {
-        final current = jsonDecode(await currentPreferences.readAsString());
-        if (current is Map<String, dynamic>) updated.addAll(current);
-      } catch (_) {}
+        current = _configurationParser.parseBytes(
+          await currentPreferences.readAsBytes(),
+        );
+      } on AppConfigurationParseException catch (_) {}
     }
-    updated.addAll(
-      jsonDecode(utf8.decode(importedPreferences)) as Map<String, dynamic>,
+    final updated = _configurationParser.merge(
+      defaults: AppConfiguration.defaults,
+      overrides: [current, importedPreferences],
     );
-    return Uint8List.fromList(utf8.encode(jsonEncode(updated)));
+    return _configurationParser.encode(updated);
   }
 
   void _validateDatabase(String path) {

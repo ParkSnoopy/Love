@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import 'app/app_configuration_migrator.dart';
 import 'app/app_localizations.dart';
 import 'app/app_theme.dart';
 import 'app/bug_reporter.dart';
@@ -14,6 +16,7 @@ import 'app/locale_controller.dart';
 import 'app/reader_settings_controller.dart';
 import 'app/theme_controller.dart';
 import 'app/router.dart';
+import 'data/storage/app_storage.dart';
 import 'features/study/providers/user_data_controller.dart';
 
 Future<void> main() async {
@@ -31,6 +34,15 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  final packageInfo = await PackageInfo.fromPlatform();
+  final appVersion = packageInfo.buildNumber.isEmpty
+      ? packageInfo.version
+      : '${packageInfo.version}+${packageInfo.buildNumber}';
+  final appDataDirectory = await getAppDataDirectory();
+  await const AppConfigurationMigrator().migrateIfNeeded(
+    appDataPath: appDataDirectory.path,
+    appVersion: appVersion,
+  );
   runZonedGuarded(
     () => runApp(const ProviderScope(child: MyApp())),
     BugReportLog.record,

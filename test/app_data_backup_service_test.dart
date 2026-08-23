@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:Love/app/app_configuration.dart';
 import 'package:Love/data/backup/app_data_backup_service.dart';
 import 'package:Love/features/study/data/user_data_repository.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -105,12 +106,14 @@ void main() {
       backupBytes: backup,
     );
 
-    expect(
-      jsonDecode(
-        await File('${destination.path}/preferences.json').readAsString(),
-      ),
-      {'theme_mode': 'dark', 'reader_chapter': 7},
-    );
+    final preferences =
+        jsonDecode(
+              await File('${destination.path}/preferences.json').readAsString(),
+            )
+            as Map<String, dynamic>;
+    expect(preferences, containsPair('theme_mode', 'dark'));
+    expect(preferences, containsPair('reader_chapter', 7));
+    expect(preferences.keys, containsAll(AppConfiguration.defaults.keys));
   });
 
   test('invalid backup leaves existing app data unchanged', () async {

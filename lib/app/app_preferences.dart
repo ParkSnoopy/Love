@@ -1,15 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
 import '../data/storage/app_storage.dart';
+import 'app_configuration_parser.dart';
 
 class AppPreferences {
   AppPreferences._(this._file, Map<String, Object?> values) : _values = values;
 
   static AppPreferences? _instance;
   static Map<String, Object?>? _memoryValuesForTesting;
+  static const _parser = AppConfigurationParser();
 
   final File? _file;
   final Map<String, Object?> _values;
@@ -51,11 +52,8 @@ class AppPreferences {
   static Future<Map<String, Object?>> _readValues(File file) async {
     try {
       if (!file.existsSync()) return <String, Object?>{};
-      final decoded = jsonDecode(await file.readAsString());
-      if (decoded is Map<String, dynamic>) {
-        return Map<String, Object?>.from(decoded);
-      }
-    } catch (_) {}
+      return _parser.parseBytes(await file.readAsBytes());
+    } on AppConfigurationParseException catch (_) {}
     return <String, Object?>{};
   }
 
@@ -100,6 +98,6 @@ class AppPreferences {
     final file = _file;
     if (file == null) return;
     await file.parent.create(recursive: true);
-    await file.writeAsString(jsonEncode(_values));
+    await file.writeAsBytes(_parser.encode(_values));
   }
 }
