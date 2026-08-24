@@ -129,4 +129,6 @@ Importing replaces the current settings and saved study data. Confirm that you s
 
 ## Report a problem
 
-Open **Settings → Support → Report a bug**. Love opens a report page and copies recent error details for you to review before submitting.
+Open **Settings → Support → Check update** to compare your installed version with the latest release. When an update is available, Love provides a link to its download page.
+
+To report a problem, open **Settings → Support → Report a bug**. Love opens a report page and copies recent error details for you to review before submitting.

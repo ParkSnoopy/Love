@@ -11,6 +11,7 @@ import '../domain/bible_pack.dart';
 import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../reader/presentation/commentary_intro_sheet.dart';
+import 'app_update_tile.dart';
 import 'theme_selection_sheet.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../../app/bug_reporter.dart';
@@ -477,15 +478,22 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            child: ListTile(
-              leading: Icon(
-                Icons.bug_report_outlined,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: Text(l10n.t('reportBug')),
-              subtitle: Text(l10n.t('reportBugSubtitle')),
-              trailing: const Icon(Icons.open_in_new, size: 20),
-              onTap: () => _openBugReport(context),
+            child: Column(
+              children: [
+                AppUpdateTile(),
+                const Divider(height: 1),
+                ListTile(
+                  key: const ValueKey('report-bug'),
+                  leading: Icon(
+                    Icons.bug_report_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(l10n.t('reportBug')),
+                  subtitle: Text(l10n.t('reportBugSubtitle')),
+                  trailing: const Icon(Icons.open_in_new, size: 20),
+                  onTap: () => _openBugReport(context),
+                ),
+              ],
             ),
           ),
         ],

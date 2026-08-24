@@ -9,6 +9,7 @@
 - `previous note is not showing on screen`: editor prefill/rendering problem, not necessarily persistence failure, especially when the note is visible in the notes tab.
 - `selection`: Riverpod `verseSelectionProvider`; can be single or multi mode. A one-verse multi-selection is still one editable verse for note prefill.
 - `bug report`: user-facing settings support action for reporting app problems to GitHub Issues.
+- `check update`: support action immediately before Report a bug; compares the build-time commit hash with the latest GitHub release `target_commitish`, reports when the build is current, and shows an update dialog linking to that release when they differ.
 - `github issue`: bug-report target at `https://github.com/ParkSnoopy/Love/issues/new`.
 - `error log`: in-app captured Flutter/platform/zone exception summaries and stack traces for the current session; safe report body material that users can review/remove before submitting.
 - `automatically attach`: prefill the GitHub issue body with captured logs and copy the same body to clipboard; GitHub new-issue URLs cannot attach files directly.

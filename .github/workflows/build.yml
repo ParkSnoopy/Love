@@ -180,7 +180,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: love-release
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=BUILD_COMMIT=${GITHUB_SHA}
 
       - name: Package Android artifact
         env:
@@ -240,7 +240,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Linux
-        run: flutter build linux --release
+        run: flutter build linux --release --dart-define=BUILD_COMMIT=${GITHUB_SHA}
 
       - name: Package Linux artifact
         env:
@@ -295,7 +295,7 @@ jobs:
         run: flutter pub get
 
       - name: Build macOS
-        run: flutter build macos --release
+        run: flutter build macos --release --dart-define=BUILD_COMMIT=${GITHUB_SHA}
 
       - name: Package macOS artifact
         env:
@@ -351,7 +351,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define=BUILD_COMMIT=$env:GITHUB_SHA
 
       - name: Package Windows artifact
         env:
@@ -407,6 +407,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.prepare.outputs.rolling-tag }}
+          target_commitish: ${{ github.sha }}
           name: ${{ needs.prepare.outputs.release-title }}
           prerelease: false
           make_latest: true
