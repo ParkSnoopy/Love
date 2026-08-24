@@ -56,7 +56,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(userDataInitProvider);
-    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
+    final themeMode = ref.watch(themeModeProvider).value ?? AppThemeMode.system;
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final fontFamily = fontFamilyForType(fontType);
@@ -73,11 +73,15 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      themeMode: themeMode,
-      theme: buildLightTheme(fontFamily),
-      darkTheme: ThemeData.dark().copyWith(
-        textTheme: ThemeData.dark().textTheme.apply(fontFamily: fontFamily),
-      ),
+      themeMode: themeMode.materialThemeMode,
+      theme: switch (themeMode) {
+        AppThemeMode.lightGreen => buildLightGreenTheme(fontFamily),
+        _ => buildLightOrangeTheme(fontFamily),
+      },
+      darkTheme: switch (themeMode) {
+        AppThemeMode.darkOrange => buildDarkOrangeTheme(fontFamily),
+        _ => buildDarkPurpleTheme(fontFamily),
+      },
       routerConfig: router,
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);

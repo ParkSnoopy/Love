@@ -3,32 +3,50 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_configuration.dart';
 import 'app_preferences.dart';
 
-final themeModeProvider = AsyncNotifierProvider<ThemeModeController, ThemeMode>(
-  ThemeModeController.new,
-);
+enum AppThemeMode {
+  system(0, ThemeMode.system),
+  lightOrange(1, ThemeMode.light),
+  lightGreen(3, ThemeMode.light),
+  darkOrange(4, ThemeMode.dark),
+  darkPurple(2, ThemeMode.dark);
 
-class ThemeModeController extends AsyncNotifier<ThemeMode> {
+  const AppThemeMode(this.storageIndex, this.materialThemeMode);
+
+  final int storageIndex;
+  final ThemeMode materialThemeMode;
+
+  static AppThemeMode fromStorageIndex(int index) => values.firstWhere(
+    (mode) => mode.storageIndex == index,
+    orElse: () => system,
+  );
+}
+
+final themeModeProvider =
+    AsyncNotifierProvider<ThemeModeController, AppThemeMode>(
+      ThemeModeController.new,
+    );
+
+class ThemeModeController extends AsyncNotifier<AppThemeMode> {
   static const _key = AppConfiguration.appThemeModeKey;
 
   @override
-  Future<ThemeMode> build() async {
+  Future<AppThemeMode> build() async {
     final prefs = await AppPreferences.getInstance();
     final index = prefs.getInt(_key) ?? AppConfiguration.appThemeModeDefault;
-    if (index >= 0 && index < ThemeMode.values.length) {
-      return ThemeMode.values[index];
-    }
-    return ThemeMode.system;
+    return AppThemeMode.fromStorageIndex(index);
   }
 
   Future<void> cycle() async {
-    final current = state.value ?? ThemeMode.system;
+    final current = state.value ?? AppThemeMode.system;
     final next = switch (current) {
-      ThemeMode.system => ThemeMode.light,
-      ThemeMode.light => ThemeMode.dark,
-      ThemeMode.dark => ThemeMode.system,
+      AppThemeMode.system => AppThemeMode.lightOrange,
+      AppThemeMode.lightOrange => AppThemeMode.lightGreen,
+      AppThemeMode.lightGreen => AppThemeMode.darkOrange,
+      AppThemeMode.darkOrange => AppThemeMode.darkPurple,
+      AppThemeMode.darkPurple => AppThemeMode.system,
     };
     final prefs = await AppPreferences.getInstance();
-    await prefs.setInt(_key, next.index);
+    await prefs.setInt(_key, next.storageIndex);
     state = AsyncData(next);
   }
 }

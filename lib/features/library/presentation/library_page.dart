@@ -36,11 +36,14 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   bool _appDataOperationActive = false;
   ReaderFontWeight? _pendingFontWeight;
 
-  String _themeLabel(AppLocalizations l10n, ThemeMode mode) => switch (mode) {
-    ThemeMode.system => l10n.t('system'),
-    ThemeMode.light => l10n.t('light'),
-    ThemeMode.dark => l10n.t('dark'),
-  };
+  String _themeLabel(AppLocalizations l10n, AppThemeMode mode) =>
+      switch (mode) {
+        AppThemeMode.system => l10n.t('system'),
+        AppThemeMode.lightOrange => l10n.t('lightOrange'),
+        AppThemeMode.lightGreen => l10n.t('lightGreen'),
+        AppThemeMode.darkOrange => l10n.t('darkOrange'),
+        AppThemeMode.darkPurple => l10n.t('darkPurple'),
+      };
 
   String _fontLabel(AppLocalizations l10n, FontType type) => switch (type) {
     FontType.sans => l10n.t('sansSerif'),
@@ -69,10 +72,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         _ => l10n.t('system'),
       };
 
-  IconData _themeIcon(ThemeMode mode) => switch (mode) {
-    ThemeMode.system => Icons.brightness_auto_outlined,
-    ThemeMode.light => Icons.light_mode_outlined,
-    ThemeMode.dark => Icons.dark_mode_outlined,
+  IconData _themeIcon(AppThemeMode mode) => switch (mode) {
+    AppThemeMode.system => Icons.brightness_auto_outlined,
+    AppThemeMode.lightOrange ||
+    AppThemeMode.lightGreen => Icons.light_mode_outlined,
+    AppThemeMode.darkOrange ||
+    AppThemeMode.darkPurple => Icons.dark_mode_outlined,
   };
 
   IconData _fontIcon(FontType type) => switch (type) {
@@ -83,7 +88,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
+    final themeMode = ref.watch(themeModeProvider).value ?? AppThemeMode.system;
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
