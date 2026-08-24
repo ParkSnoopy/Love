@@ -370,7 +370,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    name: Publish rolling release
+    name: Publish release
     if: github.ref == 'refs/heads/ai-dev'
     needs:
       - prepare
