@@ -190,13 +190,12 @@ jobs:
           set -euo pipefail
           asset="${ASSET_PREFIX}-android.apk"
           cp build/app/outputs/flutter-apk/app-release.apk "${asset}"
-          sha256sum "${asset}" > "${asset}.sha256"
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v7
         with:
           name: android-release
-          path: Love-v*-android.apk*
+          path: Love-v*-android.apk
           if-no-files-found: error
 
   build-linux:
@@ -251,13 +250,12 @@ jobs:
           set -euo pipefail
           asset="${ASSET_PREFIX}-linux.tar.gz"
           tar -C build/linux/x64/release/bundle -czf "${asset}" .
-          sha256sum "${asset}" > "${asset}.sha256"
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v7
         with:
           name: linux-release
-          path: Love-v*-linux.tar.gz*
+          path: Love-v*-linux.tar.gz
           if-no-files-found: error
 
   build-macos:
@@ -307,13 +305,12 @@ jobs:
           set -euo pipefail
           asset="${ASSET_PREFIX}-macos.zip"
           ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/Love.app "${asset}"
-          shasum -a 256 "${asset}" > "${asset}.sha256"
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v7
         with:
           name: macos-release
-          path: Love-v*-macos.zip*
+          path: Love-v*-macos.zip
           if-no-files-found: error
 
   build-windows:
@@ -364,14 +361,12 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $asset = "$env:ASSET_PREFIX-windows.zip"
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath $asset -Force
-          $hash = (Get-FileHash $asset -Algorithm SHA256).Hash.ToLower()
-          "$hash  $asset" | Out-File -Encoding ascii "$asset.sha256"
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
         with:
           name: windows-release
-          path: Love-v*-windows.zip*
+          path: Love-v*-windows.zip
           if-no-files-found: error
 
   release:
@@ -416,4 +411,8 @@ jobs:
           prerelease: false
           make_latest: true
           overwrite_files: true
-          files: release-assets/Love-v*-*.*
+          files: |
+            release-assets/Love-v*-android.apk
+            release-assets/Love-v*-linux.tar.gz
+            release-assets/Love-v*-macos.zip
+            release-assets/Love-v*-windows.zip
