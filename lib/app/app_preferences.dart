@@ -89,6 +89,11 @@ class AppPreferences {
     await _save();
   }
 
+  Future<void> setValues(Map<String, Object?> values) async {
+    _values.addAll(values);
+    await _save();
+  }
+
   Future<void> remove(String key) async {
     _values.remove(key);
     await _save();

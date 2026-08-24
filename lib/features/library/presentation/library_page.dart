@@ -11,6 +11,7 @@ import '../domain/bible_pack.dart';
 import '../domain/manifest_repository.dart';
 import '../providers/library_controller.dart';
 import '../../reader/presentation/commentary_intro_sheet.dart';
+import 'theme_selection_sheet.dart';
 import '../../../data/storage/db_path_provider.dart';
 import '../../../app/bug_reporter.dart';
 import '../../../app/theme_controller.dart';
@@ -43,6 +44,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         AppThemeMode.lightGreen => l10n.t('lightGreen'),
         AppThemeMode.darkOrange => l10n.t('darkOrange'),
         AppThemeMode.darkPurple => l10n.t('darkPurple'),
+        AppThemeMode.custom => l10n.t('customTheme'),
       };
 
   String _fontLabel(AppLocalizations l10n, FontType type) => switch (type) {
@@ -78,6 +80,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     AppThemeMode.lightGreen => Icons.light_mode_outlined,
     AppThemeMode.darkOrange ||
     AppThemeMode.darkPurple => Icons.dark_mode_outlined,
+    AppThemeMode.custom => Icons.palette_outlined,
   };
 
   IconData _fontIcon(FontType type) => switch (type) {
@@ -88,7 +91,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final themeMode = ref.watch(themeModeProvider).value ?? AppThemeMode.system;
+    final themeSettings =
+        ref.watch(themeModeProvider).value ?? AppThemeSettings.defaults;
+    final themeMode = themeSettings.mode;
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
@@ -131,8 +136,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   ),
                   title: Text(l10n.t('themeMode')),
                   subtitle: Text(_themeLabel(l10n, themeMode)),
-                  trailing: const Icon(Icons.sync, size: 20),
-                  onTap: () => ref.read(themeModeProvider.notifier).cycle(),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showThemeSelection(themeSettings),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -501,6 +506,25 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _showThemeSelection(AppThemeSettings settings) async {
+    final selection = await showModalBottomSheet<ThemeSelectionResult>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ThemeSelectionSheet(settings: settings),
+    );
+    if (selection == null || !mounted) return;
+
+    final controller = ref.read(themeModeProvider.notifier);
+    if (selection.mode == AppThemeMode.custom) {
+      await controller.setCustomTheme(
+        base: selection.customBase,
+        primaryValue: selection.customPrimaryValue,
+      );
+      return;
+    }
+    await controller.setMode(selection.mode);
   }
 
   Future<void> _showBibleSelection(BuildContext context) async {

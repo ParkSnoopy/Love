@@ -1,5 +1,7 @@
 abstract final class AppConfiguration {
   static const appThemeModeKey = 'app_theme_mode';
+  static const customThemeBaseKey = 'custom_theme_base';
+  static const customThemePrimaryKey = 'custom_theme_primary';
   static const appLocaleCodeKey = 'app_locale_code';
   static const readerFontTypeKey = 'reader_font_type';
   static const readerFontSizeKey = 'reader_font_size';
@@ -14,6 +16,8 @@ abstract final class AppConfiguration {
   static const activeCommentaryNameKey = 'active_commentary_name';
 
   static const appThemeModeDefault = 0;
+  static const customThemeBaseDefault = 0;
+  static const customThemePrimaryDefault = 0xFFCC785C;
   static const readerFontTypeDefault = 1;
   static const readerFontSizeDefault = 18.0;
   static const readerLineSpacingDefault = 1.5;
@@ -24,6 +28,8 @@ abstract final class AppConfiguration {
 
   static const defaults = <String, Object?>{
     appThemeModeKey: appThemeModeDefault,
+    customThemeBaseKey: customThemeBaseDefault,
+    customThemePrimaryKey: customThemePrimaryDefault,
     readerFontTypeKey: readerFontTypeDefault,
     readerFontSizeKey: readerFontSizeDefault,
     readerLineSpacingKey: readerLineSpacingDefault,

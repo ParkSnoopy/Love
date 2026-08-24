@@ -76,3 +76,44 @@ ThemeData buildDarkPurpleTheme(String fontFamily) {
   final base = ThemeData.dark();
   return base.copyWith(textTheme: base.textTheme.apply(fontFamily: fontFamily));
 }
+
+ThemeData buildCustomTheme(
+  String fontFamily, {
+  required Brightness brightness,
+  required Color primary,
+}) {
+  final generated = ColorScheme.fromSeed(
+    seedColor: primary,
+    brightness: brightness,
+  );
+  final onPrimary =
+      ThemeData.estimateBrightnessForColor(primary) == Brightness.dark
+      ? Colors.white
+      : Colors.black;
+  if (brightness == Brightness.light) {
+    return _buildLightTheme(
+      fontFamily,
+      _lightOrangeColors.copyWith(
+        primary: primary,
+        onPrimary: onPrimary,
+        primaryContainer: generated.primaryContainer,
+        onPrimaryContainer: generated.onPrimaryContainer,
+        inversePrimary: generated.inversePrimary,
+        surfaceTint: primary,
+      ),
+    );
+  }
+
+  final base = ThemeData.dark();
+  return base.copyWith(
+    colorScheme: base.colorScheme.copyWith(
+      primary: primary,
+      onPrimary: onPrimary,
+      primaryContainer: generated.primaryContainer,
+      onPrimaryContainer: generated.onPrimaryContainer,
+      inversePrimary: generated.inversePrimary,
+      surfaceTint: primary,
+    ),
+    textTheme: base.textTheme.apply(fontFamily: fontFamily),
+  );
+}
