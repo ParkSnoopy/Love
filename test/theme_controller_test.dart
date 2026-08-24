@@ -33,7 +33,7 @@ void main() {
     );
   });
 
-  test('cycles named themes while preserving stored legacy modes', () async {
+  test('cycles named themes while preserving stored theme values', () async {
     AppPreferences.useMemoryStoreForTesting({
       AppConfiguration.appThemeModeKey: ThemeMode.dark.index,
     });

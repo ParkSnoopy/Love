@@ -34,9 +34,6 @@ const _lightOrangeColors = ColorScheme.light(
   surfaceContainerHighest: Color(0xFFE6DFD8),
 );
 
-ThemeData buildLightTheme(String fontFamily) =>
-    buildLightOrangeTheme(fontFamily);
-
 ThemeData buildLightOrangeTheme(String fontFamily) =>
     _buildLightTheme(fontFamily, _lightOrangeColors);
 
