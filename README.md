@@ -107,15 +107,6 @@ Open **Settings** to adjust:
 - Line spacing
 - Interface scale
 
-Available themes include:
-
-- System
-- Light Orange
-- Light Green
-- Dark Orange
-- Dark Purple
-- Custom
-
 The **Custom** theme lets you choose a Light or Dark base and a primary color.
 
 ## Back up and restore app data

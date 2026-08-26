@@ -6,11 +6,15 @@ import 'app_configuration.dart';
 import 'app_configuration_parser.dart';
 
 class AppConfigurationMigrator {
-  const AppConfigurationMigrator({this.defaults = AppConfiguration.defaults});
+  const AppConfigurationMigrator({
+    this.defaults = AppConfiguration.defaults,
+    this.removedKeys = AppConfiguration.removedKeys,
+  });
 
   static const _parser = AppConfigurationParser();
 
   final Map<String, Object?> defaults;
+  final Set<String> removedKeys;
 
   Future<void> migrateIfNeeded({
     required String appDataPath,
@@ -30,6 +34,7 @@ class AppConfigurationMigrator {
     );
     final local = await _readConfiguration(preferencesFile);
     final updated = _parser.merge(defaults: defaults, overrides: [local]);
+    updated.removeWhere((key, _) => removedKeys.contains(key));
 
     await _deleteIfExists(stagedPreferences);
     await _deleteIfExists(previousPreferences);

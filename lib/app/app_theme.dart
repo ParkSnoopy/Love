@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-const _lightOrangePrimary = Color(0xFFCC785C);
-const _forestGreenPrimary = Color(0xFF228B22);
+const _defaultPrimary = Color(0xFFCC785C);
 
-const _lightOrangeColors = ColorScheme.light(
-  primary: _lightOrangePrimary,
+const _customLightColors = ColorScheme.light(
+  primary: _defaultPrimary,
   onPrimary: Color(0xFFFFFFFF),
   primaryContainer: Color(0xFFEFE9DE),
   onPrimaryContainer: Color(0xFF141413),
@@ -26,23 +25,12 @@ const _lightOrangeColors = ColorScheme.light(
   inverseSurface: Color(0xFF181715),
   onInverseSurface: Color(0xFFFAF9F5),
   inversePrimary: Color(0xFFE8A55A),
-  surfaceTint: _lightOrangePrimary,
+  surfaceTint: _defaultPrimary,
   surfaceContainerLowest: Color(0xFFFAF9F5),
   surfaceContainerLow: Color(0xFFF5F0E8),
   surfaceContainer: Color(0xFFEFE9DE),
   surfaceContainerHigh: Color(0xFFE8E0D2),
   surfaceContainerHighest: Color(0xFFE6DFD8),
-);
-
-ThemeData buildLightOrangeTheme(String fontFamily) =>
-    _buildLightTheme(fontFamily, _lightOrangeColors);
-
-ThemeData buildLightGreenTheme(String fontFamily) => _buildLightTheme(
-  fontFamily,
-  _lightOrangeColors.copyWith(
-    primary: _forestGreenPrimary,
-    surfaceTint: _forestGreenPrimary,
-  ),
 );
 
 ThemeData _buildLightTheme(String fontFamily, ColorScheme colors) {
@@ -61,22 +49,6 @@ ThemeData _buildLightTheme(String fontFamily, ColorScheme colors) {
   );
 }
 
-ThemeData buildDarkOrangeTheme(String fontFamily) {
-  final base = ThemeData.dark();
-  return base.copyWith(
-    colorScheme: base.colorScheme.copyWith(
-      primary: _lightOrangePrimary,
-      surfaceTint: _lightOrangePrimary,
-    ),
-    textTheme: base.textTheme.apply(fontFamily: fontFamily),
-  );
-}
-
-ThemeData buildDarkPurpleTheme(String fontFamily) {
-  final base = ThemeData.dark();
-  return base.copyWith(textTheme: base.textTheme.apply(fontFamily: fontFamily));
-}
-
 ThemeData buildCustomTheme(
   String fontFamily, {
   required Brightness brightness,
@@ -93,7 +65,7 @@ ThemeData buildCustomTheme(
   if (brightness == Brightness.light) {
     return _buildLightTheme(
       fontFamily,
-      _lightOrangeColors.copyWith(
+      _customLightColors.copyWith(
         primary: primary,
         onPrimary: onPrimary,
         primaryContainer: generated.primaryContainer,

@@ -57,8 +57,8 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(userDataInitProvider);
     final themeSettings =
-        ref.watch(themeModeProvider).value ?? AppThemeSettings.defaults;
-    final themeMode = themeSettings.mode;
+        ref.watch(themeProvider).value ?? AppThemeSettings.defaults;
+
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final fontFamily = fontFamilyForType(fontType);
@@ -76,28 +76,16 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       themeMode: themeSettings.materialThemeMode,
-      theme: switch (themeMode) {
-        AppThemeMode.custom
-            when themeSettings.customBase == CustomThemeBase.light =>
-          buildCustomTheme(
-            fontFamily,
-            brightness: themeSettings.customBase.brightness,
-            primary: Color(themeSettings.customPrimaryValue),
-          ),
-        AppThemeMode.lightGreen => buildLightGreenTheme(fontFamily),
-        _ => buildLightOrangeTheme(fontFamily),
-      },
-      darkTheme: switch (themeMode) {
-        AppThemeMode.custom
-            when themeSettings.customBase == CustomThemeBase.dark =>
-          buildCustomTheme(
-            fontFamily,
-            brightness: themeSettings.customBase.brightness,
-            primary: Color(themeSettings.customPrimaryValue),
-          ),
-        AppThemeMode.darkOrange => buildDarkOrangeTheme(fontFamily),
-        _ => buildDarkPurpleTheme(fontFamily),
-      },
+      theme: buildCustomTheme(
+        fontFamily,
+        brightness: Brightness.light,
+        primary: Color(themeSettings.customPrimaryValue),
+      ),
+      darkTheme: buildCustomTheme(
+        fontFamily,
+        brightness: Brightness.dark,
+        primary: Color(themeSettings.customPrimaryValue),
+      ),
       routerConfig: router,
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);

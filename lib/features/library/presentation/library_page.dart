@@ -38,16 +38,6 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   bool _appDataOperationActive = false;
   ReaderFontWeight? _pendingFontWeight;
 
-  String _themeLabel(AppLocalizations l10n, AppThemeMode mode) =>
-      switch (mode) {
-        AppThemeMode.system => l10n.t('system'),
-        AppThemeMode.lightOrange => l10n.t('lightOrange'),
-        AppThemeMode.lightGreen => l10n.t('lightGreen'),
-        AppThemeMode.darkOrange => l10n.t('darkOrange'),
-        AppThemeMode.darkPurple => l10n.t('darkPurple'),
-        AppThemeMode.custom => l10n.t('customTheme'),
-      };
-
   String _fontLabel(AppLocalizations l10n, FontType type) => switch (type) {
     FontType.sans => l10n.t('sansSerif'),
     FontType.serif => l10n.t('serif'),
@@ -75,15 +65,6 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         _ => l10n.t('system'),
       };
 
-  IconData _themeIcon(AppThemeMode mode) => switch (mode) {
-    AppThemeMode.system => Icons.brightness_auto_outlined,
-    AppThemeMode.lightOrange ||
-    AppThemeMode.lightGreen => Icons.light_mode_outlined,
-    AppThemeMode.darkOrange ||
-    AppThemeMode.darkPurple => Icons.dark_mode_outlined,
-    AppThemeMode.custom => Icons.palette_outlined,
-  };
-
   IconData _fontIcon(FontType type) => switch (type) {
     FontType.sans => Icons.font_download_outlined,
     FontType.serif => Icons.font_download,
@@ -93,8 +74,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final themeSettings =
-        ref.watch(themeModeProvider).value ?? AppThemeSettings.defaults;
-    final themeMode = themeSettings.mode;
+        ref.watch(themeProvider).value ?? AppThemeSettings.defaults;
     final locale = ref.watch(appLocaleProvider).value;
     final fontType = ref.watch(fontTypeProvider).value ?? FontType.serif;
     final activeBibleAsync = ref.watch(activeBibleSelectionProvider);
@@ -132,11 +112,11 @@ class _SettingPageState extends ConsumerState<SettingPage> {
               children: [
                 ListTile(
                   leading: Icon(
-                    _themeIcon(themeMode),
+                    Icons.palette_outlined,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: Text(l10n.t('themeMode')),
-                  subtitle: Text(_themeLabel(l10n, themeMode)),
+                  title: Text(l10n.t('theme')),
+                  subtitle: Text(l10n.t('customTheme')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showThemeSelection(themeSettings),
                 ),
@@ -524,15 +504,12 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     );
     if (selection == null || !mounted) return;
 
-    final controller = ref.read(themeModeProvider.notifier);
-    if (selection.mode == AppThemeMode.custom) {
-      await controller.setCustomTheme(
-        base: selection.customBase,
-        primaryValue: selection.customPrimaryValue,
-      );
-      return;
-    }
-    await controller.setMode(selection.mode);
+    await ref
+        .read(themeProvider.notifier)
+        .setCustomTheme(
+          base: selection.customBase,
+          primaryValue: selection.customPrimaryValue,
+        );
   }
 
   Future<void> _showBibleSelection(BuildContext context) async {
@@ -663,7 +640,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   }
 
   void _refreshImportedAppData() {
-    ref.invalidate(themeModeProvider);
+    ref.invalidate(themeProvider);
     ref.invalidate(appLocaleProvider);
     ref.invalidate(fontTypeProvider);
     ref.invalidate(readerSettingsProvider);

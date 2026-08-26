@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../data/storage/app_storage.dart';
+import 'app_configuration.dart';
 import 'app_configuration_parser.dart';
 
 class AppPreferences {
@@ -42,7 +43,9 @@ class AppPreferences {
 
     final file = File(p.join(await _settingsDirPath(), 'preferences.json'));
     final values = await _readValues(file);
-    return _instance = AppPreferences._(file, values);
+    final preferences = AppPreferences._(file, values);
+    await preferences.removeAll(AppConfiguration.removedKeys);
+    return _instance = preferences;
   }
 
   static Future<String> _settingsDirPath() async {
@@ -95,7 +98,15 @@ class AppPreferences {
   }
 
   Future<void> remove(String key) async {
+    if (!_values.containsKey(key)) return;
     _values.remove(key);
+    await _save();
+  }
+
+  Future<void> removeAll(Set<String> keys) async {
+    final previousLength = _values.length;
+    _values.removeWhere((key, _) => keys.contains(key));
+    if (_values.length == previousLength) return;
     await _save();
   }
 

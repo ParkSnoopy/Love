@@ -42,8 +42,13 @@ void main() {
 
     await tester.tap(find.text('Open themes'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('theme-mode-custom')));
-    await tester.pumpAndSettle();
+    expect(find.text('Custom'), findsOneWidget);
+    expect(find.text('Base'), findsOneWidget);
+    expect(find.text('System'), findsNothing);
+    expect(find.text('Light Orange'), findsNothing);
+    expect(find.text('Light Green'), findsNothing);
+    expect(find.text('Dark Orange'), findsNothing);
+    expect(find.text('Dark Purple'), findsNothing);
     await tester.tap(find.text('Dark'));
     await tester.tap(
       find.byKey(const ValueKey('custom-theme-color-4280453922')),
@@ -56,7 +61,6 @@ void main() {
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
 
-    expect(result?.mode, AppThemeMode.custom);
     expect(result?.customBase, CustomThemeBase.dark);
     expect(result?.customPrimaryValue, 0xFF228B22);
   });

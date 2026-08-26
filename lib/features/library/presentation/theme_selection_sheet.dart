@@ -24,27 +24,15 @@ class ThemeSelectionSheet extends StatefulWidget {
 }
 
 class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
-  late AppThemeMode _mode;
   late CustomThemeBase _customBase;
   late int _customPrimaryValue;
 
   @override
   void initState() {
     super.initState();
-    _mode = widget.settings.mode;
     _customBase = widget.settings.customBase;
     _customPrimaryValue = widget.settings.customPrimaryValue;
   }
-
-  String _themeLabel(AppLocalizations l10n, AppThemeMode mode) =>
-      switch (mode) {
-        AppThemeMode.system => l10n.t('system'),
-        AppThemeMode.lightOrange => l10n.t('lightOrange'),
-        AppThemeMode.lightGreen => l10n.t('lightGreen'),
-        AppThemeMode.darkOrange => l10n.t('darkOrange'),
-        AppThemeMode.darkPurple => l10n.t('darkPurple'),
-        AppThemeMode.custom => l10n.t('customTheme'),
-      };
 
   @override
   Widget build(BuildContext context) {
@@ -57,67 +45,52 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              l10n.t('themeMode'),
+              l10n.t('customTheme'),
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
-            for (final mode in AppThemeMode.values)
-              ListTile(
-                key: ValueKey('theme-mode-${mode.name}'),
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  _mode == mode
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
+            const SizedBox(height: 20),
+            Text(
+              l10n.t('customThemeBase'),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            SegmentedButton<CustomThemeBase>(
+              segments: [
+                ButtonSegment(
+                  value: CustomThemeBase.light,
+                  label: Text(l10n.t('lightBase')),
                 ),
-                title: Text(_themeLabel(l10n, mode)),
-                onTap: () => setState(() => _mode = mode),
-              ),
-            if (_mode == AppThemeMode.custom) ...[
-              const Divider(),
-              Text(
-                l10n.t('customThemeBase'),
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 8),
-              SegmentedButton<CustomThemeBase>(
-                segments: [
-                  ButtonSegment(
-                    value: CustomThemeBase.light,
-                    label: Text(l10n.t('lightBase')),
+                ButtonSegment(
+                  value: CustomThemeBase.dark,
+                  label: Text(l10n.t('darkBase')),
+                ),
+              ],
+              selected: {_customBase},
+              onSelectionChanged: (selection) {
+                setState(() => _customBase = selection.single);
+              },
+            ),
+            const SizedBox(height: 20),
+            Text(
+              l10n.t('primaryColor'),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 14,
+              runSpacing: 14,
+              children: [
+                for (final value in customThemePrimaryChoices)
+                  _ColorChoice(
+                    value: value,
+                    selected: _customPrimaryValue == value,
+                    onSelected: () {
+                      setState(() => _customPrimaryValue = value);
+                    },
                   ),
-                  ButtonSegment(
-                    value: CustomThemeBase.dark,
-                    label: Text(l10n.t('darkBase')),
-                  ),
-                ],
-                selected: {_customBase},
-                onSelectionChanged: (selection) {
-                  setState(() => _customBase = selection.single);
-                },
-              ),
-              const SizedBox(height: 20),
-              Text(
-                l10n.t('primaryColor'),
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 14,
-                runSpacing: 14,
-                children: [
-                  for (final value in customThemePrimaryChoices)
-                    _ColorChoice(
-                      value: value,
-                      selected: _customPrimaryValue == value,
-                      onSelected: () {
-                        setState(() => _customPrimaryValue = value);
-                      },
-                    ),
-                ],
-              ),
-            ],
+              ],
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -131,7 +104,6 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
                   onPressed: () => Navigator.pop(
                     context,
                     ThemeSelectionResult(
-                      mode: _mode,
                       customBase: _customBase,
                       customPrimaryValue: _customPrimaryValue,
                     ),
@@ -149,12 +121,10 @@ class _ThemeSelectionSheetState extends State<ThemeSelectionSheet> {
 
 class ThemeSelectionResult {
   const ThemeSelectionResult({
-    required this.mode,
     required this.customBase,
     required this.customPrimaryValue,
   });
 
-  final AppThemeMode mode;
   final CustomThemeBase customBase;
   final int customPrimaryValue;
 }

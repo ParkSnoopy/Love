@@ -133,8 +133,12 @@ void main() {
     });
   });
 
-  test('Light Orange uses warm editorial palette', () {
-    final theme = buildLightOrangeTheme('NotoSerifCJK');
+  test('custom light base uses warm editorial surfaces', () {
+    final theme = buildCustomTheme(
+      'NotoSerifCJK',
+      brightness: Brightness.light,
+      primary: const Color(0xFFCC785C),
+    );
 
     expect(theme.brightness, Brightness.light);
     expect(theme.scaffoldBackgroundColor, const Color(0xFFFAF9F5));

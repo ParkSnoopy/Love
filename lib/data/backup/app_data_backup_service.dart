@@ -228,6 +228,7 @@ CREATE TABLE history (
       defaults: AppConfiguration.defaults,
       overrides: [current, importedPreferences],
     );
+    updated.removeWhere((key, _) => AppConfiguration.removedKeys.contains(key));
     return _configurationParser.encode(updated);
   }
 

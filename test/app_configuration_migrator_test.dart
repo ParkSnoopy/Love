@@ -72,4 +72,27 @@ void main() {
       {'existing_setting': 7},
     );
   });
+
+  test('configuration migration removes retired settings', () async {
+    final directory = createDirectory();
+    await File(
+      '${directory.path}/preferences.json',
+    ).writeAsString(jsonEncode({'app_theme_mode': 2, 'custom_theme_base': 1}));
+    const migrator = AppConfigurationMigrator(
+      defaults: {'custom_theme_base': 0},
+      removedKeys: {'app_theme_mode'},
+    );
+
+    await migrator.migrateIfNeeded(
+      appDataPath: directory.path,
+      appVersion: '2.0.0+5',
+    );
+
+    expect(
+      jsonDecode(
+        await File('${directory.path}/preferences.json').readAsString(),
+      ),
+      {'custom_theme_base': 1},
+    );
+  });
 }

@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:Love/app/app_configuration.dart';
-import 'package:Love/app/theme_controller.dart';
 import 'package:Love/data/backup/app_data_backup_service.dart';
 import 'package:Love/features/study/data/user_data_repository.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -94,7 +93,7 @@ void main() {
     await File('${source.path}/preferences.json').writeAsString(
       jsonEncode({
         'reader_chapter': 7,
-        AppConfiguration.appThemeModeKey: 5,
+        'app_theme_mode': 5,
         AppConfiguration.customThemeBaseKey: 1,
         AppConfiguration.customThemePrimaryKey: 0xFF1565C0,
       }),
@@ -119,13 +118,7 @@ void main() {
             as Map<String, dynamic>;
     expect(preferences, containsPair('theme_mode', 'dark'));
     expect(preferences, containsPair('reader_chapter', 7));
-    expect(
-      preferences,
-      containsPair(
-        AppConfiguration.appThemeModeKey,
-        AppThemeMode.custom.storageIndex,
-      ),
-    );
+    expect(preferences, isNot(contains('app_theme_mode')));
     expect(preferences, containsPair(AppConfiguration.customThemeBaseKey, 1));
     expect(
       preferences,

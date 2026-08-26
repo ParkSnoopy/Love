@@ -1,5 +1,4 @@
 abstract final class AppConfiguration {
-  static const appThemeModeKey = 'app_theme_mode';
   static const customThemeBaseKey = 'custom_theme_base';
   static const customThemePrimaryKey = 'custom_theme_primary';
   static const appLocaleCodeKey = 'app_locale_code';
@@ -15,7 +14,6 @@ abstract final class AppConfiguration {
   static const activeCommentaryFileKey = 'active_commentary_file';
   static const activeCommentaryNameKey = 'active_commentary_name';
 
-  static const appThemeModeDefault = 0;
   static const customThemeBaseDefault = 0;
   static const customThemePrimaryDefault = 0xFFCC785C;
   static const readerFontTypeDefault = 1;
@@ -27,7 +25,6 @@ abstract final class AppConfiguration {
   static const readerChapterDefault = 1;
 
   static const defaults = <String, Object?>{
-    appThemeModeKey: appThemeModeDefault,
     customThemeBaseKey: customThemeBaseDefault,
     customThemePrimaryKey: customThemePrimaryDefault,
     readerFontTypeKey: readerFontTypeDefault,
@@ -38,4 +35,6 @@ abstract final class AppConfiguration {
     readerBookIdKey: readerBookIdDefault,
     readerChapterKey: readerChapterDefault,
   };
+
+  static const removedKeys = <String>{'app_theme_mode'};
 }
