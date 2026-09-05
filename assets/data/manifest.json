@@ -101,7 +101,7 @@
   {
     "id": "kor_klb",
     "shortname": "KLB",
-    "name": "한국인의 성경",
+    "name": "현대인의 성경",
     "language": "Korean",
     "type": "bible",
     "file": "kor_klb.sqlite",
